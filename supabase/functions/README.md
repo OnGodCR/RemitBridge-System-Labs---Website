@@ -56,22 +56,32 @@ key itself never appears in this repo.
 Optionally add `NOTIFY_FROM="RemitBridge <hello@yourdomain.org>"` once the
 domain is verified in Resend.
 
-### 3. Point the webhook at it
+### 3. Point the database at it
 
-In the Supabase dashboard: **Database → Webhooks → Create a new hook**.
+Copy `supabase/set-notify.sql.example` to `supabase/set-notify.sql`, put your
+project ref and the same `WEBHOOK_SECRET` string in it, and run it in the SQL
+Editor. It is gitignored.
 
-| Field | Value |
-| --- | --- |
-| Name | `notify-message` |
-| Table | `public.messages` |
-| Events | Insert only |
-| Type | Supabase Edge Functions |
-| Edge Function | `notify-message` |
-| HTTP Headers | add `x-webhook-secret` with the same random string |
+That is all: `schema.sql` already creates the trigger on `public.messages` that
+reads those two rows and calls the function.
+
+**Not a dashboard Database Webhook, deliberately.** Creating one fails with
+`3F000 schema "supabase_functions" does not exist` on projects that never had
+the webhooks integration enabled. A webhook is also invisible to this
+repository: nothing you could read here would tell you an email is sent. The
+trigger in `schema.sql` says so plainly and is version controlled.
 
 Send yourself a message from the contact page to check. If nothing arrives,
-**Edge Functions → notify-message → Logs** will say why: a 401 means the header
-and the secret do not match, a 500 means Resend refused the send.
+**Edge Functions → notify-message → Logs** will say why: 401 means
+`notify_secret` and `WEBHOOK_SECRET` do not match, and a 500 names whichever
+secret is unset or repeats what Resend refused.
+
+If the log shows nothing at all, the trigger never fired. Check `pg_net` is
+enabled under **Database → Extensions**, and that both rows exist:
+
+```sql
+select key from public.app_config where key in ('notify_url', 'notify_secret');
+```
 
 ### Why not send the email from the browser
 

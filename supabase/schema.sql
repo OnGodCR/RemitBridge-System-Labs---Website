@@ -236,6 +236,71 @@ create policy "staff mark handled"
 create index if not exists messages_created_at_idx
   on public.messages (created_at desc);
 
+-- --------------------------------------------------- new message, by email --
+
+-- Calls the notify-message edge function when a message arrives.
+--
+-- This is a plain trigger rather than a dashboard Database Webhook. Two
+-- reasons. A webhook needs the `supabase_functions` schema, which is not on
+-- every project and fails with `3F000 schema does not exist` when it is
+-- missing. And a webhook's configuration exists only in the dashboard, so
+-- reading this repository would not tell you the email is ever sent.
+--
+-- The url and the shared secret live in app_config, which has RLS on and no
+-- policies, so neither is readable through the API.
+do $$
+begin
+  create extension if not exists pg_net with schema extensions;
+exception
+  when insufficient_privilege then
+    raise notice 'Could not create the pg_net extension. Enable it under Database, Extensions, then run this file again.';
+end $$;
+
+create or replace function public.notify_new_message()
+returns trigger language plpgsql security definer set search_path = '' as $$
+declare
+  fn_url text;
+  secret text;
+begin
+  select value into fn_url from public.app_config where key = 'notify_url';
+  select value into secret from public.app_config where key = 'notify_secret';
+
+  -- Not configured yet is a normal state, not an error. The message is already
+  -- saved by this point, so a missing url must never fail the insert: the
+  -- contact form working matters more than the email going out.
+  if fn_url is null or secret is null then
+    return new;
+  end if;
+
+  perform extensions.net_http_post(
+    url := fn_url,
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'x-webhook-secret', secret
+    ),
+    body := jsonb_build_object(
+      'type', 'INSERT',
+      'table', 'messages',
+      'record', to_jsonb(new)
+    ),
+    timeout_milliseconds := 5000
+  );
+
+  return new;
+exception
+  -- pg_net queues the request, so this should not fire. If it somehow does,
+  -- swallow it: losing the notification is survivable, losing the message is
+  -- not.
+  when others then
+    raise warning 'notify_new_message failed: %', sqlerrm;
+    return new;
+end $$;
+
+drop trigger if exists messages_notify on public.messages;
+create trigger messages_notify
+  after insert on public.messages
+  for each row execute function public.notify_new_message();
+
 -- ------------------------------------------------------------------- posts --
 
 -- Posts written in the browser. The thirty posts in src/data/posts.js stay in

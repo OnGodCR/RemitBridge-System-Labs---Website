@@ -1,0 +1,22 @@
+-- Where the new-message email goes out from.
+--
+-- Copy to `supabase/set-notify.sql`, fill in the real values, run it in the
+-- SQL Editor. That copy is gitignored, because the secret below is the thing
+-- stopping strangers from sending mail through the function.
+--
+-- These live in app_config rather than in a dashboard webhook so that the
+-- notification is visible to anyone reading this repository, and so it does
+-- not depend on the `supabase_functions` schema, which is not on every project.
+--
+-- notify_secret must be byte-identical to the WEBHOOK_SECRET set with
+--   npx supabase secrets set WEBHOOK_SECRET=...
+-- Mismatched, the function answers 401 and no email is sent.
+
+insert into public.app_config (key, value) values
+  ('notify_url',    'https://YOUR-PROJECT-REF.supabase.co/functions/v1/notify-message'),
+  ('notify_secret', 'the-same-string-you-gave-supabase-secrets-set')
+on conflict (key) do update set value = excluded.value;
+
+-- Turning it off again: delete the rows. The trigger treats missing config as
+-- "not set up" and lets the insert through untouched.
+--   delete from public.app_config where key in ('notify_url', 'notify_secret');

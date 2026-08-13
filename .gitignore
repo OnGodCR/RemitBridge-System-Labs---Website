@@ -14,3 +14,4 @@ graphify-out/
 
 # holds the owner email; use set-owner.sql.example as the template
 supabase/set-owner.sql
+supabase/set-notify.sql
