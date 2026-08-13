@@ -248,9 +248,14 @@ create index if not exists messages_created_at_idx
 --
 -- The url and the shared secret live in app_config, which has RLS on and no
 -- policies, so neither is readable through the API.
+-- pg_net owns its own schema (`net`), so no `with schema` clause here. An
+-- earlier version of this file called `extensions.net_http_post`, which does
+-- not exist under any name: the real function is `net.http_post`. It threw,
+-- the handler below caught it, and the result was a contact form that worked
+-- perfectly while silently never sending anything.
 do $$
 begin
-  create extension if not exists pg_net with schema extensions;
+  create extension if not exists pg_net;
 exception
   when insufficient_privilege then
     raise notice 'Could not create the pg_net extension. Enable it under Database, Extensions, then run this file again.';
@@ -259,40 +264,52 @@ end $$;
 create or replace function public.notify_new_message()
 returns trigger language plpgsql security definer set search_path = '' as $$
 declare
-  fn_url text;
-  secret text;
+  fn_url     text;
+  secret     text;
+  net_schema text;
 begin
   select value into fn_url from public.app_config where key = 'notify_url';
   select value into secret from public.app_config where key = 'notify_secret';
 
   -- Not configured yet is a normal state, not an error. The message is already
-  -- saved by this point, so a missing url must never fail the insert: the
+  -- saved by this point, so missing config must never fail the insert: the
   -- contact form working matters more than the email going out.
   if fn_url is null or secret is null then
     return new;
   end if;
 
-  perform extensions.net_http_post(
-    url := fn_url,
-    headers := jsonb_build_object(
-      'Content-Type', 'application/json',
-      'x-webhook-secret', secret
-    ),
-    body := jsonb_build_object(
-      'type', 'INSERT',
-      'table', 'messages',
-      'record', to_jsonb(new)
-    ),
-    timeout_milliseconds := 5000
-  );
+  -- Looked up rather than hardcoded, because pg_net has lived in `net` and in
+  -- `extensions` depending on how a project was provisioned. Guessing wrong is
+  -- what caused the silent failure above.
+  select n.nspname into net_schema
+  from pg_catalog.pg_proc p
+  join pg_catalog.pg_namespace n on n.oid = p.pronamespace
+  where p.proname = 'http_post'
+  limit 1;
+
+  if net_schema is null then
+    raise exception 'pg_net is not installed: no http_post function found';
+  end if;
+
+  execute format('select %I.http_post($1, $2, $3, $4, $5)', net_schema)
+  using
+    fn_url,
+    jsonb_build_object('type', 'INSERT', 'table', 'messages', 'record', to_jsonb(new)),
+    '{}'::jsonb,
+    jsonb_build_object('Content-Type', 'application/json', 'x-webhook-secret', secret),
+    5000;
+
+  -- Clear a previous failure so the row means "last attempt", not "ever failed".
+  delete from public.app_config where key = 'notify_last_error';
 
   return new;
 exception
-  -- pg_net queues the request, so this should not fire. If it somehow does,
-  -- swallow it: losing the notification is survivable, losing the message is
-  -- not.
+  -- Still never fail the insert. But record why, because a warning goes to the
+  -- Postgres log where nobody looks, and that is how this stayed invisible.
   when others then
     raise warning 'notify_new_message failed: %', sqlerrm;
+    delete from public.app_config where key = 'notify_last_error';
+    insert into public.app_config (key, value) values ('notify_last_error', sqlerrm);
     return new;
 end $$;
 
