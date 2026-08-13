@@ -34,8 +34,11 @@ Then set the secrets. Pick any long random string for `WEBHOOK_SECRET`
 (`openssl rand -hex 32` will make one):
 
 ```bash
-npx supabase secrets set RESEND_API_KEY=re_your_key_here WEBHOOK_SECRET=your_random_string NOTIFY_TO=angadkochar2000@gmail.com
+npx supabase secrets set RESEND_API_KEY=re_your_key_here WEBHOOK_SECRET=your_random_string NOTIFY_TO=you@example.com
 ```
+
+`NOTIFY_TO` is where the alerts go. It is a secret rather than a value in this
+repo for the same reason the owner address is: this repository is public.
 
 Optionally add `NOTIFY_FROM="RemitBridge <hello@yourdomain.org>"` once the
 domain is verified in Resend.

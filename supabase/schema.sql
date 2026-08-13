@@ -50,13 +50,30 @@ returns public.user_role language sql stable security definer set search_path = 
   select role from public.profiles where id = auth.uid()
 $$;
 
--- The lab owner. This address is granted admin automatically when it signs up,
--- and by the backfill at the bottom if the account already exists. Changing
--- who owns the lab means changing this one function.
+-- Settings that should not be in a public repository. One row per key.
+--
+-- RLS is on and there are deliberately no policies, so nothing reaches this
+-- through the API at all. Security definer functions still read it, because
+-- they run as the table's owner rather than as the caller.
+create table if not exists public.app_config (
+  key   text primary key,
+  value text not null
+);
+
+alter table public.app_config enable row level security;
+
+-- The lab owner. The address itself lives in app_config, not in this file, so
+-- checking this schema into a public repo does not publish a personal email.
+-- Set it once with supabase/set-owner.sql, which is gitignored.
 create or replace function public.owner_email()
-returns text language sql immutable set search_path = '' as $$
-  select 'angadkochar2000@gmail.com'
+returns text language sql stable security definer set search_path = '' as $$
+  select lower(value) from public.app_config where key = 'owner_email'
 $$;
+
+-- Not callable over the API. It is only ever used inside the signup trigger and
+-- the backfill below, both of which run as the owner. Left exposed, anyone with
+-- the publishable key could read the address straight back out of it.
+revoke all on function public.owner_email() from public, anon, authenticated;
 
 create or replace function public.is_admin()
 returns boolean language sql stable security definer set search_path = '' as $$
@@ -371,6 +388,17 @@ create or replace view public.directory as
 
 grant select on public.directory to anon, authenticated;
 
+-- ------------------------------------------------------------ api exposure --
+
+-- PostgREST publishes every function in `public` that the API roles can execute.
+-- These are needed by `authenticated`, because row-level security policies are
+-- evaluated as the caller. No policy for `anon` uses any of them, so `anon` has
+-- no reason to be able to call them.
+revoke all on function
+  public.my_role(), public.my_team(), public.is_admin(),
+  public.is_staff(), public.can_write()
+from anon;
+
 -- ------------------------------------------------------------- owner grant --
 
 -- Accounts created before this file was first run have no profile row: the
@@ -401,3 +429,15 @@ from auth.users u
 where u.id = p.id
   and lower(u.email) = public.owner_email()
   and p.role is distinct from 'admin';
+
+-- With no owner set, `owner_email()` is null, every comparison above is null,
+-- and nobody is promoted. That is the safe direction to fail, but it is silent,
+-- so say it out loud instead of leaving someone to wonder why they are a member.
+do $$
+begin
+  if public.owner_email() is null then
+    raise notice 'No owner set: run supabase/set-owner.sql, then re-run this file. Nobody has admin until you do.';
+  elsif not exists (select 1 from public.profiles where role = 'admin') then
+    raise notice 'Owner is set to %, but no account with that address has signed up yet. Sign up, then re-run this file.', public.owner_email();
+  end if;
+end $$;

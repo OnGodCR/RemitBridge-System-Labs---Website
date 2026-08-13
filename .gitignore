@@ -11,3 +11,6 @@ graphify-out/
 .DS_Store
 *.local
 .vite/
+
+# holds the owner email; use set-owner.sql.example as the template
+supabase/set-owner.sql

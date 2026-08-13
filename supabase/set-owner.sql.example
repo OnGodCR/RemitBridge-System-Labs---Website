@@ -1,0 +1,28 @@
+-- Who owns the lab.
+--
+-- Copy this to `supabase/set-owner.sql`, put the real address in, and run it in
+-- the Supabase SQL Editor after schema.sql. That copy is gitignored, which is
+-- the whole point: schema.sql can live in a public repo without publishing a
+-- personal email.
+--
+-- Re-runnable, and it promotes the account itself, so schema.sql does not need
+-- a second run afterwards.
+
+insert into public.app_config (key, value)
+values ('owner_email', 'you@example.com')
+on conflict (key) do update set value = excluded.value;
+
+-- Promote the matching account, whether it signed up before or after this ran.
+update public.profiles p
+set role = 'admin'
+from auth.users u
+where u.id = p.id
+  and lower(u.email) = public.owner_email()
+  and p.role is distinct from 'admin';
+
+do $$
+begin
+  if not exists (select 1 from public.profiles where role = 'admin') then
+    raise notice 'Owner set, but no account with that address has signed up yet. Sign up, then run this file again.';
+  end if;
+end $$;
