@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import Section, { PageHeader } from '@/components/Section'
+import Section from '@/components/Section'
 import { Input } from '@/components/ui/input'
 import { buttonVariants } from '@/components/ui/button'
 import { supabase, backendEnabled } from '@/lib/supabase'
@@ -65,13 +65,8 @@ export default function Contact() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="Contact"
-        title="Get in touch"
-        intro="Questions, corrections, workshop requests, or wanting to join — all of it goes to the same inbox and a student reads it."
-      />
-
-      <Section>
+      {/* No standing header. The form is the page, so it opens on the form. */}
+      <Section className="pt-12">
         <div className="grid gap-12 lg:grid-cols-[1fr_20rem] lg:items-start">
           <form onSubmit={submit}>
             <h2 className="text-2xl">Send a message</h2>
