@@ -13,16 +13,17 @@ values ('owner_email', 'you@example.com')
 on conflict (key) do update set value = excluded.value;
 
 -- Promote the matching account, whether it signed up before or after this ran.
+-- 'owner' is the top of the ladder: one person, and nobody can demote them.
 update public.profiles p
-set role = 'admin'
+set role = 'owner'
 from auth.users u
 where u.id = p.id
   and lower(u.email) = public.owner_email()
-  and p.role is distinct from 'admin';
+  and p.role is distinct from 'owner';
 
 do $$
 begin
-  if not exists (select 1 from public.profiles where role = 'admin') then
+  if not exists (select 1 from public.profiles where role = 'owner') then
     raise notice 'Owner set, but no account with that address has signed up yet. Sign up, then run this file again.';
   end if;
 end $$;

@@ -19,11 +19,13 @@ import { useAuth, authEnabled, canWrite, isStaff, isAdmin } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 
 const ROLE_BLURB = {
+  owner:
+    'You are the owner. Everything is yours, including who gets to be an admin. Nobody can change your role but you.',
   member:
     'Your account is set up. Applying for a fellowship is the way onto a team; writing access comes with that.',
   writer: 'You can write. The post list below shows what still needs a body.',
   editor: 'You can write and you can read the contact inbox.',
-  admin: 'You can do everything, including changing what everyone else can do.',
+  admin: 'You can do everything below you, including changing what other people can do.',
 }
 
 export default function Dashboard() {
@@ -182,7 +184,7 @@ export default function Dashboard() {
           </Card>
         )}
 
-        {tab === 'people' && isAdmin(profile) && <People myId={user.id} />}
+        {tab === 'people' && isAdmin(profile) && <People myId={user.id} profile={profile} />}
 
         {tab === 'account' && (
           <div className="max-w-xl">

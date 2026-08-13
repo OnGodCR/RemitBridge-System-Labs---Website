@@ -17,10 +17,15 @@
 -- apply for a fellowship. It does NOT grant writing access. Roles are raised
 -- by hand in the dashboard once someone is actually accepted.
 do $$ begin
-  create type public.user_role as enum ('member', 'writer', 'editor', 'admin');
+  create type public.user_role as enum ('member', 'writer', 'editor', 'admin', 'owner');
 exception
   when duplicate_object then null;
 end $$;
+
+-- For databases created before 'owner' existed. Postgres will not let a label
+-- added in a transaction be used in that same transaction, so anything that
+-- writes the literal 'owner' lives in set-owner.sql, which runs separately.
+alter type public.user_role add value if not exists 'owner';
 
 create table if not exists public.profiles (
   id         uuid primary key references auth.users on delete cascade,
@@ -75,20 +80,52 @@ $$;
 -- the publishable key could read the address straight back out of it.
 revoke all on function public.owner_email() from public, anon, authenticated;
 
+/*
+ * Roles are a ladder, not a set of flags.
+ *
+ *   owner  5   one person, the address in app_config. Cannot be demoted.
+ *   admin  4   everything except touching another admin or the owner
+ *   editor 3   publishes posts, reads the inbox, reviews applications
+ *   writer 2   writes and edits their own drafts
+ *   member 1   signing up. Can apply for a fellowship and nothing else.
+ *
+ * Comparisons are on text rather than enum literals: a `language sql` body is
+ * parsed when the function is created, so a literal would fail on a database
+ * where the label had just been added.
+ */
+create or replace function public.role_rank(r public.user_role)
+returns int language sql immutable set search_path = '' as $$
+  select case
+    when r is null then 0
+    when r::text = 'owner'  then 5
+    when r::text = 'admin'  then 4
+    when r::text = 'editor' then 3
+    when r::text = 'writer' then 2
+    else 1
+  end
+$$;
+
+-- 0 when not signed in, so every comparison against it fails closed.
+create or replace function public.my_rank()
+returns int language sql stable security definer set search_path = '' as $$
+  select public.role_rank((select role from public.profiles where id = auth.uid()))
+$$;
+
+create or replace function public.is_owner()
+returns boolean language sql stable security definer set search_path = '' as $$
+  select public.my_rank() >= 5
+$$;
+
+-- Defined against the ladder so owner inherits everything below it without
+-- being named in a dozen separate policies.
 create or replace function public.is_admin()
 returns boolean language sql stable security definer set search_path = '' as $$
-  select coalesce(
-    (select role from public.profiles where id = auth.uid()) = 'admin',
-    false
-  )
+  select public.my_rank() >= 4
 $$;
 
 create or replace function public.is_staff()
 returns boolean language sql stable security definer set search_path = '' as $$
-  select coalesce(
-    (select role from public.profiles where id = auth.uid()) in ('editor', 'admin'),
-    false
-  )
+  select public.my_rank() >= 3
 $$;
 
 drop policy if exists "read own profile" on public.profiles;
@@ -115,14 +152,44 @@ create policy "update own profile"
     and team is not distinct from public.my_team()
   );
 
--- Two UPDATE policies sit side by side. Postgres allows the write if either
--- passes: a normal user matches "update own profile" (which pins their role),
--- an admin matches this one (which does not).
+/*
+ * Two UPDATE policies sit side by side. Postgres allows the write if either
+ * passes: a normal user matches "update own profile", which pins their role,
+ * and a senior person matches this one.
+ *
+ * This replaced `using (is_admin()) with check (is_admin())`, which constrained
+ * neither whose row was changed nor what the new role was, so an admin could
+ * edit their own row and grant themselves anything.
+ *
+ * USING tests the row as it stands, WITH CHECK the row as it would become, so
+ * both halves are needed: one stops you touching someone at or above your
+ * level, the other stops you handing out a role at or above your level.
+ * `id <> auth.uid()` is what makes self-promotion impossible.
+ */
 drop policy if exists "admins manage anyone" on public.profiles;
-create policy "admins manage anyone"
+drop policy if exists "manage people below you" on public.profiles;
+create policy "manage people below you"
   on public.profiles for update to authenticated
-  using (public.is_admin())
-  with check (public.is_admin());
+  using (
+    public.is_admin()
+    and id <> auth.uid()
+    and public.role_rank(role) < public.my_rank()
+  )
+  with check (
+    public.is_admin()
+    and id <> auth.uid()
+    and public.role_rank(role) < public.my_rank()
+  );
+
+-- At most one owner, enforced by the database rather than by remembering.
+-- Wrapped because the predicate needs the 'owner' label to already exist; on a
+-- database that gained it moments ago this runs on the next pass.
+do $$ begin
+  create unique index if not exists profiles_single_owner
+    on public.profiles ((role = 'owner')) where role = 'owner';
+exception when others then
+  raise notice 'Single-owner index not created yet (%). Re-run this file once more.', sqlerrm;
+end $$;
 
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = '' as $$
@@ -133,7 +200,7 @@ begin
     new.email,
     new.raw_user_meta_data ->> 'full_name',
     case
-      when lower(new.email) = public.owner_email() then 'admin'::public.user_role
+      when lower(new.email) = public.owner_email() then 'owner'::public.user_role
       else 'member'::public.user_role
     end
   )
@@ -514,6 +581,9 @@ select
   u.email,
   u.raw_user_meta_data ->> 'full_name',
   case
+    -- Deliberately not 'owner': this file may have added that label moments
+    -- ago, and Postgres refuses to use a label in the transaction that created
+    -- it. set-owner.sql does the promotion, separately.
     when lower(u.email) = public.owner_email() then 'admin'::public.user_role
     else 'member'::public.user_role
   end

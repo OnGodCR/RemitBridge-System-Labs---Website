@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { buttonVariants } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
-import { isAdmin } from '@/lib/auth'
+import { isAdmin, ROLE_RANK, rankOf } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 
 const STATUSES = [
@@ -78,9 +78,10 @@ export function Applications({ profile, myId }) {
     if (status === 'accepted') {
       const person = people[row.user_id]
       const patch = { team: row.team }
-      // Only an admin's update passes the role check in the policy, and a
-      // person already above 'writer' should not be demoted by being accepted.
-      if (isAdmin(profile) && person?.role === 'member') patch.role = 'writer'
+      // Only when the actor actually outranks 'writer'. The policy would
+      // refuse otherwise, and the team assignment would be lost with it.
+      // Someone already above writer must not be demoted by being accepted.
+      if (rankOf(profile) > ROLE_RANK.writer && person?.role === 'member') patch.role = 'writer'
       const { error: profileError } = await supabase
         .from('profiles')
         .update(patch)

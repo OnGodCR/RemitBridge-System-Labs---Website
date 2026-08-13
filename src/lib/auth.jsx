@@ -11,18 +11,66 @@ const AuthContext = createContext({
 export const authEnabled = backendEnabled
 
 /**
- * Writing access. Signing up alone does not grant it — a new account is a
- * 'member', which can apply for a fellowship and nothing more. The database
- * enforces this too; this is only for hiding UI that would fail anyway.
+ * The role ladder, mirroring public.role_rank in the schema.
+ *
+ * Every check below is a rank comparison rather than a list of role names, so
+ * adding a role in the middle does not mean hunting down each place that
+ * happened to enumerate the ones above it. This is the same shape as the SQL
+ * so the two cannot quietly disagree.
+ *
+ * None of this is a security boundary. Row-level security is. Hiding a control
+ * here only avoids showing someone a button the database would refuse.
  */
-export const canWrite = (profile) =>
-  ['writer', 'editor', 'admin'].includes(profile?.role)
+export const ROLE_RANK = {
+  member: 1,
+  writer: 2,
+  editor: 3,
+  admin: 4,
+  owner: 5,
+}
 
-/** Only admins can change other people's roles. Mirrors the RLS policy. */
-export const isAdmin = (profile) => profile?.role === 'admin'
+export const ROLE_LABEL = {
+  member: 'Member',
+  writer: 'Writer',
+  editor: 'Editor',
+  admin: 'Admin',
+  owner: 'Owner',
+}
 
-/** Reading the contact inbox is staff-only, matching the RLS policy. */
-export const isStaff = (profile) => ['editor', 'admin'].includes(profile?.role)
+/** 0 for signed out or an unknown role, so every comparison fails closed. */
+export const rankOf = (profile) => ROLE_RANK[profile?.role] ?? 0
+
+/**
+ * Writing access. Signing up alone does not grant it: a new account is a
+ * 'member', which can apply for a fellowship and nothing more.
+ */
+export const canWrite = (profile) => rankOf(profile) >= ROLE_RANK.writer
+
+/** Reading the contact inbox and reviewing applications. */
+export const isStaff = (profile) => rankOf(profile) >= ROLE_RANK.editor
+
+/** Managing other people's roles. */
+export const isAdmin = (profile) => rankOf(profile) >= ROLE_RANK.admin
+
+/** Exactly one person, set by supabase/set-owner.sql. Cannot be demoted. */
+export const isOwner = (profile) => rankOf(profile) >= ROLE_RANK.owner
+
+/**
+ * Whether `actor` may change `target`'s role, and to what.
+ *
+ * Mirrors the "manage people below you" policy: strictly below your own rank,
+ * never yourself. Returned as the list of roles that are actually assignable,
+ * which is what the People panel needs to render.
+ */
+export const assignableRoles = (actor, target) => {
+  if (!actor || !target) return []
+  // Admin floor: outranking someone is not on its own a licence to hand out
+  // access. Matches the policy, which an editor's update would fail anyway.
+  if (!isAdmin(actor)) return []
+  if (actor.id === target.id) return []
+  if (rankOf(target) >= rankOf(actor)) return []
+  return Object.keys(ROLE_RANK).filter((r) => ROLE_RANK[r] < rankOf(actor))
+}
 
 /**
  * Holds the current session and the signed-in person's profile row.

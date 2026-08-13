@@ -3,7 +3,8 @@ import Section from '@/components/Section'
 import { supabase, backendEnabled } from '@/lib/supabase'
 
 const ROLE_LABEL = {
-  admin: 'Lab lead',
+  owner: 'Lab lead',
+  admin: 'Admin',
   editor: 'Editor',
   writer: 'Researcher',
   member: 'Member',
