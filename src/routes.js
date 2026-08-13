@@ -15,9 +15,9 @@ export const navGroups = [
         blurb: 'Work out what a transfer really costs once the exchange rate is counted.',
       },
       {
-        path: '/remitbench',
-        label: 'RemitBench',
-        blurb: 'Our testbed for comparing payment rails against a normal bank transfer.',
+        path: '/coming-soon',
+        label: 'Coming soon',
+        blurb: 'What we are building next, including RemitBench, and how to suggest something.',
       },
     ],
   },
@@ -81,7 +81,13 @@ export const routes = navGroups.flatMap((group) =>
   group.items.map((item) => ({ ...item, group: group.label })),
 )
 
-/** What a first-time visitor should look at, in order. */
-export const featured = ['/truecost', '/remitbench', '/blog', '/papers'].map((path) =>
-  routes.find((route) => route.path === path),
-)
+/**
+ * What a first-time visitor should look at, in order.
+ *
+ * Filtered, because `find` returns undefined for a path that is no longer in
+ * navGroups and the home page reads `.path` off every entry. Renaming a route
+ * here should drop a card, not take the home page down with it.
+ */
+export const featured = ['/truecost', '/coming-soon', '/blog', '/papers']
+  .map((path) => routes.find((route) => route.path === path))
+  .filter(Boolean)

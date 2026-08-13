@@ -30,8 +30,10 @@ export default function Home() {
               Try the calculator
               <ArrowRight className="size-4" />
             </Link>
+            {/* Was /remitbench, which is now filed under Coming soon. The
+                blog is where the finished research actually is. */}
             <Link
-              to="/remitbench"
+              to="/blog"
               className={cn(buttonVariants({ variant: 'outline', size: 'hero' }))}
             >
               See the research

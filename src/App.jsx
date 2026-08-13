@@ -3,6 +3,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import RemitBench from './pages/RemitBench'
+import ComingSoon from './pages/ComingSoon'
 import TrueCost from './pages/TrueCost'
 import Workshops from './pages/Workshops'
 import Blog from './pages/Blog'
@@ -31,6 +32,8 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
+            <Route path="coming-soon" element={<ComingSoon />} />
+            {/* Kept: the design write-up is linked from Coming soon. */}
             <Route path="remitbench" element={<RemitBench />} />
             <Route path="truecost" element={<TrueCost />} />
             <Route path="workshops" element={<Workshops />} />
