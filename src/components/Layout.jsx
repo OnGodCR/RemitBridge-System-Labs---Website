@@ -8,6 +8,8 @@ import ErrorBoundary from './ErrorBoundary'
 export default function Layout() {
   const { pathname } = useLocation()
 
+  const isAuthPage = pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')
+
   // Client-side navigation keeps the old scroll position, which drops the
   // reader into the middle of the page they just opened.
   //
@@ -30,7 +32,11 @@ export default function Layout() {
           <Outlet />
         </ErrorBoundary>
       </main>
-      <Footer />
+
+      {/* No footer on the auth pages. A column of site navigation under a
+          sign-in box invites people away from the one thing the page is for,
+          and the form is short enough that the footer was most of the screen. */}
+      {!isAuthPage && <Footer />}
 
       {/*
         Vercel Web Analytics. Cookieless, and it does not fingerprint or build

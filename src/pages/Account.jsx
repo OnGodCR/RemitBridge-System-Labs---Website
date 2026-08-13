@@ -1,18 +1,106 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Container } from '@/components/Section'
+import AuthBackdrop from '@/components/AuthBackdrop'
 import { Input } from '@/components/ui/input'
 import { buttonVariants } from '@/components/ui/button'
 import { supabase, backendEnabled } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
-function Shell({ title, children }) {
+/*
+ * What an account actually gets you, in order.
+ *
+ * Every step is what really happens, not a funnel. Signing up grants `member`,
+ * which can apply for a fellowship and nothing else, and the database enforces
+ * that. Promising writing access on this page would be a lie the schema would
+ * then refuse to tell.
+ */
+const steps = [
+  {
+    title: 'Make an account',
+    body: 'Email and a password. Nothing else is asked for, and nothing is shared with anyone.',
+  },
+  {
+    title: 'Apply to a team',
+    body: 'Four teams. Pick one and say why in a paragraph. There is no form letter we are looking for.',
+  },
+  {
+    title: 'A student lead reads it',
+    body: 'Every application is read by a person. You can see where yours has got to from your dashboard.',
+  },
+  {
+    title: 'A decision, either way',
+    body: 'By email, whichever way it goes. Being accepted is what grants writing access, not signing up.',
+  },
+]
+
+function Onboarding({ isSignUp }) {
   return (
-    <div className="bg-muted py-20">
-      <Container className="flex justify-center">
-        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8">
-          <h1 className="text-2xl">{title}</h1>
-          {children}
+    <div className="max-w-md">
+      <p className="text-xs font-bold uppercase tracking-widest text-primary">
+        Joining the lab
+      </p>
+      <h2 className="mt-3 text-2xl sm:text-3xl">
+        {isSignUp ? 'What happens after this' : 'How joining works'}
+      </h2>
+      <p className="mt-4 leading-relaxed text-muted-foreground">
+        An account on its own does not grant writing access. Here is the whole route,
+        so nothing about it is a surprise.
+      </p>
+
+      <ol className="mt-8">
+        {steps.map((step, i) => (
+          <li key={step.title} className="flex gap-4 pb-7 last:pb-0">
+            {/* Number and rule in one column, so the list reads as a sequence
+                rather than four unrelated notes. */}
+            <div className="flex flex-col items-center">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full border border-primary/30 bg-card text-sm font-bold text-primary">
+                {i + 1}
+              </span>
+              {i < steps.length - 1 && (
+                <span className="mt-1 w-px flex-1 bg-border" aria-hidden />
+              )}
+            </div>
+
+            <div className="pt-1">
+              <p className="font-bold">{step.title}</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                {step.body}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
+function Shell({ title, children, aside }) {
+  return (
+    // Fills what is left under the header, since the footer is gone here. The
+    // card would otherwise float in a short band with white below it.
+    <div className="relative flex min-h-[calc(100vh-5rem)] items-center bg-muted py-16">
+      <AuthBackdrop />
+
+      <Container className="relative">
+        <div
+          className={cn(
+            'grid items-center gap-12',
+            // Only two columns when there is something to put in the second.
+            aside && 'lg:grid-cols-2 lg:gap-16',
+          )}
+        >
+          {aside}
+
+          <div
+            className={cn(
+              'w-full max-w-md rounded-2xl border border-border bg-card/95 p-8 shadow-sm backdrop-blur-sm',
+              aside ? 'lg:justify-self-end' : 'mx-auto',
+            )}
+          >
+            <h1 className="text-2xl">{title}</h1>
+            {children}
+          </div>
         </div>
       </Container>
     </div>
@@ -71,13 +159,10 @@ function AuthForm({ mode }) {
   }
 
   return (
-    <Shell title={isSignUp ? 'Create an account' : 'Sign in'}>
-      {isSignUp && (
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          An account lets you apply for a fellowship and track where the application
-          got to.
-        </p>
-      )}
+    <Shell
+      title={isSignUp ? 'Create an account' : 'Sign in'}
+      aside={<Onboarding isSignUp={isSignUp} />}
+    >
 
       {status.state === 'check-email' ? (
         <div className="mt-6 rounded-xl border border-border bg-muted p-4">

@@ -140,23 +140,34 @@ export default function Contact() {
             </p>
           </form>
 
-          <aside className="space-y-4">
-            {reasons.map((r) => (
-              <div
-                key={r.title}
-                className="rounded-2xl border border-border bg-muted p-5"
-              >
-                <h3 className="text-lg">{r.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {r.body}
-                </p>
-              </div>
-            ))}
+          {/*
+            A divided list, not a stack of cards.
 
-            <p className="px-1 text-sm leading-relaxed text-muted-foreground">
+            Three rounded boxes floating one above another gave each note a
+            frame it did not need and made the column louder than the form it
+            sits next to. Rules do the same separating with nothing drawn.
+            Same pattern as the index on the home page.
+          */}
+          <aside>
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              What to write about
+            </p>
+
+            <dl className="mt-5 border-t border-border">
+              {reasons.map((r) => (
+                <div key={r.title} className="border-b border-border py-5">
+                  <dt className="font-bold">{r.title}</dt>
+                  <dd className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    {r.body}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
               Writing for the lab already?{' '}
-              <Link to="/write" className="font-bold text-primary hover:underline">
-                Go to the writers area
+              <Link to="/dashboard" className="font-bold text-primary hover:underline">
+                Go to your dashboard
               </Link>
               .
             </p>

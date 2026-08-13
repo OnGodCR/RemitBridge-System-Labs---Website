@@ -152,3 +152,43 @@
     @apply font-sans;
   }
 }
+
+/*
+  Entrance animation for the home page.
+
+  Written so the finished state is the default and the animation only moves an
+  element towards where it already is. `backwards` fill applies the from-frame
+  during the delay, so a staggered element is hidden until its turn without
+  ever being hidden in the stylesheet itself. If animations do not run at all,
+  every element is simply where it belongs.
+
+  Distances are small on purpose. The site is meant to read like a document,
+  and anything that slides a long way reads as decoration.
+*/
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* Stagger. Kept short: past about half a second the page feels slow rather
+   than considered, and the last item is what people are waiting for. */
+.rise-1 { animation-delay: 0.06s; }
+.rise-2 { animation-delay: 0.14s; }
+.rise-3 { animation-delay: 0.22s; }
+.rise-4 { animation-delay: 0.3s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+}

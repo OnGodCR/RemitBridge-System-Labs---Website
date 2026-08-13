@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import Section, { PageHeader, Container } from '@/components/Section'
+import Section, { Container } from '@/components/Section'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -10,6 +10,15 @@ import { cn } from '@/lib/utils'
  * No dates. A student lab works around school terms, and a date we miss is
  * worse than no date at all. Each entry says what it is, how far along it
  * actually is, and what it is waiting on.
+ *
+ * One entry, because one thing is actually being worked on. Corridor pages and
+ * extra workshop languages were listed here and were removed: neither was
+ * planned, and a roadmap of things nobody has started is the same overclaim as
+ * an unsourced number.
+ *
+ * No standing page header either. One item under a full-height title read as a
+ * mostly empty page, so it opens on the thing itself, the way the blog and the
+ * contact page do.
  */
 const upcoming = [
   {
@@ -21,60 +30,77 @@ const upcoming = [
     to: '/remitbench',
     linkLabel: 'Read the current design',
   },
-  {
-    title: 'Corridor pages',
-    stage: 'Planned',
-    what: 'One page per corridor, starting with the routes families in King County actually use, showing what a $200 transfer costs and how that has moved over the last year.',
-    waitingOn: 'Enough collected price data per corridor to say anything honest about a trend.',
-  },
-  {
-    title: 'Workshop materials in more languages',
-    stage: 'Planned',
-    what: 'The handouts already exist in six languages. The next set depends on which languages people actually ask for.',
-    waitingOn: 'Requests, and a native speaker to check each translation before it goes out.',
-    to: '/workshops',
-    linkLabel: 'See the current workshops',
-  },
 ]
 
 export default function ComingSoon() {
   return (
     <>
-      <PageHeader
-        eyebrow="Tools"
-        title="Coming soon"
-        intro="What we are working on next, and roughly where each one has got to. Nothing here is finished, which is why it is on this page and not on the site proper."
-      />
+      <Section className="pt-12">
+        <div className="mb-10 flex flex-wrap items-baseline justify-between gap-4">
+          <h1 className="text-3xl sm:text-4xl">Coming soon</h1>
+          <p className="text-sm text-muted-foreground">
+            {upcoming.length === 1
+              ? 'One thing being worked on'
+              : `${upcoming.length} things being worked on`}
+          </p>
+        </div>
 
-      <Section>
-        <ul className="border-t border-border">
+        <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-start">
           {upcoming.map((item) => (
-            <li key={item.title} className="border-b border-border py-10">
-              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-                <h2 className="text-2xl">{item.title}</h2>
-                <span className="rounded-full border border-border px-3 py-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  {item.stage}
-                </span>
+            <div key={item.title} className="rounded-2xl border border-border bg-card p-8">
+              <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary">
+                {/* A dot rather than a spinner. Nothing is happening on this
+                    page, and a spinner would imply something is. */}
+                <span className="size-1.5 rounded-full bg-primary" aria-hidden />
+                {item.stage}
+              </span>
+
+              <h2 className="mt-5 text-2xl sm:text-3xl">{item.title}</h2>
+              <p className="mt-4 text-lg leading-relaxed">{item.what}</p>
+
+              <div className="mt-6 rounded-xl bg-muted p-5">
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Waiting on
+                </p>
+                <p className="mt-2 leading-relaxed text-muted-foreground">
+                  {item.waitingOn}
+                </p>
               </div>
-
-              <p className="mt-4 max-w-3xl leading-relaxed">{item.what}</p>
-
-              <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-                <span className="font-bold">Waiting on:</span> {item.waitingOn}
-              </p>
 
               {item.to && (
                 <Link
                   to={item.to}
-                  className="group mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:underline"
+                  className="group mt-6 inline-flex items-center gap-1.5 font-bold text-primary hover:underline"
                 >
                   {item.linkLabel}
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+
+          {/* Sits beside the card rather than under it, so the page has two
+              columns of content instead of one narrow strip. */}
+          <aside className="rounded-2xl border border-border p-8">
+            <h2 className="text-xl">Why the list is short</h2>
+            <p className="mt-4 leading-relaxed text-muted-foreground">
+              Because it only holds work that has actually started. A page of things
+              nobody has begun is a wish list, and it would tell you nothing about what
+              the lab is really doing.
+            </p>
+            <p className="mt-4 leading-relaxed text-muted-foreground">
+              Finished work moves off this page and onto the{' '}
+              <Link to="/blog" className="font-bold text-primary hover:underline">
+                blog
+              </Link>{' '}
+              or{' '}
+              <Link to="/papers" className="font-bold text-primary hover:underline">
+                research papers
+              </Link>
+              .
+            </p>
+          </aside>
+        </div>
       </Section>
 
       {/* Green, because the section above it is white. */}
@@ -82,9 +108,9 @@ export default function ComingSoon() {
         <Container width="prose">
           <h2 className="text-3xl sm:text-4xl">Something you want built?</h2>
           <p className="mt-5 text-lg leading-relaxed text-current/90">
-            This list is short on purpose, and most of what is on it came from someone
-            asking. If there is a number you keep wanting and cannot find, or a corridor
-            nobody covers, tell us. It is the most useful mail we get.
+            If there is a number you keep wanting and cannot find, or a corridor nobody
+            covers, tell us. Requests are how most of what we build gets chosen, and it
+            is the most useful mail we get.
           </p>
           <Link
             to="/contact"

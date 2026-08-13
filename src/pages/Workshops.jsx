@@ -1,121 +1,136 @@
-import Section, { PageHeader, SectionImage } from '@/components/Section'
-import { Card, CardContent } from '@/components/ui/card'
-import { seriesTheme } from '@/lib/palette'
+import { Link } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
+import Section, { Container, SectionImage } from '@/components/Section'
+import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import meetingImage from '@/assets/community-meeting.jpg'
 
+/*
+ * Nothing here is running yet.
+ *
+ * The page previously listed four sessions and marked three languages as ready.
+ * None of that was true. A family who turns up for a session that does not
+ * exist, or asks for a guide nobody has written, is worse off than one that was
+ * never told about it, so the page now says plainly that this is planned work.
+ */
 const languages = [
-  { code: 'ES', name: 'Español', english: 'Spanish', ready: true },
-  { code: 'ZH', name: '中文', english: 'Mandarin', ready: true },
-  { code: 'HI', name: 'हिन्दी', english: 'Hindi', ready: true },
-  { code: 'VI', name: 'Tiếng Việt', english: 'Vietnamese', ready: false },
-  { code: 'AR', name: 'العربية', english: 'Arabic', ready: false },
-  { code: 'TL', name: 'Tagalog', english: 'Filipino', ready: false },
+  { code: 'ES', name: 'Español', english: 'Spanish' },
+  { code: 'ZH', name: '中文', english: 'Mandarin' },
+  { code: 'HI', name: 'हिन्दी', english: 'Hindi' },
+  { code: 'VI', name: 'Tiếng Việt', english: 'Vietnamese' },
+  { code: 'AR', name: 'العربية', english: 'Arabic' },
+  { code: 'TL', name: 'Tagalog', english: 'Filipino' },
 ]
 
-const moduleHues = ['series1', 'series2', 'series3', 'series4']
-
-const modules = [
+/* What the workshops are for, as commitments rather than a schedule. These are
+   things the lab can be held to now, unlike a session list with no dates. */
+const principles = [
   {
-    num: '01',
-    title: 'Working out what a transfer really costs',
-    desc: 'How to read the receipt, tell the fee apart from the exchange rate markup, and figure out what will actually show up on the other end.',
+    title: 'Free, and no sign-up',
+    body: 'No cost, no registration, and no names taken at the door. Nobody should have to identify themselves to find out what a transfer costs.',
   },
   {
-    num: '02',
-    title: 'Why the money says "sent" but is not there yet',
-    desc: 'Sent, cleared, and settled are three different things. We go through why a transfer can sit in the middle for days, and which delays are banking hours versus something going wrong.',
+    title: 'Nothing collected',
+    body: 'We will not ask for transfer details, amounts, or where anyone sends money. There is no list, so there is nothing to leak.',
   },
   {
-    num: '03',
-    title: 'Banks, apps, and blockchain, side by side',
-    desc: 'A plain comparison of the options on speed, cost, and what happens if something breaks. We do not recommend any company and we are not paid by any of them.',
+    title: 'No company recommended',
+    body: 'We compare options on cost and speed and leave the choosing to you. No provider pays us, and none ever will.',
   },
   {
-    num: '04',
-    title: 'Spotting transfer and crypto scams',
-    desc: 'The warning signs that come up over and over: rates that are too good, pressure to move fast, and anyone asking for a wallet phrase or a login.',
+    title: 'Checked by a speaker',
+    body: 'Every guide is read by someone who actually speaks the language before it goes out, not run through a translation tool and posted.',
   },
 ]
 
 export default function Workshops() {
   return (
     <>
-      <PageHeader
-        eyebrow="Community"
-        title="Money Across Borders workshops"
-        intro="Free sessions for families around King County, plus printed guides people can take home. Same material as the research, minus the jargon."
-      />
+      {/* No standing header: the page opens on what it is, the way the blog
+          and contact pages do. */}
+      <Section className="pt-12">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+          <h1 className="text-3xl sm:text-4xl">Money Across Borders workshops</h1>
+          <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            <span className="size-1.5 rounded-full bg-muted-foreground" aria-hidden />
+            Not running yet
+          </span>
+        </div>
 
-      <Section>
-        <SectionImage src={meetingImage} alt="People seated around a table in discussion" />
-        <p className="max-w-3xl leading-relaxed">
-          Most of what we found in the research is useful to somebody sending money next
-          week, but only if it is written in a way they can actually read. So we turned the
-          main findings into four short sessions. No sign-up, no cost, and we do not collect
-          names or any transfer details from anyone who shows up.
+        <p className="mt-6 max-w-3xl text-lg leading-relaxed">
+          Free sessions for families around King County, with printed guides to take
+          home. The same material as the research, minus the jargon. None of it is
+          running yet, and this page will say so until it is.
+        </p>
+
+        <div className="mt-10">
+          <SectionImage
+            src={meetingImage}
+            alt="People seated around a table in discussion"
+          />
+        </div>
+
+        <p className="mt-10 max-w-3xl leading-relaxed text-muted-foreground">
+          Most of what the research turns up is useful to somebody sending money next
+          week, but only if it is written so they can read it. Turning it into sessions
+          worth someone&rsquo;s evening is the work, and it has not been done yet.
         </p>
       </Section>
 
+      {/* Green (the section above is white). */}
+      <section className="bg-primary py-20 text-primary-foreground sm:py-24">
+        <Container>
+          <h2 className="text-2xl sm:text-3xl">What we are committing to</h2>
+          <p className="mt-4 max-w-3xl leading-relaxed text-current/90">
+            Not a schedule, because there is not one. These are the rules the sessions
+            will run under, and they hold from the first one.
+          </p>
+
+          <dl className="mt-12 grid gap-10 sm:grid-cols-2">
+            {principles.map((p) => (
+              <div key={p.title}>
+                <dt className="text-lg font-bold">{p.title}</dt>
+                <dd className="mt-2 leading-relaxed text-current/90">{p.body}</dd>
+              </div>
+            ))}
+          </dl>
+        </Container>
+      </section>
+
       <Section
-        tone="card"
         title="Languages"
-        description="Every guide is checked by a person who speaks the language, not run through a translation tool and posted."
+        description="Six to start with, chosen from what is actually spoken across King County. None are written yet."
       >
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {languages.map((lang) => (
             <li
               key={lang.code}
-              className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-background px-4 py-3"
+              className="flex items-center justify-between gap-3 rounded-2xl border border-border px-4 py-3"
             >
               <div>
                 <p className="text-base">{lang.name}</p>
                 <p className="text-xs text-muted-foreground">{lang.english}</p>
               </div>
-              <span
-                className={cn(
-                  'shrink-0 rounded-full border px-3 py-1 text-xs font-bold',
-                  lang.ready
-                    ? cn(seriesTheme.series1.tint, seriesTheme.series1.ink, seriesTheme.series1.border)
-                    : cn(seriesTheme.series4.tint, seriesTheme.series4.ink, seriesTheme.series4.border),
-                )}
-              >
-                {lang.ready ? 'Ready' : 'Being checked'}
+              <span className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-bold text-muted-foreground">
+                Coming soon
               </span>
             </li>
           ))}
         </ul>
-      </Section>
 
-      <Section title="The four sessions">
-        <div className="grid gap-4 md:grid-cols-2">
-          {modules.map((m, i) => (
-            <Card key={m.num}>
-              <CardContent>
-                <p
-                  className={cn(
-                    'inline-block rounded-full px-3 py-1 text-xs font-bold',
-                    seriesTheme[moduleHues[i]].tint,
-                    seriesTheme[moduleHues[i]].ink,
-                  )}
-                >
-                  Session {m.num}
-                </p>
-                <h3 className="mt-2 text-xl leading-snug">{m.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{m.desc}</p>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="mt-12 flex flex-wrap items-center gap-6 rounded-2xl border border-border bg-muted p-8">
+          <div className="min-w-64 flex-1">
+            <h3 className="text-xl">Want one of these where you are?</h3>
+            <p className="mt-2 leading-relaxed text-muted-foreground">
+              Community groups, libraries and schools in King County can ask now. Which
+              languages people request is what decides the order these get written in.
+            </p>
+          </div>
+          <Link to="/contact" className={cn(buttonVariants({ size: 'lg' }), 'shrink-0')}>
+            Ask for a session
+            <ArrowRight className="size-4" />
+          </Link>
         </div>
-      </Section>
-
-      <Section tone="card" title="About our community partners">
-        <p className="max-w-3xl leading-relaxed text-muted-foreground">
-          We run listening sessions and get our materials reviewed with local nonprofits and
-          civic groups around King County. We do not list any of them as a partner until
-          there is an actual agreement in writing, since putting a group&rsquo;s name on
-          your website before they agreed to it is a good way to lose their trust.
-        </p>
       </Section>
     </>
   )
