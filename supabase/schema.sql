@@ -346,6 +346,10 @@ create table if not exists public.posts (
   status       text not null default 'draft'
 );
 
+-- One per post: the thumbnail on the index and the banner on the article.
+-- Images inside the post are markdown in `body`, not columns here.
+alter table public.posts add column if not exists cover_image text;
+
 alter table public.posts drop constraint if exists posts_status_check;
 alter table public.posts add constraint posts_status_check
   check (status in ('draft', 'review', 'published'));

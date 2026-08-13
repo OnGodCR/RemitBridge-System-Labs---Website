@@ -33,6 +33,8 @@ function adapt(row, index) {
     seriesName: seriesNameFor(row.series),
     tags: [],
     publishedAt: row.published_at,
+    // Only database posts have one. The repo posts use generated cover art.
+    cover: row.cover_image ?? null,
     // Markdown rather than the block array the repo posts use. The article page
     // branches on which one is present.
     markdown: row.body,
@@ -49,7 +51,7 @@ export function usePosts() {
     let cancelled = false
     supabase
       .from('posts')
-      .select('id, slug, title, summary, body, read_time, series, published_at')
+      .select('id, slug, title, summary, body, read_time, series, published_at, cover_image')
       .eq('status', 'published')
       .order('published_at', { ascending: false })
       .then(({ data }) => {
@@ -82,7 +84,7 @@ export function usePost(slug) {
     setState({ post: null, loading: true })
     supabase
       .from('posts')
-      .select('id, slug, title, summary, body, read_time, series, published_at')
+      .select('id, slug, title, summary, body, read_time, series, published_at, cover_image')
       .eq('slug', slug)
       .eq('status', 'published')
       .maybeSingle()

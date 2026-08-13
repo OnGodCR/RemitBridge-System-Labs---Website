@@ -114,6 +114,15 @@ export default function BlogPost() {
 
       <article className="py-14">
         <Container width="prose">
+          {/* Banner, only for posts written in the dashboard. Repo posts carry
+              their generated cover on the index tile and no banner here. */}
+          {post.cover && (
+            <img
+              src={post.cover}
+              alt=""
+              className="mb-10 aspect-video w-full rounded-2xl border border-border object-cover"
+            />
+          )}
           {/* Repo posts are block arrays; posts written in the dashboard are
               markdown. Both end up as the same elements on the page. */}
           {post.markdown ? (
