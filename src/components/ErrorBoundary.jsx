@@ -57,12 +57,14 @@ export default class ErrorBoundary extends Component {
             nothing on its own: the build is minified, so the stack and the
             component list are what make it findable. Sourcemaps are on, so
             these resolve back to real files. */}
+        {/* Component list first. In the last report the JS stack filled the
+            box and pushed this below the fold, and it is the half that says
+            which component is at fault. */}
         <pre className="mt-8 max-h-80 overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-muted p-4 text-xs leading-relaxed">
           {[
             String(this.state.error?.message || this.state.error),
-            this.state.error?.stack,
-            this.state.componentStack &&
-              `\nComponents:${this.state.componentStack}`,
+            this.state.componentStack && `\nComponents:${this.state.componentStack}`,
+            this.state.error?.stack && `\n${this.state.error.stack}`,
           ]
             .filter(Boolean)
             .join('\n')}

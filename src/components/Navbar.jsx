@@ -22,7 +22,12 @@ export default function Navbar() {
   const { pathname } = useLocation()
   const { user, profile, loading, signOut } = useAuth()
 
-  useEffect(() => setOpen(false), [pathname])
+  // Braced for the same reason as the scroll reset in Layout: a concise arrow
+  // hands its return value to React as the effect's cleanup, and React calls
+  // it on the next navigation without checking it is a function.
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/90 backdrop-blur">

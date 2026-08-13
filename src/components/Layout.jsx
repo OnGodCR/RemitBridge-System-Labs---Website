@@ -10,7 +10,15 @@ export default function Layout() {
 
   // Client-side navigation keeps the old scroll position, which drops the
   // reader into the middle of the page they just opened.
-  useEffect(() => window.scrollTo(0, 0), [pathname])
+  //
+  // Braces are not style here. A concise arrow returns whatever the expression
+  // evaluates to, and React treats a non-undefined return as the cleanup
+  // function, calling it on the next navigation without checking it is
+  // callable. window.scrollTo is specified to return undefined, but the whole
+  // class of bug disappears if nothing is returned at all.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
