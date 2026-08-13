@@ -51,12 +51,19 @@ select 'last send attempt',
          'ok, no recorded failure'
        )
 
+-- Counts, and the status the function actually answered with. A 200 here is
+-- the only row that proves the whole chain ran, so it reports the last status
+-- rather than just saying 'ok', which read as success when it meant silence.
 union all
-select 'recent pg_net calls',
+select 'last pg_net call',
        coalesce(
-         (select 'ok, ' || count(*)::text || ' in the last hour'
-          from net._http_response where created > now() - interval '1 hour'),
-         'none'
+         (select case
+                   when r.status_code = 200 then 'ok, 200 from the function'
+                   when r.status_code is null then 'NO RESPONSE: the request never completed'
+                   else 'FUNCTION SAID ' || r.status_code::text || ': ' || coalesce(left(r.content, 200), '(no body)')
+                 end
+          from net._http_response r order by r.created desc limit 1),
+         'NOTHING SENT YET: insert a message, then run this again'
        );
 
 -- If every row says ok and mail still does not arrive, the request left the
