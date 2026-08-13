@@ -10,13 +10,22 @@ Three steps, all of which need credentials that only you should hold.
 
 ### 1. Get a sending key
 
-Sign up at [resend.com](https://resend.com) and create an API key. The free tier
-sends 100 emails a day, which is far more contact-form traffic than this site
-will see.
+Sign up at [resend.com](https://resend.com) **using
+`remitbridgesystemlabs@gmail.com`**, then create an API key. The free tier sends
+100 emails a day, far more contact-form traffic than this site will see.
 
-You can send from `onboarding@resend.dev` straight away. Sending from
-`@remitbridge.org` needs the domain verified in Resend first, which is a DNS
-record on whoever hosts the domain.
+Signing up with that address is not incidental. Until a domain is verified,
+Resend only lets you send **to the address the account was created with**, and
+only **from `onboarding@resend.dev`**. Sign up with a different address and
+every notification fails with a 403 that reads like a bad key.
+
+So on the free tier, unverified:
+
+- `NOTIFY_TO` must be `remitbridgesystemlabs@gmail.com`
+- `NOTIFY_FROM` must be left unset, so it uses `onboarding@resend.dev`
+
+Both limits lift once a real domain is verified in Resend, which is a DNS record
+on whoever hosts the domain.
 
 ### 2. Deploy the function and set its secrets
 
@@ -34,11 +43,15 @@ Then set the secrets. Pick any long random string for `WEBHOOK_SECRET`
 (`openssl rand -hex 32` will make one):
 
 ```bash
-npx supabase secrets set RESEND_API_KEY=re_your_key_here WEBHOOK_SECRET=your_random_string NOTIFY_TO=you@example.com
+npx supabase secrets set RESEND_API_KEY=re_your_key_here WEBHOOK_SECRET=your_random_string NOTIFY_TO=remitbridgesystemlabs@gmail.com
 ```
 
-`NOTIFY_TO` is where the alerts go. It is a secret rather than a value in this
-repo for the same reason the owner address is: this repository is public.
+`NOTIFY_TO` is where the alerts go. Only add `NOTIFY_FROM` once a domain is
+verified in Resend; before that it must stay unset.
+
+Nothing in this file is a secret you can read back out: `supabase secrets set`
+stores them on Supabase, and the function reads them from its environment. The
+key itself never appears in this repo.
 
 Optionally add `NOTIFY_FROM="RemitBridge <hello@yourdomain.org>"` once the
 domain is verified in Resend.

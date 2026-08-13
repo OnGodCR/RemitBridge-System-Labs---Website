@@ -16,20 +16,18 @@ list is short on purpose; if it stops being short, that is worth saying.
 
 Deferred by choice, not forgotten. Update this list as things land.
 
-- [ ] **Re-run `supabase/schema.sql`** to pick up the `revoke ... from public`
-      on the five helper functions. Trivial: each only reports on its caller,
-      so `anon` gets null or false either way.
 - [ ] **Email notifications on contact messages.** Function and setup are
       written; needs a Resend key and a database webhook. See
       `supabase/functions/README.md`.
-- [ ] **Real site URL** in the three `og:`/`twitter:` tags in `index.html`,
-      once Vercel has a domain. They must be absolute or link previews break.
-- [ ] **Real contact address** in `src/pages/Contact.jsx`, currently
-      `hello@remitbridge.org`.
-- [x] Supabase schema and `set-owner.sql` run. `owner_email()` returns 401 to
-      the API, so the address is not readable through it.
+- [ ] **Blank page on navigation**, reported on the deployed site and not
+      reproducible here. An error boundary now catches render errors and prints
+      the message, so the next occurrence should say what it was.
+- [x] Supabase schema and `set-owner.sql` run. `owner_email()` and the five
+      role helpers all return 401 to `anon`, verified against the live project.
 - [x] `post-images` bucket created, public, with the MIME allowlist and the
       three policies. Verified: an anon upload is refused by RLS.
+- [x] Contact address set to remitbridgesystemlabs@gmail.com.
+- [x] og: URLs built from the Vercel production domain at build time.
 - [x] Vercel Web Analytics enabled. Speed Insights deliberately not used.
 - [x] Personal email removed from tracked files. It remains in the root commit
       `b4c8316` on GitHub; Angad chose to leave it rather than force-push.

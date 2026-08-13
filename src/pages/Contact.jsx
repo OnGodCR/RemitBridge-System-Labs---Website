@@ -6,8 +6,12 @@ import { buttonVariants } from '@/components/ui/button'
 import { supabase, backendEnabled } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
-/** Replace with the lab's real address. */
-export const contactEmail = 'hello@remitbridge.org'
+/**
+ * The lab's address, shown on the page as a fallback for anyone who would
+ * rather use their own mail client than the form. A shared lab address, not a
+ * personal one, which is why it is fine in a public repo.
+ */
+export const contactEmail = 'remitbridgesystemlabs@gmail.com'
 
 const reasons = [
   {
