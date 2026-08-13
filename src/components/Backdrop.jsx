@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { usePrefersReducedMotion } from '@/lib/useInView'
+import { cn } from '@/lib/utils'
 
 /**
- * Backdrop for the sign-in and sign-up pages.
+ * The bridge mark, tiled, with a light that follows the pointer.
  *
  * The bridge mark from the logo, tiled faintly, with a soft green light that
  * follows the pointer. The tiling is a static SVG pattern and the light is one
@@ -13,7 +14,7 @@ import { usePrefersReducedMotion } from '@/lib/useInView'
  * It sits behind the card and is hidden from screen readers: it carries no
  * information, and the page has to work identically without it.
  */
-export default function AuthBackdrop() {
+export default function Backdrop({ fadeClass = 'from-background' }) {
   const ref = useRef(null)
   const reduced = usePrefersReducedMotion()
 
@@ -89,9 +90,10 @@ export default function AuthBackdrop() {
         }}
       />
 
-      {/* Fades the pattern out towards the bottom so it does not collide with
-          whatever follows the form. */}
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
+      {/* Fades out at the bottom so the pattern does not collide with whatever
+          follows. The colour has to match the section it sits in, which is why
+          it is a prop rather than a fixed token. */}
+      <div className={cn('absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t to-transparent', fadeClass)} />
     </div>
   )
 }

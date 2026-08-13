@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Container } from '@/components/Section'
-import AuthBackdrop from '@/components/AuthBackdrop'
+import Backdrop from '@/components/Backdrop'
 import { Input } from '@/components/ui/input'
 import { buttonVariants } from '@/components/ui/button'
 import { supabase, backendEnabled } from '@/lib/supabase'
@@ -80,7 +80,7 @@ function Shell({ title, children, aside }) {
     // Fills what is left under the header, since the footer is gone here. The
     // card would otherwise float in a short band with white below it.
     <div className="relative flex min-h-[calc(100vh-5rem)] items-center bg-muted py-16">
-      <AuthBackdrop />
+      <Backdrop fadeClass="from-muted" />
 
       <Container className="relative">
         <div

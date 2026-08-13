@@ -4,28 +4,41 @@ import Section, { Container, DisplayTitle } from '@/components/Section'
 import WhyItMatters from '@/components/WhyItMatters'
 import { buttonVariants } from '@/components/ui/button'
 import { LogoMark } from '@/components/Logo'
+import Backdrop from '@/components/Backdrop'
 import { featured } from '@/routes'
 import { cn } from '@/lib/utils'
 
 export default function Home() {
   return (
     <>
-      {/* Centred hero. No banner photo — the display type does the work. */}
-      <section className="bg-card py-24 text-center sm:py-32">
-        <Container width="prose">
-          <LogoMark className="mx-auto mb-8 h-16 w-24 text-primary" />
+      {/*
+        Centred hero. No banner photo: the display type does the work, and the
+        backdrop gives it something to sit on without competing for attention.
 
-          <DisplayTitle
-            lead="Sending money home"
-            accent={<>shouldn&rsquo;t cost this much</>}
-          />
+        The rise classes stagger the entrance. They are defined so the finished
+        state is the default and the animation only moves an element towards
+        where it already is, so a browser that runs none of it still shows the
+        correct page.
+      */}
+      <section className="relative overflow-hidden bg-card py-24 text-center sm:py-32">
+        <Backdrop fadeClass="from-card" />
 
-          <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+        <Container width="prose" className="relative">
+          <LogoMark className="rise mx-auto mb-8 h-16 w-24 text-primary" />
+
+          <div className="rise rise-1">
+            <DisplayTitle
+              lead="Sending money home"
+              accent={<>shouldn&rsquo;t cost this much</>}
+            />
+          </div>
+
+          <p className="rise rise-2 mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
             A student research lab measuring what cross-border transfers actually cost,
             and testing whether newer payment rails can do it cheaper.
           </p>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <div className="rise rise-3 mt-10 flex flex-wrap justify-center gap-4">
             <Link to="/truecost" className={buttonVariants({ size: 'hero' })}>
               Try the calculator
               <ArrowRight className="size-4" />
