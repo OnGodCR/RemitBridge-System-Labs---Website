@@ -22,17 +22,174 @@ type WebhookPayload = {
   }
 }
 
-/** Text into HTML, escaped, with blank lines becoming paragraphs. */
-function toParagraphs(text: string): string {
-  const escaped = text
+/**
+ * Everything below treats the message as hostile. It comes from a public form
+ * with no account behind it, so the name and the address are attacker
+ * controlled just as much as the body is. An earlier version dropped the name
+ * straight into the markup.
+ */
+const escape = (text: string) =>
+  text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-  return escaped
+    .replace(/'/g, '&#39;')
+
+/** Text into paragraphs, escaped, with blank lines splitting blocks. */
+function toParagraphs(text: string): string {
+  return escape(text)
     .split(/\n{2,}/)
-    .map((block) => `<p>${block.replace(/\n/g, '<br>')}</p>`)
+    .map(
+      (block) =>
+        `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#1C2024">${block.replace(
+          /\n/g,
+          '<br>',
+        )}</p>`,
+    )
     .join('')
+}
+
+const GREEN = '#14705A'
+const INK = '#1C2024'
+const MUTED = '#6B7280'
+const LINE = '#E5E7EB'
+const PAPER = '#F9FAFB'
+
+// A system stack rather than the site's Plus Jakarta Sans: web fonts are
+// stripped by most mail clients, and a font that half-loads looks worse than
+// one that was never asked for.
+const FONT =
+  "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+
+/**
+ * Tables, inline styles, no flexbox. Not nostalgia: Outlook renders through
+ * Word, which supports none of the modern layout, and a nested div layout
+ * collapses there.
+ */
+function buildHtml(opts: {
+  name: string
+  replyTo?: string
+  body: string
+  sentAt: string
+}): string {
+  const { name, replyTo, body, sentAt } = opts
+
+  const contactLine = replyTo
+    ? `<a href="mailto:${encodeURI(replyTo)}" style="color:${GREEN};text-decoration:underline">${escape(
+        replyTo,
+      )}</a>`
+    : `<span style="color:${MUTED}">no address given, so there is no way to reply</span>`
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>New message from the contact page</title>
+</head>
+<body style="margin:0;padding:0;background-color:${PAPER};">
+  <!-- Shown in the inbox list under the subject, then hidden in the body. -->
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0">
+    ${escape(body.slice(0, 140))}
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+         style="background-color:${PAPER};padding:24px 12px">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+               style="width:100%;max-width:600px;background-color:#ffffff;border:1px solid ${LINE};border-radius:16px;overflow:hidden">
+
+          <tr>
+            <td style="background-color:${GREEN};padding:24px 28px">
+              <p style="margin:0;font-family:${FONT};font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#ffffff;opacity:0.85">
+                RemitBridge Systems Lab
+              </p>
+              <p style="margin:6px 0 0;font-family:${FONT};font-size:22px;font-weight:700;color:#ffffff">
+                New message from the contact page
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:28px 28px 8px;font-family:${FONT}">
+              <p style="margin:0;font-size:18px;font-weight:700;color:${INK}">${escape(name)}</p>
+              <p style="margin:4px 0 0;font-size:15px">${contactLine}</p>
+              <p style="margin:4px 0 0;font-size:13px;color:${MUTED}">${escape(sentAt)}</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:20px 28px 0">
+              <div style="height:1px;background-color:${LINE};line-height:1px">&nbsp;</div>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:24px 28px 8px;font-family:${FONT}">
+              ${toParagraphs(body)}
+            </td>
+          </tr>
+
+          ${
+            replyTo
+              ? `<tr>
+            <td style="padding:12px 28px 28px">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="background-color:${GREEN};border-radius:9999px">
+                    <a href="mailto:${encodeURI(replyTo)}"
+                       style="display:inline-block;padding:12px 28px;font-family:${FONT};font-size:15px;font-weight:700;color:#ffffff;text-decoration:none">
+                      Reply to ${escape(name)}
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>`
+              : ''
+          }
+
+          <tr>
+            <td style="background-color:${PAPER};border-top:1px solid ${LINE};padding:18px 28px;font-family:${FONT}">
+              <p style="margin:0;font-size:13px;line-height:1.5;color:${MUTED}">
+                Sent from the contact page. It is saved in the Messages tab of the
+                dashboard too, so replying here does not mark it handled.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+}
+
+/** The same thing as text. Sending only HTML reads as spam to most filters. */
+function buildText(opts: {
+  name: string
+  replyTo?: string
+  body: string
+  sentAt: string
+}): string {
+  return [
+    'NEW MESSAGE FROM THE CONTACT PAGE',
+    '',
+    `From:  ${opts.name}`,
+    `Email: ${opts.replyTo ?? 'not given'}`,
+    `Sent:  ${opts.sentAt}`,
+    '',
+    '----------------------------------------',
+    '',
+    opts.body,
+    '',
+    '----------------------------------------',
+    '',
+    'Saved in the Messages tab of the dashboard as well.',
+  ].join('\n')
 }
 
 Deno.serve(async (req) => {
@@ -82,8 +239,21 @@ Deno.serve(async (req) => {
     return new Response('Ignored', { status: 200 })
   }
 
-  const name = record.name ?? 'Someone'
-  const replyTo = record.email ?? undefined
+  const name = record.name?.trim() || 'Someone'
+  const replyTo = record.email?.trim() || undefined
+
+  const sentAt = new Date(record.created_at ?? Date.now()).toLocaleString('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'America/Los_Angeles',
+  })
+
+  // A subject that says who and what. "Contact form submission" tells you
+  // nothing you did not already know from the sender.
+  const preview = record.body.replace(/\s+/g, ' ').trim()
+  const subject = `${name}: ${preview.length > 60 ? `${preview.slice(0, 57)}...` : preview}`
+
+  const content = { name, replyTo, body: record.body, sentAt }
 
   const res = await fetch(RESEND_ENDPOINT, {
     method: 'POST',
@@ -96,12 +266,9 @@ Deno.serve(async (req) => {
       to: [to],
       // Reply goes to the person who wrote in, not to the form.
       ...(replyTo ? { reply_to: replyTo } : {}),
-      subject: `RemitBridge contact form: ${name}`,
-      html: [
-        `<p><strong>${name}</strong>${replyTo ? ` &lt;${replyTo}&gt;` : ' (no email given)'}</p>`,
-        toParagraphs(record.body),
-        `<hr><p style="color:#6b7280;font-size:12px">Sent from the contact page. It is also in the Messages tab of the dashboard.</p>`,
-      ].join(''),
+      subject,
+      html: buildHtml(content),
+      text: buildText(content),
     }),
   })
 
