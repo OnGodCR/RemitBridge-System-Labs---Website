@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 /** Contact form submissions. Staff only, enforced by the RLS policy. */
 export function Inbox() {
   const [state, setState] = useState({ status: 'loading', rows: [], error: '' })
+  const [confirming, setConfirming] = useState(null)
 
   const load = () =>
     supabase
@@ -26,6 +27,17 @@ export function Inbox() {
       rows: s.rows.map((r) => (r.id === row.id ? { ...r, handled: !r.handled } : r)),
     }))
     await supabase.from('messages').update({ handled: !row.handled }).eq('id', row.id)
+  }
+
+  const remove = async (row) => {
+    setConfirming(null)
+    const { error } = await supabase.from('messages').delete().eq('id', row.id)
+    if (error) {
+      // Most likely the delete policy is missing, which is a schema.sql re-run.
+      setState((s) => ({ ...s, error: error.message, status: 'error' }))
+      return
+    }
+    setState((s) => ({ ...s, rows: s.rows.filter((r) => r.id !== row.id) }))
   }
 
   if (state.status === 'loading') {
@@ -87,12 +99,40 @@ export function Inbox() {
             <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">
               {row.body}
             </p>
-            <button
-              onClick={() => toggle(row)}
-              className="mt-3 text-xs font-bold text-muted-foreground hover:text-foreground"
-            >
-              {row.handled ? 'Mark as not handled' : 'Mark handled'}
-            </button>
+            <div className="mt-3 flex items-center gap-4">
+              <button
+                onClick={() => toggle(row)}
+                className="text-xs font-bold text-muted-foreground hover:text-foreground"
+              >
+                {row.handled ? 'Mark as not handled' : 'Mark handled'}
+              </button>
+
+              {/* Two taps rather than a confirm dialog. A message is somebody
+                  writing in, and there is no undo once it is gone. */}
+              {confirming === row.id ? (
+                <>
+                  <button
+                    onClick={() => remove(row)}
+                    className="text-xs font-bold text-destructive hover:underline"
+                  >
+                    Delete for good
+                  </button>
+                  <button
+                    onClick={() => setConfirming(null)}
+                    className="text-xs font-bold text-muted-foreground hover:text-foreground"
+                  >
+                    Keep it
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setConfirming(row.id)}
+                  className="text-xs font-bold text-muted-foreground hover:text-destructive"
+                >
+                  Delete
+                </button>
+              )}
+            </div>
           </li>
         ))}
       </ul>

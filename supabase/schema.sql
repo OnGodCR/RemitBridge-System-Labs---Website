@@ -233,6 +233,14 @@ create policy "staff mark handled"
   on public.messages for update to authenticated
   using (public.is_staff()) with check (public.is_staff());
 
+-- A public form with no account behind it will eventually collect spam, and
+-- with no delete policy the only way to remove any of it was the SQL editor.
+-- Staff only: the person who sent a message must not be able to unsend it.
+drop policy if exists "staff delete messages" on public.messages;
+create policy "staff delete messages"
+  on public.messages for delete to authenticated
+  using (public.is_staff());
+
 create index if not exists messages_created_at_idx
   on public.messages (created_at desc);
 
