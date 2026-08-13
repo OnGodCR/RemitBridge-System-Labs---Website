@@ -40,29 +40,34 @@ Deno.serve(async (req) => {
     return new Response('Method not allowed', { status: 405 })
   }
 
-  const secret = Deno.env.get('WEBHOOK_SECRET')
-  // Fail closed. An unset secret means anyone who finds the URL can send mail
-  // through it, so a missing secret is a misconfiguration, not a shortcut.
-  if (!secret) {
-    console.error('WEBHOOK_SECRET is not set; refusing to run')
-    return new Response('Not configured', { status: 500 })
+  // Name the variable that is missing. Three different causes returning one
+  // "Not configured" made setup guesswork. Naming an unset env var tells an
+  // outsider nothing useful: with WEBHOOK_SECRET unset the function refuses
+  // every request anyway, so there is nothing behind it to attack.
+  const missing = ['WEBHOOK_SECRET', 'RESEND_API_KEY', 'NOTIFY_TO'].filter(
+    (name) => !Deno.env.get(name),
+  )
+  if (missing.length > 0) {
+    const detail = `Not configured: ${missing.join(', ')} not set. Run: npx supabase secrets set ${missing
+      .map((n) => `${n}=...`)
+      .join(' ')}`
+    console.error(detail)
+    return new Response(detail, { status: 500 })
   }
+
+  const secret = Deno.env.get('WEBHOOK_SECRET')
   if (req.headers.get('x-webhook-secret') !== secret) {
-    return new Response('Unauthorized', { status: 401 })
+    return new Response(
+      'Unauthorized: the x-webhook-secret header does not match WEBHOOK_SECRET.',
+      { status: 401 },
+    )
   }
 
   const apiKey = Deno.env.get('RESEND_API_KEY')
-  if (!apiKey) {
-    console.error('RESEND_API_KEY is not set')
-    return new Response('Not configured', { status: 500 })
-  }
-
   const to = Deno.env.get('NOTIFY_TO')
+  // Unset until a domain is verified in Resend. onboarding@resend.dev is the
+  // only sender the free tier allows before that.
   const from = Deno.env.get('NOTIFY_FROM') ?? 'RemitBridge <onboarding@resend.dev>'
-  if (!to) {
-    console.error('NOTIFY_TO is not set')
-    return new Response('Not configured', { status: 500 })
-  }
 
   let payload: WebhookPayload
   try {
@@ -103,8 +108,17 @@ Deno.serve(async (req) => {
   if (!res.ok) {
     const detail = await res.text()
     console.error('Resend rejected the message', res.status, detail)
+
+    // 403 here is nearly always the free-tier rule rather than a bad key: an
+    // unverified Resend account may only send to the address it was created
+    // with, from onboarding@resend.dev. Say so, because the raw error does not.
+    const hint =
+      res.status === 403
+        ? ` This is usually the Resend free-tier limit: until a domain is verified, NOTIFY_TO must be the address the Resend account was created with, and NOTIFY_FROM must be unset. Currently sending to ${to} from ${from}.`
+        : ''
+
     // 500 so the webhook retries rather than dropping it silently.
-    return new Response('Send failed', { status: 500 })
+    return new Response(`Send failed: ${detail}${hint}`, { status: 500 })
   }
 
   return new Response('Sent', { status: 200 })
