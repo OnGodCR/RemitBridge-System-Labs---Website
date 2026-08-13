@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/react'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import ErrorBoundary from './ErrorBoundary'
+import Backdrop from './Backdrop'
 
 export default function Layout() {
   const { pathname } = useLocation()
@@ -23,7 +24,12 @@ export default function Layout() {
   }, [pathname])
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col">
+      {/* Site-wide. The ground is painted on body in index.css, so this can sit
+          behind every page at -z-10. Sections that paint their own surface, the
+          white cards and the green and ink bands, cover it, which is what keeps
+          the alternation reading as bands rather than as texture everywhere. */}
+      <Backdrop fixed />
       <Navbar />
       {/* Inside the layout, not around it, so a page that throws still leaves
           the reader a header and a footer to navigate away with. */}

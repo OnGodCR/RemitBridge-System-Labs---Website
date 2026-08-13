@@ -4,7 +4,6 @@ import Section, { Container, DisplayTitle } from '@/components/Section'
 import WhyItMatters from '@/components/WhyItMatters'
 import { buttonVariants } from '@/components/ui/button'
 import { LogoMark } from '@/components/Logo'
-import Backdrop from '@/components/Backdrop'
 import { featured } from '@/routes'
 import { cn } from '@/lib/utils'
 
@@ -13,17 +12,16 @@ export default function Home() {
     <>
       {/*
         Centred hero. No banner photo: the display type does the work, and the
-        backdrop gives it something to sit on without competing for attention.
+        backdrop is the site-wide one in Layout showing through: the hero paints
+        no surface of its own, which is what lets it.
 
         The rise classes stagger the entrance. They are defined so the finished
         state is the default and the animation only moves an element towards
         where it already is, so a browser that runs none of it still shows the
         correct page.
       */}
-      <section className="relative overflow-hidden bg-card py-24 text-center sm:py-32">
-        <Backdrop fadeClass="from-card" />
-
-        <Container width="prose" className="relative">
+      <section className="py-24 text-center sm:py-32">
+        <Container width="prose">
           <LogoMark className="rise mx-auto mb-8 h-16 w-24 text-primary" />
 
           <div className="rise rise-1">

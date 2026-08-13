@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Container } from '@/components/Section'
-import Backdrop from '@/components/Backdrop'
 import { Input } from '@/components/ui/input'
 import { buttonVariants } from '@/components/ui/button'
 import { supabase, backendEnabled } from '@/lib/supabase'
@@ -79,10 +78,8 @@ function Shell({ title, children, aside }) {
   return (
     // Fills what is left under the header, since the footer is gone here. The
     // card would otherwise float in a short band with white below it.
-    <div className="relative flex min-h-[calc(100vh-5rem)] items-center bg-muted py-16">
-      <Backdrop fadeClass="from-muted" />
-
-      <Container className="relative">
+    <div className="flex min-h-[calc(100vh-5rem)] items-center py-16">
+      <Container>
         <div
           className={cn(
             'grid items-center gap-12',

@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils'
  * It sits behind the card and is hidden from screen readers: it carries no
  * information, and the page has to work identically without it.
  */
-export default function Backdrop({ fadeClass = 'from-background' }) {
+export default function Backdrop({ fadeClass = 'from-background', fixed = false }) {
   const ref = useRef(null)
   const reduced = usePrefersReducedMotion()
 
@@ -49,7 +49,14 @@ export default function Backdrop({ fadeClass = 'from-background' }) {
     <div
       ref={ref}
       aria-hidden
-      className="pointer-events-none absolute inset-0 overflow-hidden [--x:50%] [--y:35%]"
+      className={cn(
+        'pointer-events-none overflow-hidden [--x:50%] [--y:35%]',
+        // Fixed sits behind the whole document, so the pattern stays put while
+        // the page scrolls over it and the light tracks the pointer anywhere.
+        // -z-10 works only because the layout wrapper paints no background of
+        // its own: a child cannot render behind its own parent's fill.
+        fixed ? 'fixed inset-0 -z-10' : 'absolute inset-0',
+      )}
     >
       {/* Tiled bridge marks. Two arcs at 3% opacity: present when you look for
           it, invisible when you are reading the form. */}
@@ -93,7 +100,11 @@ export default function Backdrop({ fadeClass = 'from-background' }) {
       {/* Fades out at the bottom so the pattern does not collide with whatever
           follows. The colour has to match the section it sits in, which is why
           it is a prop rather than a fixed token. */}
-      <div className={cn('absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t to-transparent', fadeClass)} />
+      {!fixed && (
+        <div
+          className={cn('absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t to-transparent', fadeClass)}
+        />
+      )}
     </div>
   )
 }
