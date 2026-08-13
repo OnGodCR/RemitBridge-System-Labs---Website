@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/react'
 import Navbar from './Navbar'
 import Footer from './Footer'
 
@@ -21,13 +20,16 @@ export default function Layout() {
       <Footer />
 
       {/*
-        Vercel Web Analytics and Speed Insights. Both are cookieless and do not
-        fingerprint or build cross-site profiles, which is what lets the Impact
-        page keep saying "aggregate counts only, we do not track individual
-        users". They no-op anywhere that is not a Vercel deployment.
+        Vercel Web Analytics. Cookieless, and it does not fingerprint or build
+        cross-site profiles, which is what lets the Impact page keep saying
+        "aggregate counts only, we do not track individual users". It no-ops
+        anywhere that is not a Vercel deployment.
+
+        Speed Insights was here too and was removed: it is a separate paid
+        feature that was never switched on, so it was a script loading for
+        nothing.
       */}
       <Analytics />
-      <SpeedInsights />
     </div>
   )
 }

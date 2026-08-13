@@ -4,6 +4,36 @@ Student-led research site about what cross-border payments actually cost.
 React 18 + Vite 5 + Tailwind v4 + shadcn/ui (`radix-nova`, JSX), Supabase for
 auth and data, deployed on Vercel.
 
+## Talking to Angad
+
+Start every reply with `hi, angad`.
+
+End every reply with the open items below, as a short checklist showing what is
+done and what is not. Every message, not just the ones where it comes up. The
+list is short on purpose; if it stops being short, that is worth saying.
+
+## Open items
+
+Deferred by choice, not forgotten. Update this list as things land.
+
+- [ ] **Re-run `supabase/schema.sql`, then `supabase/set-owner.sql`.** The
+      database still has the old `owner_email()` with the address as a literal
+      and no `app_config` table.
+- [ ] **Create the `post-images` storage bucket** (public) in the Supabase
+      Storage tab. The SQL skips it when the editor lacks rights on
+      `storage.objects`, so image upload in the post editor fails until it
+      exists. Policies are in `schema.sql` to paste in.
+- [ ] **Email notifications on contact messages.** Function and setup are
+      written; needs a Resend key and a database webhook. See
+      `supabase/functions/README.md`.
+- [ ] **Real site URL** in the three `og:`/`twitter:` tags in `index.html`,
+      once Vercel has a domain. They must be absolute or link previews break.
+- [ ] **Real contact address** in `src/pages/Contact.jsx`, currently
+      `hello@remitbridge.org`.
+- [x] Vercel Web Analytics enabled. Speed Insights deliberately not used.
+- [x] Personal email removed from tracked files. It remains in the root commit
+      `b4c8316` on GitHub; Angad chose to leave it rather than force-push.
+
 ## Git
 
 Commit and push without asking. Standing permission, given 2026-08-12, applies
