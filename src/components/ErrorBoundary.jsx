@@ -13,7 +13,7 @@ import { Container } from './Section'
  * Resets on navigation, so following a link out of a broken page works.
  */
 export default class ErrorBoundary extends Component {
-  state = { error: null }
+  state = { error: null, componentStack: '' }
 
   static getDerivedStateFromError(error) {
     return { error }
@@ -23,7 +23,7 @@ export default class ErrorBoundary extends Component {
     // A new route is a fresh attempt; without this the boundary stays tripped
     // and every later page looks broken too.
     if (this.state.error && prev.resetKey !== this.props.resetKey) {
-      this.setState({ error: null })
+      this.setState({ error: null, componentStack: '' })
     }
   }
 
@@ -31,6 +31,7 @@ export default class ErrorBoundary extends Component {
     // Kept as an error, not a warning, so it survives in the browser console
     // for anyone reporting the problem.
     console.error('Page failed to render:', error, info?.componentStack)
+    this.setState({ componentStack: info?.componentStack ?? '' })
   }
 
   render() {
@@ -52,15 +53,24 @@ export default class ErrorBoundary extends Component {
           Reload the page
         </button>
 
-        {/* The message itself, because "something went wrong" is not a bug
-            report. Stack traces are minified in production, so the message is
-            the useful part. */}
-        <pre className="mt-8 overflow-x-auto rounded-xl border border-border bg-muted p-4 text-xs">
-          {String(this.state.error?.message || this.state.error)}
+        {/* Message, then where it came from. "r is not a function" identifies
+            nothing on its own: the build is minified, so the stack and the
+            component list are what make it findable. Sourcemaps are on, so
+            these resolve back to real files. */}
+        <pre className="mt-8 max-h-80 overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-muted p-4 text-xs leading-relaxed">
+          {[
+            String(this.state.error?.message || this.state.error),
+            this.state.error?.stack,
+            this.state.componentStack &&
+              `\nComponents:${this.state.componentStack}`,
+          ]
+            .filter(Boolean)
+            .join('\n')}
         </pre>
 
         <p className="mt-4 text-sm text-muted-foreground">
-          If you are reporting this, the line above is the part that matters.
+          If you are reporting this, send the whole grey box, not just the first
+          line.
         </p>
       </Container>
     )

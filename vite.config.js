@@ -34,6 +34,12 @@ function siteUrlPlugin() {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    // Production stacks are minified to single letters, so "r is not a
+    // function" names nothing. The source is public on GitHub anyway, so a
+    // sourcemap gives away nothing and turns that into a file and a line.
+    sourcemap: true,
+  },
   plugins: [react(), tailwindcss(), siteUrlPlugin()],
   resolve: {
     alias: {
