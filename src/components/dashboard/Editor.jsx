@@ -17,6 +17,7 @@ import { supabase } from '@/lib/supabase'
 import { seriesCategories } from '@/data/posts'
 import { renderMarkdown, readTimeFor, stripMarkdown } from '@/lib/markdown'
 import { isStaff } from '@/lib/auth'
+import { resizeImage } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 
 const SERIES = seriesCategories.filter((s) => s.id !== 'all')
@@ -46,20 +47,24 @@ const ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/avif'
  * after it, and in words rather than as "EntityTooLarge".
  */
 const MAX_BYTES = 5 * 1024 * 1024
-const LIMITS = 'PNG, JPEG, WebP, GIF or AVIF, up to 5 MB'
+const LIMITS = 'PNG, JPEG, WebP or GIF. Anything too large is shrunk automatically.'
 
 const mb = (bytes) => `${(bytes / 1024 / 1024).toFixed(1)} MB`
 
 /** Uploads to the writer's own folder, which is what the storage policy checks. */
 async function uploadImage(file, userId) {
-  // Checked here first because the server rejects on size before it looks at
-  // anything else, so the alternative is waiting out a doomed upload to be told
-  // "The object exceeded the maximum allowed size".
-  if (file.size > MAX_BYTES) {
-    return {
-      error: `That image is ${mb(file.size)}. The limit is 5 MB, so it needs resizing or exporting at a lower quality first.`,
-    }
-  }
+  // Shrunk here rather than refused. A phone photo is several megabytes and
+  // 4000px wide, while the site displays it at about 800, so the browser was
+  // throwing most of it away on every page view anyway. Storage also checks
+  // size before anything else, so an oversized upload would otherwise be a
+  // wasted transfer ending in "The object exceeded the maximum allowed size".
+  const sized = await resizeImage(file, { maxBytes: MAX_BYTES })
+  if (sized.error) return { error: sized.error }
+
+  file = sized.file
+  const shrunk = sized.resized
+    ? `Resized from ${mb(sized.from)} to ${mb(sized.to)}.`
+    : ''
 
   const path = `${userId}/${Date.now()}-${file.name.replace(/[^\w.-]+/g, '-')}`
   const { error } = await supabase.storage.from('post-images').upload(path, file, {
@@ -68,7 +73,7 @@ async function uploadImage(file, userId) {
   })
   if (error) return { error: error.message }
   const { data } = supabase.storage.from('post-images').getPublicUrl(path)
-  return { url: data.publicUrl }
+  return { url: data.publicUrl, shrunk }
 }
 
 /* -------------------------------------------------------------------- list */
@@ -309,21 +314,24 @@ function PostForm({ post, user, profile, onDone }) {
     if (!file) return
     setBusy('inline')
     setNote('')
-    const { url, error } = await uploadImage(file, user.id)
+    const { url, error, shrunk } = await uploadImage(file, user.id)
     setBusy('')
     if (error) return setNote(error)
     apply(() => ({ text: `\n\n![Describe this image](${url})\n\n` }))
-    setNote('Image added where your cursor was. Replace the text in the square brackets with a description of it.')
+    setNote(
+      `Image added where your cursor was. Replace the text in the square brackets with a description of it. ${shrunk}`.trim(),
+    )
   }
 
   const uploadCover = async (file) => {
     if (!file) return
     setBusy('cover')
     setNote('')
-    const { url, error } = await uploadImage(file, user.id)
+    const { url, error, shrunk } = await uploadImage(file, user.id)
     setBusy('')
     if (error) return setNote(error)
     setForm((f) => ({ ...f, cover: url }))
+    if (shrunk) setNote(shrunk)
   }
 
   const save = async (nextStatus) => {
@@ -453,7 +461,7 @@ function PostForm({ post, user, profile, onDone }) {
                   top of the article. It is not part of the text, so it does not appear
                   in the body. For images inside the post, use{' '}
                   <span className="font-medium text-foreground">Add image</span> on the
-                  toolbar below. {LIMITS}.
+                  toolbar below. {LIMITS}
                 </p>
               </div>
               {form.cover && (
@@ -565,7 +573,7 @@ function PostForm({ post, user, profile, onDone }) {
 
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
               Images added from the toolbar land at your cursor, so a post can have as
-              many as it needs. {LIMITS}. Every one takes a description in the square
+              many as it needs. {LIMITS} Every one takes a description in the square
               brackets, which is what a screen reader reads out.
             </p>
           </div>
