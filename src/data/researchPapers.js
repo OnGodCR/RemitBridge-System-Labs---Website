@@ -29,6 +29,11 @@ export const statuses = {
   },
 }
 
+/*
+ * One paper. The cost model and the workshop findings were listed here as
+ * drafting, but nobody had started either, and a list of papers that do not
+ * exist is the same overclaim as a statistic without a source.
+ */
 export const papers = [
   {
     id: 'rb-01',
@@ -37,29 +42,12 @@ export const papers = [
     authors: ['Systems team'],
     status: 'drafting',
     year: 2026,
+    // The question the paper actually sets out to answer, in full, rather than
+    // a summary of it. A reader can hold us to this.
+    question:
+      'What sharding, sidechain, or off-chain transaction architectures would most effectively increase throughput and reduce settlement cost for blockchain-based remittance systems, and how would interoperability between these architectures and existing fiat rails, such as SWIFT and RTGS, be achieved?',
     abstract:
       'The methods paper for RemitBench. Sets out the six synthetic workloads, why each one was chosen, how the traffic is generated, and what would count as one setup outperforming another. Written so the runs can be reproduced rather than taken on trust.',
     topics: ['Benchmarking', 'Scaling architectures', 'Reproducibility'],
-  },
-  {
-    id: 'rb-02',
-    title: 'A complete-cost model for cross-border transfers',
-    authors: ['Economics team'],
-    status: 'drafting',
-    year: 2026,
-    abstract:
-      'Formalises the model behind the TrueCost calculator: fixed fee, percentage fee, exchange-rate margin and payout charges, and how each is disclosed or hidden in practice. Includes a corridor-by-corridor comparison of advertised price against total cost.',
-    topics: ['Pricing', 'Exchange-rate margins', 'Consumer disclosure'],
-  },
-  {
-    id: 'rb-03',
-    title:
-      'What families actually ask: findings from the first Money Across Borders workshops',
-    authors: ['Community education team', 'Evaluation team'],
-    status: 'drafting',
-    year: 2026,
-    abstract:
-      'The questions that came up repeatedly across the first workshops in King County, what participants could and could not work out before and after, and where our own teaching materials fell short.',
-    topics: ['Community education', 'Evaluation', 'Financial literacy'],
   },
 ]

@@ -19,7 +19,13 @@ export default function Papers() {
             <p className="text-sm font-bold uppercase tracking-widest text-primary">
               Nothing published yet
             </p>
-            <h2 className="mt-3 text-2xl">All {papers.length} are still in progress</h2>
+            {/* Reads "All 1 are still in progress" otherwise, and the list is
+                one paper long now. */}
+            <h2 className="mt-3 text-2xl">
+              {papers.length === 1
+                ? 'The one paper is still in progress'
+                : `All ${papers.length} are still in progress`}
+            </h2>
             <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
               A paper goes up here once it has been through the team and then the adult
               advisory group, and once the data and code behind it can be published
@@ -59,7 +65,19 @@ export default function Papers() {
                   {paper.authors.join(', ')}
                 </p>
 
-                <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
+                {/* The research question, set apart and in full. It is the
+                    thing the paper is accountable to, so it should not be
+                    paraphrased into the abstract. */}
+                {paper.question && (
+                  <div className="mt-5 max-w-3xl border-l-4 border-primary pl-5">
+                    <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                      Research question
+                    </p>
+                    <p className="mt-2 leading-relaxed">{paper.question}</p>
+                  </div>
+                )}
+
+                <p className="mt-5 max-w-3xl leading-relaxed text-muted-foreground">
                   {paper.abstract}
                 </p>
 
