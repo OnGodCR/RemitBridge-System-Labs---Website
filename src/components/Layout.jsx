@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import Navbar from './Navbar'
 import Footer from './Footer'
+import ErrorBoundary from './ErrorBoundary'
 
 export default function Layout() {
   const { pathname } = useLocation()
@@ -14,8 +15,12 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Navbar />
+      {/* Inside the layout, not around it, so a page that throws still leaves
+          the reader a header and a footer to navigate away with. */}
       <main className="flex-1">
-        <Outlet />
+        <ErrorBoundary resetKey={pathname}>
+          <Outlet />
+        </ErrorBoundary>
       </main>
       <Footer />
 
