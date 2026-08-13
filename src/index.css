@@ -1,0 +1,154 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  RemitBridge Systems Lab — design tokens.
+  Deliberately plain: one neutral ramp, one accent, no decorative color.
+  Palette follows Google's Material text/border/accent values so the page
+  reads like an institutional Google Site rather than a styled marketing page.
+*/
+:root {
+  --radius: 1rem;
+
+  /* Cool off-white ground with a deep green accent. Deliberately not the
+     warm-cream-and-orange of the site this layout takes its shape from. */
+  --background: #f9fafb;
+  --foreground: #1c2024;
+
+  --card: #ffffff;
+  --card-foreground: #1c2024;
+
+  --popover: #ffffff;
+  --popover-foreground: #1c2024;
+
+  --primary: #14705a;
+  --primary-foreground: #ffffff;
+
+  --secondary: #eef1f4;
+  --secondary-foreground: #1c2024;
+
+  --muted: #f2f4f7;
+  --muted-foreground: #5b6470;
+
+  --accent: #e8f2ee;
+  --accent-foreground: #14705a;
+
+  --destructive: #b3261e;
+
+  --border: #e4e7eb;
+  --input: #e4e7eb;
+  --ring: #14705a;
+
+  /* Inverted surface for the footer and the full-bleed feature band. */
+  --ink: #1c2024;
+  --ink-foreground: #f9fafb;
+  --ink-muted: #9aa3ae;
+
+  --chart-1: #14705a;
+  --chart-2: #5b6470;
+  --chart-3: #8d97a3;
+  --chart-4: #a8d5c6;
+  --chart-5: #e4e7eb;
+
+  --sidebar: #f2f4f7;
+  --sidebar-foreground: #1c2024;
+  --sidebar-primary: #14705a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8f2ee;
+  --sidebar-accent-foreground: #14705a;
+  --sidebar-border: #e4e7eb;
+  --sidebar-ring: #14705a;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-ink-muted: var(--ink-muted);
+
+  --radius-pill: 9999px;
+
+  --font-heading: var(--font-sans);
+
+  --radius-2xl: calc(var(--radius) * 1.8);
+
+  --radius-3xl: calc(var(--radius) * 2.2);
+
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+    Flat, uniform heading scale. No serif display face and no letter-spacing
+    tricks — headings differ from body text by size and weight only.
+  */
+  /*
+    Display headings. Bold and tightly tracked — the size and the negative
+    tracking are what carry the page, so nothing else needs decoration.
+  */
+  /* No colour here: headings inherit from their surface, so the same rule
+     works on the page ground and on inverted accent bands. */
+  h1, h2, h3, h4 {
+    @apply font-bold;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+  html {
+    @apply font-sans;
+  }
+}
