@@ -40,8 +40,27 @@ const field =
 
 const ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/avif'
 
+/*
+ * Must match the post-images bucket in schema.sql. The bucket is the real
+ * limit; this copy exists so a writer is told before the upload rather than
+ * after it, and in words rather than as "EntityTooLarge".
+ */
+const MAX_BYTES = 5 * 1024 * 1024
+const LIMITS = 'PNG, JPEG, WebP, GIF or AVIF, up to 5 MB'
+
+const mb = (bytes) => `${(bytes / 1024 / 1024).toFixed(1)} MB`
+
 /** Uploads to the writer's own folder, which is what the storage policy checks. */
 async function uploadImage(file, userId) {
+  // Checked here first because the server rejects on size before it looks at
+  // anything else, so the alternative is waiting out a doomed upload to be told
+  // "The object exceeded the maximum allowed size".
+  if (file.size > MAX_BYTES) {
+    return {
+      error: `That image is ${mb(file.size)}. The limit is 5 MB, so it needs resizing or exporting at a lower quality first.`,
+    }
+  }
+
   const path = `${userId}/${Date.now()}-${file.name.replace(/[^\w.-]+/g, '-')}`
   const { error } = await supabase.storage.from('post-images').upload(path, file, {
     cacheControl: '31536000',
@@ -434,7 +453,7 @@ function PostForm({ post, user, profile, onDone }) {
                   top of the article. It is not part of the text, so it does not appear
                   in the body. For images inside the post, use{' '}
                   <span className="font-medium text-foreground">Add image</span> on the
-                  toolbar below.
+                  toolbar below. {LIMITS}.
                 </p>
               </div>
               {form.cover && (
@@ -546,8 +565,8 @@ function PostForm({ post, user, profile, onDone }) {
 
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
               Images added from the toolbar land at your cursor, so a post can have as
-              many as it needs. Every one takes a description in the square brackets,
-              which is what a screen reader reads out.
+              many as it needs. {LIMITS}. Every one takes a description in the square
+              brackets, which is what a screen reader reads out.
             </p>
           </div>
         </div>
