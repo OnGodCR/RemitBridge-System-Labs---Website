@@ -394,10 +394,20 @@ grant select on public.directory to anon, authenticated;
 -- These are needed by `authenticated`, because row-level security policies are
 -- evaluated as the caller. No policy for `anon` uses any of them, so `anon` has
 -- no reason to be able to call them.
+--
+-- Revoking from `anon` alone does nothing: Postgres grants EXECUTE on every new
+-- function to PUBLIC, and `anon` is a member of PUBLIC, so the broader grant
+-- kept letting it through. Take it away from PUBLIC, then hand it back to the
+-- one role that needs it.
 revoke all on function
   public.my_role(), public.my_team(), public.is_admin(),
   public.is_staff(), public.can_write()
-from anon;
+from public, anon, authenticated;
+
+grant execute on function
+  public.my_role(), public.my_team(), public.is_admin(),
+  public.is_staff(), public.can_write()
+to authenticated;
 
 -- ------------------------------------------------------------- owner grant --
 
