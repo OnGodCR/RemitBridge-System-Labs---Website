@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Container } from './Section'
+import Backdrop from './Backdrop'
 import { figures, derived } from '@/data/figures'
 import { useCountUp, useInView, usePrefersReducedMotion } from '@/lib/useInView'
 import { cn } from '@/lib/utils'
@@ -137,8 +138,9 @@ function CostBars() {
  */
 function Speed() {
   return (
-    <section className="bg-primary py-20 text-primary-foreground sm:py-24">
-      <Container>
+    <section className="relative overflow-hidden bg-primary py-20 text-primary-foreground sm:py-24">
+      <Backdrop onDark fadeClass={null} />
+      <Container className="relative">
         <h3 className="text-2xl sm:text-3xl">And then there is the waiting</h3>
         <div className="mt-10 grid gap-10 sm:grid-cols-2">
           {[
@@ -177,8 +179,12 @@ export default function WhyItMatters() {
   return (
     <>
       {/* Green (the hero above is white) */}
-      <section className="bg-primary py-20 text-primary-foreground sm:py-28">
-        <Container>
+      <section className="relative overflow-hidden bg-primary py-20 text-primary-foreground sm:py-28">
+        {/* The site backdrop is fixed behind the document, so a band that
+            paints a surface covers it. These two carry their own copy, drawn
+            in the foreground colour so it survives the green. */}
+        <Backdrop onDark fadeClass={null} />
+        <Container className="relative">
           <h2 className="max-w-3xl text-3xl sm:text-4xl">
             Migrants send $905 billion home a year. The world takes a cut of every dollar.
           </h2>

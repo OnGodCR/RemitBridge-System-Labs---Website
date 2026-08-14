@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import Section, { Container } from '@/components/Section'
+import Backdrop from '@/components/Backdrop'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -104,8 +105,9 @@ export default function ComingSoon() {
       </Section>
 
       {/* Green, because the section above it is white. */}
-      <section className="bg-primary py-20 text-primary-foreground sm:py-24">
-        <Container width="prose">
+      <section className="relative overflow-hidden bg-primary py-20 text-primary-foreground sm:py-24">
+        <Backdrop onDark fadeClass={null} />
+        <Container width="prose" className="relative">
           <h2 className="text-3xl sm:text-4xl">Something you want built?</h2>
           <p className="mt-5 text-lg leading-relaxed text-current/90">
             If there is a number you keep wanting and cannot find, or a corridor nobody

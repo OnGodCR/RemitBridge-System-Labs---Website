@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import Section, { Container, SectionImage } from '@/components/Section'
+import Backdrop from '@/components/Backdrop'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import meetingImage from '@/assets/community-meeting.jpg'
@@ -78,8 +79,9 @@ export default function Workshops() {
       </Section>
 
       {/* Green (the section above is white). */}
-      <section className="bg-primary py-20 text-primary-foreground sm:py-24">
-        <Container>
+      <section className="relative overflow-hidden bg-primary py-20 text-primary-foreground sm:py-24">
+        <Backdrop onDark fadeClass={null} />
+        <Container className="relative">
           <h2 className="text-2xl sm:text-3xl">What we are committing to</h2>
           <p className="mt-4 max-w-3xl leading-relaxed text-current/90">
             Not a schedule, because there is not one. These are the rules the sessions
