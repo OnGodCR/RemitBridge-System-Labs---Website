@@ -60,6 +60,8 @@ export default function TrueCost() {
 
             <p className="mt-8 font-bold">Where the mid-market rate comes from</p>
             <p className="mt-3 leading-relaxed">
+              One of two sources, and the tool names the one that answered rather than
+              crediting a fixed one.{' '}
               <a
                 href={FX_SOURCE.href}
                 className="font-medium text-primary underline underline-offset-2"
@@ -67,11 +69,15 @@ export default function TrueCost() {
                 rel="noopener noreferrer"
               >
                 {FX_SOURCE.name}
-              </a>
-              , which aggregates daily reference rates published by central banks. It needs
-              no key and its code is open, so anyone can check what it returns. The date
-              each rate was published for is shown next to it, because it is a daily
-              snapshot rather than the rate at the moment a transfer was processed.
+              </a>{' '}
+              aggregates daily reference rates published by central banks. It needs no key
+              and its code is open, so anyone can check what it returns. Where a live feed
+              is configured, that one answers instead and updates through the day.
+            </p>
+            <p className="mt-3 leading-relaxed">
+              Either way the date the rate was published for is shown next to it. A
+              reference rate is a market midpoint, not the rate at the moment a particular
+              transfer was processed, and no provider was ever offering you exactly it.
             </p>
             <p className="mt-3 leading-relaxed text-muted-foreground">
               For a currency it cannot price, the tool asks for the mid-market rate instead

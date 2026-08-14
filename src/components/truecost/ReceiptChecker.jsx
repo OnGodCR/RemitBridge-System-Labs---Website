@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Separator } from '@/components/ui/separator'
-import { fetchCurrencies, fetchRate, today, FX_SOURCE } from '@/lib/fx'
+import { fetchCurrencies, fetchRate, today, sourceOf } from '@/lib/fx'
 import { computeReceipt, validateReceipt, annualise } from '@/lib/receipt'
 import { figures } from '@/data/figures'
 import { getBenchmarks } from '@/data/corridors'
@@ -89,6 +89,10 @@ export default function ReceiptChecker() {
   const usingManual = fx.state === 'error' && manualRate !== ''
   const midRate = usingManual ? Number(manualRate) : fx.state === 'ready' ? fx.rate : null
 
+  /* Who to credit. A hand-entered rate has no source to name, and saying one
+     anyway would attribute the visitor's own number to somebody else. */
+  const rateSource = usingManual ? null : sourceOf(fx.source)
+
   const check = validateReceipt({
     sent: form.sent,
     fee: form.fee,
@@ -148,6 +152,7 @@ export default function ReceiptChecker() {
         annual={annual}
         setAnnual={setAnnual}
         hasInput={form.sent !== '' || form.rate !== ''}
+        rateSource={rateSource}
       />
     </div>
   )
@@ -278,6 +283,14 @@ function MidRate({ fx, form, manualRate, setManualRate, usingManual }) {
             {form.to} per 1 {form.from}
             {fx.date ? `, published for ${fx.date}` : ''}.
           </p>
+          {/* A live source and a once-a-day source are not the same claim, and
+              the difference matters most for a transfer sent today. */}
+          {fx.source && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              {sourceOf(fx.source).name},{' '}
+              {fx.live ? 'updated through the day' : 'published once a day'}.
+            </p>
+          )}
           {fx.isStale && (
             <p className="mt-2 text-sm">
               You asked for {fx.requestedDate}. The most recent rate published on or before
@@ -350,6 +363,7 @@ function Result({
   annual,
   setAnnual,
   hasInput,
+  rateSource,
 }) {
   const liveRef = useRef(null)
 
@@ -478,7 +492,11 @@ function Result({
         </label>
       </div>
 
-      <Scale totalCostPct={result.totalCostPct} corridor={`${form.from}_${form.to}`} />
+      <Scale
+        totalCostPct={result.totalCostPct}
+        corridor={`${form.from}_${form.to}`}
+        source={rateSource}
+      />
     </div>
   )
 }
@@ -493,7 +511,7 @@ function Result({
  * a placeholder, because a marker with no number behind it would still read as
  * a claim.
  */
-function Scale({ totalCostPct, corridor }) {
+function Scale({ totalCostPct, corridor, source }) {
   const benchmarks = getBenchmarks(corridor)
   const value = Math.max(0, totalCostPct)
   const max = Math.max(12, value * 1.15, figures.globalCostPct * 1.5)
@@ -544,11 +562,18 @@ function Scale({ totalCostPct, corridor }) {
         ))}
       </ul>
 
+      {/* Names whoever actually answered, not a constant. Two sources can
+          serve this tool, and crediting the wrong one is a false citation on a
+          site whose whole argument is that claims carry their source. */}
       <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
         Reference rate from{' '}
-        <a href={FX_SOURCE.href} className="underline underline-offset-2">
-          {FX_SOURCE.name}
-        </a>
+        {source?.href ? (
+          <a href={source.href} className="underline underline-offset-2">
+            {source.name}
+          </a>
+        ) : (
+          <span className="font-medium">{source?.name ?? 'the rate you entered'}</span>
+        )}
         . Benchmarks from the World Bank and the UN, listed on the sources page.
       </p>
     </div>

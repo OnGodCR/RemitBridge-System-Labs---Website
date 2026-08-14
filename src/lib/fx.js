@@ -1,8 +1,22 @@
 /**
- * Mid-market reference rates, from Frankfurter.
+ * Mid-market reference rates.
  *
- * https://frankfurter.dev — no key, no account, open source. It aggregates
- * daily reference rates published by central banks.
+ * Two paths, in this order:
+ *
+ *   1. The `fx` edge function, which talks to a live rate provider with a key
+ *      that cannot live in this bundle, and caches the answer in Postgres so
+ *      a metered provider is not billed once per visitor. It reports which
+ *      source answered and whether that source updates intraday.
+ *   2. Frankfurter directly, when the function is not deployed, the backend is
+ *      not configured, or the call fails.
+ *
+ * The fallback is not a broken state. Frankfurter is a real source with real
+ * dated history, and it is what the site used before any provider existed. Both
+ * paths return the source, and the page names it rather than implying one
+ * number came from somewhere better than it did.
+ *
+ * On Frankfurter specifically: https://frankfurter.dev — no key, no account,
+ * open source. It aggregates daily reference rates published by central banks.
  *
  * Verified against the live API rather than taken from documentation, because
  * the documented `llms.txt` returns 404 and two widely repeated claims about
@@ -25,15 +39,25 @@
 
 const API = 'https://api.frankfurter.dev/v2'
 
+/*
+ * The edge function, when the backend is configured. Built from the same env
+ * the client uses, so a deploy without Supabase simply has no function to call
+ * and every lookup goes straight to Frankfurter.
+ */
+const FUNCTIONS_URL = import.meta.env.VITE_SUPABASE_URL
+  ? `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fx`
+  : null
+const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? ''
+
 /** Per-session, in memory. Nothing is written to storage. */
 const rateCache = new Map()
 let currencyCache = null
 
 /** One retry, then give up and let the caller offer manual entry. */
-async function getJson(url) {
+async function getJson(url, headers) {
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
-      const res = await fetch(url)
+      const res = await fetch(url, headers ? { headers } : undefined)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       return { data: await res.json() }
     } catch (error) {
@@ -86,22 +110,65 @@ function describe(error) {
  * @param {string} base   sending currency
  * @param {string} quote  receiving currency
  * @param {string} [date] YYYY-MM-DD. Omit for the most recent.
- * @returns {Promise<{rate, date, requestedDate, isStale} | {error}>}
+ * @returns {Promise<{rate, date, requestedDate, isStale, source, live} | {error}>}
  *          `date` is the day the rate is actually for. `isStale` is true when
  *          that is not the day that was asked for, which the UI has to say out
- *          loud rather than quietly showing a different day's number.
+ *          loud rather than quietly showing a different day's number. `source`
+ *          names whoever answered, and `live` says whether that source updates
+ *          during the day or publishes once.
  */
 export async function fetchRate(base, quote, date) {
   if (!base || !quote) return { error: 'Pick both currencies first.' }
 
   // Same currency both ends: no lookup, and the answer is exactly 1.
   if (base === quote) {
-    return { rate: 1, date: date ?? null, requestedDate: date ?? null, isStale: false }
+    return {
+      rate: 1,
+      date: date ?? null,
+      requestedDate: date ?? null,
+      isStale: false,
+      source: null,
+      live: false,
+    }
   }
 
   const key = `${base}|${quote}|${date ?? 'latest'}`
   if (rateCache.has(key)) return rateCache.get(key)
 
+  const result = (await viaFunction(base, quote, date)) ?? (await viaFrankfurter(base, quote, date))
+  if (!result.error) rateCache.set(key, result)
+  return result
+}
+
+/**
+ * The edge function. Returns null, not an error, on anything unexpected: a
+ * missing deploy and a provider outage both mean "try the other path", and
+ * neither is worth showing a visitor who is about to get an answer anyway.
+ */
+async function viaFunction(base, quote, date) {
+  if (!FUNCTIONS_URL) return null
+
+  const params = new URLSearchParams({ base, quote })
+  if (date) params.set('date', date)
+
+  const { data, error } = await getJson(`${FUNCTIONS_URL}?${params}`, {
+    Authorization: `Bearer ${ANON_KEY}`,
+    apikey: ANON_KEY,
+  })
+  if (error || !data || typeof data.rate !== 'number') return null
+
+  return {
+    rate: data.rate,
+    date: data.day ?? null,
+    requestedDate: date ?? null,
+    isStale: Boolean(date && data.day && data.day !== date),
+    source: data.source ?? null,
+    live: Boolean(data.live),
+  }
+}
+
+/** Frankfurter, straight from the browser. No key, so nothing to protect. */
+async function viaFrankfurter(base, quote, date) {
   const params = new URLSearchParams({ base, quotes: quote })
   if (date) params.set('date', date)
 
@@ -115,14 +182,14 @@ export async function fetchRate(base, quote, date) {
     }
   }
 
-  const result = {
+  return {
     rate: row.rate,
     date: row.date,
     requestedDate: date ?? null,
     isStale: Boolean(date && row.date !== date),
+    source: 'Frankfurter',
+    live: false,
   }
-  rateCache.set(key, result)
-  return result
 }
 
 /** Today in the API's format, in the user's own timezone. */
@@ -132,9 +199,33 @@ export function today() {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
 }
 
-export const FX_SOURCE = {
-  name: 'Frankfurter',
-  href: 'https://frankfurter.dev',
-  description:
-    'Daily reference rates aggregated from central bank publications. Reference rates are a daily snapshot, not the rate at the moment any particular transfer was processed.',
+/**
+ * Who each source is, keyed by the name the lookup reports.
+ *
+ * Attribution is per answer rather than a constant on the page. Two sources can
+ * serve the same tool now, and a page that names one while showing the other's
+ * number is exactly the sort of unchecked claim this site is about.
+ */
+const SOURCES = {
+  Frankfurter: {
+    name: 'Frankfurter',
+    href: 'https://frankfurter.dev',
+    description:
+      'Daily reference rates aggregated from central bank publications. A daily snapshot, not the rate at the moment any particular transfer was processed.',
+  },
+  'ExchangeRate-API': {
+    name: 'ExchangeRate-API',
+    href: 'https://www.exchangerate-api.com',
+    description:
+      'Mid-market rates updated through the day. Still a reference rate: it is the market midpoint, not a price any provider offered you.',
+  },
 }
+
+/** Falls back to naming the source plainly if it is one we have no note for. */
+export function sourceOf(name) {
+  if (!name) return null
+  return SOURCES[name] ?? { name, href: null, description: 'Mid-market reference rate.' }
+}
+
+/** What to say before any lookup has happened. */
+export const FX_SOURCE = SOURCES.Frankfurter
