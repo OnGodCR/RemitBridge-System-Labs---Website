@@ -1,156 +1,137 @@
-import { useState } from 'react'
-import Section, { DataRow, SectionImage } from '@/components/Section'
+import Section, { Container, SectionImage } from '@/components/Section'
 import TwoHundred from '@/components/TwoHundred'
-import { Card, CardContent } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { cn } from '@/lib/utils'
+import ReceiptChecker from '@/components/truecost/ReceiptChecker'
+import { FX_SOURCE } from '@/lib/fx'
 import calculatorImage from '@/assets/truecost-calculator.jpg'
 
-const corridors = {
-  USD_MXN: { name: 'United States → Mexico', currency: 'MXN', benchmarkFX: 17.2, quotedFX: 16.65, advertisedFee: 4.99, recipientCharge: 0.0, fxMarkupPct: 3.2 },
-  USD_INR: { name: 'United States → India', currency: 'INR', benchmarkFX: 83.1, quotedFX: 81.8, advertisedFee: 2.99, recipientCharge: 1.5, fxMarkupPct: 1.56 },
-  USD_PHP: { name: 'United States → Philippines', currency: 'PHP', benchmarkFX: 56.4, quotedFX: 54.9, advertisedFee: 3.5, recipientCharge: 2.0, fxMarkupPct: 2.66 },
-  USD_KES: { name: 'United States → Kenya', currency: 'KES', benchmarkFX: 145.0, quotedFX: 139.5, advertisedFee: 5.0, recipientCharge: 1.0, fxMarkupPct: 3.79 },
-}
-
-const money = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+/*
+ * TrueCost.
+ *
+ * The tool this replaced ran on four hardcoded corridors with sample exchange
+ * rates that were invented to demonstrate the arithmetic. It produced a number
+ * that looked like a price and was not one. This one asks for the figures off a
+ * real receipt and computes the real total, which needs no provider database
+ * and works on a transfer from any counter anywhere.
+ */
 
 export default function TrueCost() {
-  const [corridorKey, setCorridorKey] = useState('USD_MXN')
-  const [sendAmount, setSendAmount] = useState(200)
-  const c = corridors[corridorKey]
-
-  // Complete-cost model: advertised fee + FX markup loss + recipient-side charges.
-  const fxLoss = sendAmount * ((c.benchmarkFX - c.quotedFX) / c.benchmarkFX)
-  const totalCostUSD = c.advertisedFee + fxLoss + c.recipientCharge
-  const effectiveCostPct = (totalCostUSD / sendAmount) * 100
-
-  // What actually lands, in local currency, versus a mid-market benchmark.
-  const recipientLocal = (sendAmount - c.advertisedFee) * c.quotedFX - c.recipientCharge * c.quotedFX
-  const benchmarkLocal = sendAmount * c.benchmarkFX
-  const valueLostLocal = benchmarkLocal - recipientLocal
-
   return (
     <>
-
       <TwoHundred />
 
-      {/* Calculator next — it is what people come to this page for. The
-          explanation of the model sits underneath for anyone who wants it. */}
-      <Section>
-        <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
-          <Card>
-            <CardContent>
-              <h2 className="mb-6 text-2xl">What you&rsquo;re sending</h2>
-
-              <fieldset className="mb-6">
-                <legend className="mb-2 text-sm text-muted-foreground">Corridor</legend>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {Object.entries(corridors).map(([key, value]) => (
-                    <button
-                      key={key}
-                      onClick={() => setCorridorKey(key)}
-                      aria-pressed={corridorKey === key}
-                      className={cn(
-                        'rounded-xl border px-4 py-3 text-left text-sm transition-colors',
-                        corridorKey === key
-                          ? 'border-primary bg-primary/5 text-foreground'
-                          : 'border-border text-muted-foreground hover:border-muted-foreground/40',
-                      )}
-                    >
-                      {value.name}
-                    </button>
-                  ))}
-                </div>
-              </fieldset>
-
-              <div className="mb-6">
-                <label htmlFor="send-amount" className="flex items-baseline justify-between">
-                  <span className="text-sm text-muted-foreground">Amount</span>
-                  <span className="text-sm tabular-nums">${sendAmount}</span>
-                </label>
-                <input
-                  id="send-amount"
-                  type="range"
-                  min="50"
-                  max="1000"
-                  step="50"
-                  value={sendAmount}
-                  onChange={(e) => setSendAmount(Number(e.target.value))}
-                  className="mt-2 w-full accent-primary"
-                />
-                <div className="mt-1 flex justify-between text-xs text-muted-foreground">
-                  <span>$50</span>
-                  <span>$1,000</span>
-                </div>
-              </div>
-
-              <Separator className="mb-3" />
-              <DataRow label="Real rate" value={`1 USD = ${c.benchmarkFX} ${c.currency}`} />
-              <DataRow
-                label="Their rate"
-                value={`1 USD = ${c.quotedFX} ${c.currency} (${c.fxMarkupPct}% worse)`}
-              />
-              <DataRow label="Fee on the receipt" value={`$${money(c.advertisedFee)}`} />
-              <DataRow label="Pickup charge" value={`$${money(c.recipientCharge)}`} />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <h2 className="mb-6 text-2xl">What it actually costs</h2>
-
-              <p className="text-4xl tabular-nums">${money(totalCostUSD)}</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {effectiveCostPct.toFixed(2)}% of what you sent
-              </p>
-
-              <Separator className="my-5" />
-              <DataRow label="The fee you can see" value={`$${money(c.advertisedFee)}`} />
-              <DataRow label="Lost in the exchange rate" value={`$${money(fxLoss)}`} emphasis />
-              <DataRow label="Charged at pickup" value={`$${money(c.recipientCharge)}`} />
-
-              <Separator className="my-5" />
-              <p className="mb-1 text-sm font-medium">What lands on the other end</p>
-              <DataRow label="They get" value={`${money(recipientLocal)} ${c.currency}`} />
-              <DataRow
-                label="Short of the real rate by"
-                value={`−${money(valueLostLocal)} ${c.currency}`}
-                emphasis
-              />
-
-              <p className="mt-6 text-xs leading-relaxed text-muted-foreground">
-                This runs entirely in your browser. We never ask for a bank login, a card
-                number, or anything about who you are.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+      <Section
+        title="Check my receipt"
+        description="Enter what you were charged and find out what the transfer really cost, including the exchange-rate markup that was not itemised."
+      >
+        <ReceiptChecker />
       </Section>
 
       <Section tone="card" title="How the number is worked out">
-        <div className="grid gap-8 md:grid-cols-[1fr_260px] md:items-start">
-          <div>
-            <p className="max-w-2xl leading-relaxed">
+        <div className="grid gap-10 md:grid-cols-[1fr_240px] md:items-start">
+          <div className="max-w-2xl">
+            <p className="leading-relaxed">
               The fee on the receipt is usually the small part. The bigger part is the
-              exchange rate: a company quotes you a rate a little worse than the real one
-              and keeps the difference. That markup is normally somewhere between 2% and
-              5%, and it never shows up as a line item, which is sort of the point of it.
+              exchange rate. A provider quotes a rate slightly worse than the mid-market
+              one and keeps the difference, and because it is a rate rather than a charge
+              it never appears as a line on the receipt.
             </p>
-            <div className="mt-5 rounded-2xl border border-border bg-muted p-4 text-sm leading-relaxed">
-              What it costs = the fee + any percentage fee + [(real rate &minus; their
-              rate) &times; what you send] + whatever the pickup place charges
-            </div>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              The rates in the calculator are samples we picked to show the math, so treat
-              the output as an example and not a quote.
+
+            <p className="mt-6 font-bold">The whole formula</p>
+            <ol className="mt-3 space-y-2 leading-relaxed">
+              <li>
+                Take the fee off the amount you sent. What is left is what actually got
+                converted.
+              </li>
+              <li>
+                Compare the rate you were given against the mid-market rate. The gap,
+                applied to the converted amount, is the exchange-rate cost.
+              </li>
+              <li>
+                Convert any pickup charge back into your currency at the mid-market rate.
+              </li>
+              <li>Add the three together. That is the total, and its share of what you sent.</li>
+            </ol>
+
+            <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
+              The markup applies to the converted amount and not to the gross, because the
+              fee is taken first and never reaches the exchange. Charging it the spread as
+              well would count the same money twice.
+            </p>
+
+            <p className="mt-8 font-bold">Where the mid-market rate comes from</p>
+            <p className="mt-3 leading-relaxed">
+              <a
+                href={FX_SOURCE.href}
+                className="font-medium text-primary underline underline-offset-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {FX_SOURCE.name}
+              </a>
+              , which aggregates daily reference rates published by central banks. It needs
+              no key and its code is open, so anyone can check what it returns. The date
+              each rate was published for is shown next to it, because it is a daily
+              snapshot rather than the rate at the moment a transfer was processed.
+            </p>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              For a currency it cannot price, the tool asks for the mid-market rate instead
+              of substituting one, and labels every figure that follows as using the rate
+              you entered.
             </p>
           </div>
+
           <SectionImage
             src={calculatorImage}
             alt="A desk calculator beside printed figures"
             className="mb-0 hidden h-40 md:block"
           />
+        </div>
+      </Section>
+
+      {/*
+        Full weight, not a footnote. This page invites someone to act on a
+        number, so what the number does not account for belongs at the same size
+        as the number itself.
+      */}
+      <Section title="What this does not tell you">
+        <div className="max-w-2xl space-y-5 leading-relaxed">
+          <p>
+            <span className="font-bold">It is arithmetic on your figures, not a quote.</span>{' '}
+            Nothing here is priced by a provider or checked against one. It takes the
+            numbers you entered and works out what they add up to.
+          </p>
+          <p>
+            <span className="font-bold">The mid-market rate is a daily reference.</span> It
+            is published once a day, and the rate at the moment your transfer was processed
+            may have been different. On a volatile day it could be different by more than
+            the markup you are trying to measure.
+          </p>
+          <p>
+            <span className="font-bold">It does not know about offers.</span> Promotional
+            rates, first-transfer discounts, fee waivers above a certain amount and loyalty
+            pricing are all invisible to it. A rate better than mid-market usually means you
+            got one of these.
+          </p>
+          <p>
+            <span className="font-bold">
+              It does not capture taxes or agent-level variation.
+            </span>{' '}
+            Some receiving countries tax inbound transfers. Some agents add a charge at the
+            counter that is not on the paperwork. If it was not on your receipt, it is not
+            in this calculation.
+          </p>
+          <p>
+            <span className="font-bold">
+              For some currencies the mid-market rate is whatever you typed.
+            </span>{' '}
+            When the reference service cannot price a pair, the tool asks you for the rate.
+            Everything downstream is then only as good as that number.
+          </p>
+          <p className="text-muted-foreground">
+            None of this is hedging. The tool is useful precisely because it is narrow: it
+            measures the gap between what you were charged and a published reference, and
+            it says nothing else.
+          </p>
         </div>
       </Section>
     </>

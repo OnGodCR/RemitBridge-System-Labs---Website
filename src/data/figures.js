@@ -30,6 +30,13 @@ export const sources = {
     date: 'Q1 2025',
     href: 'https://remittanceprices.worldbank.org/',
   },
+  fx: {
+    id: 'fx',
+    title: 'Frankfurter: daily reference exchange rates',
+    publisher: 'Frankfurter, aggregating central bank publications',
+    date: 'Fetched live, dated per rate',
+    href: 'https://frankfurter.dev',
+  },
   sdg: {
     id: 'sdg',
     title: 'Sustainable Development Goal 10.c: reduce remittance costs to less than 3 percent',
@@ -84,6 +91,7 @@ export const citations = [
       { page: 'Home', where: 'Figure: "Average cost to send"' },
       { page: 'Home', where: 'Cost comparison bar, "Global average"' },
       { page: 'Home', where: 'Input to our own $30bn gap calculation' },
+      { page: 'TrueCost', where: 'Benchmark marker on the receipt-check result scale' },
     ],
   },
   {
@@ -96,6 +104,7 @@ export const citations = [
       { page: 'Home', where: 'Cost comparison bar, "UN target for 2030"' },
       { page: 'Home', where: 'Input to our own $30bn gap calculation' },
       { page: 'TrueCost', where: 'The $200 countdown, comparing against the target' },
+      { page: 'TrueCost', where: 'Benchmark marker on the receipt-check result scale' },
     ],
   },
   {
@@ -116,6 +125,16 @@ export const citations = [
     usedOn: [
       { page: 'TrueCost', where: 'The $200 countdown' },
       { page: 'TrueCost', where: 'Default amount in the calculator' },
+    ],
+  },
+  {
+    value: 'Live, per currency pair',
+    claim:
+      'The mid-market exchange rate the receipt checker compares against. It is a daily reference rate, dated in the interface, not the rate at the instant a transfer was processed. When a pair cannot be priced the tool asks the reader for the rate and labels every result as using it.',
+    source: sources.fx,
+    usedOn: [
+      { page: 'TrueCost', where: 'Mid-market rate shown beside the receipt form' },
+      { page: 'TrueCost', where: 'Every figure in the receipt-check result' },
     ],
   },
   {
