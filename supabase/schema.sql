@@ -274,6 +274,14 @@ create table if not exists public.messages (
   handled    boolean not null default false
 );
 
+-- Why they wrote in. Nullable, because messages sent before this existed have
+-- no topic and a default would invent one for them.
+alter table public.messages add column if not exists topic text;
+
+alter table public.messages drop constraint if exists messages_topic_check;
+alter table public.messages add constraint messages_topic_check
+  check (topic is null or topic in ('workshop', 'correction', 'join', 'research', 'other'));
+
 alter table public.messages enable row level security;
 
 -- Anyone may send one, signed in or not — it is a public contact form.

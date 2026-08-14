@@ -2,6 +2,16 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
+/* Mirrors the select on the contact page. Older messages have no topic, which
+   is why every use is guarded rather than defaulted to something invented. */
+const TOPIC_LABEL = {
+  workshop: 'Book a workshop',
+  correction: 'Something is wrong',
+  join: 'Join the lab',
+  research: 'Research or partnership',
+  other: 'Something else',
+}
+
 /** Contact form submissions. Staff only, enforced by the RLS policy. */
 export function Inbox() {
   const [state, setState] = useState({ status: 'loading', rows: [], error: '' })
@@ -10,7 +20,7 @@ export function Inbox() {
   const load = () =>
     supabase
       .from('messages')
-      .select('id, created_at, name, email, body, handled')
+      .select('id, created_at, name, email, body, handled, topic')
       .order('created_at', { ascending: false })
       .limit(100)
       .then(({ data, error }) =>
@@ -92,6 +102,11 @@ export function Inbox() {
                   </a>
                 )}
               </p>
+              {row.topic && (
+                <span className="rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                  {TOPIC_LABEL[row.topic] ?? row.topic}
+                </span>
+              )}
               <time className="text-xs text-muted-foreground">
                 {new Date(row.created_at).toLocaleString()}
               </time>

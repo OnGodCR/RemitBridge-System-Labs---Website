@@ -13,27 +13,57 @@ import { cn } from '@/lib/utils'
  */
 export const contactEmail = 'remitbridgesystemlabs@gmail.com'
 
-const reasons = [
+/*
+ * One list, used twice: as the options in the select and as the guidance
+ * beside the form. They were previously two different lists sitting next to
+ * each other, which read as five reasons rather than the same three.
+ *
+ * `value` is stored on the row and constrained by the database, so the
+ * dashboard can sort the inbox without matching on prose.
+ */
+const topics = [
   {
-    title: 'Book a workshop',
+    value: 'workshop',
+    label: 'Book a workshop',
     body: 'If you run a community group, library, or school in King County and want a session, tell us roughly how many people and which languages.',
   },
   {
-    title: 'Something here is wrong',
-    body: 'Corrections are the most useful mail we get. Point at the page and say what is off, and we will fix it or explain why we think it stands.',
+    value: 'correction',
+    label: 'Report something wrong on this site',
+    body: 'Corrections are the most useful mail we get. Point at the page and say what is off, and we will fix it or explain why we think it stands. Every change gets logged publicly.',
   },
   {
-    title: 'Join the lab',
+    value: 'join',
+    label: 'Join the lab',
     body: 'Students who want a fellowship should say which team interests them and what they have worked on before.',
+  },
+  {
+    value: 'research',
+    label: 'Research or partnership',
+    body: 'Researchers, nonprofits and anyone wanting to use or check the work. Say what you are working on.',
+  },
+  {
+    value: 'other',
+    label: 'Something else',
+    body: 'Anything that does not fit the list above.',
   },
 ]
 
+/*
+ * Languages a message can be written in.
+ *
+ * Deliberately not the six the workshop material is planned in: those handouts
+ * are not written yet, and a language nobody can currently read a reply in
+ * would be a promise the lab cannot keep this week.
+ */
+const LANGUAGES = 'English, Hindi, Punjabi or Spanish'
+
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', topic: '', message: '' })
   const [status, setStatus] = useState({ state: 'idle', message: '' })
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
-  const ready = form.name.trim() && form.message.trim()
+  const ready = form.name.trim() && form.topic && form.message.trim()
 
   /*
    * Writes straight to the messages table. The row-level security policy lets
@@ -48,6 +78,7 @@ export default function Contact() {
     const { error } = await supabase.from('messages').insert({
       name: form.name.trim(),
       email: form.email.trim() || null,
+      topic: form.topic,
       body: form.message.trim(),
     })
 
@@ -59,7 +90,7 @@ export default function Contact() {
       return
     }
 
-    setForm({ name: '', email: '', message: '' })
+    setForm({ name: '', email: '', topic: '', message: '' })
     setStatus({ state: 'sent', message: 'Thanks — that reached us. We read everything.' })
   }
 
@@ -71,8 +102,13 @@ export default function Contact() {
           <form onSubmit={submit}>
             <h2 className="text-2xl">Send a message</h2>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              Goes straight to the lab. A student reads every one, usually within a few
-              days.
+              Goes straight to the lab, where a student reads it. We have not measured how
+              long replies take yet, so there is no response time promised here. Once it is
+              being tracked it will appear on{' '}
+              <Link to="/impact" className="font-medium text-primary hover:underline">
+                what we measure
+              </Link>
+              .
             </p>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -94,7 +130,30 @@ export default function Contact() {
             </div>
 
             <label className="mt-4 block">
+              <span className="mb-1.5 block text-sm font-medium">What is this about?</span>
+              <select
+                value={form.topic}
+                onChange={set('topic')}
+                required
+                className="w-full rounded-xl border border-border bg-card p-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              >
+                <option value="" disabled>
+                  Pick the closest one
+                </option>
+                {topics.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="mt-4 block">
               <span className="mb-1.5 block text-sm font-medium">Message</span>
+              <span className="mb-2 block text-sm text-muted-foreground">
+                Write in {LANGUAGES}. Anything else still reaches us and we will find someone
+                to read it, which takes longer.
+              </span>
               <textarea
                 value={form.message}
                 onChange={set('message')}
@@ -131,7 +190,29 @@ export default function Contact() {
               </>
             )}
 
-            <p className="mt-4 text-sm text-muted-foreground">
+            <div className="mt-8 border-t border-border pt-6">
+              <p className="max-w-xl text-sm leading-relaxed">
+                <span className="font-bold">Messages here are read by students.</span> Keep
+                out account numbers, identity documents, and anything you would not want a
+                student volunteer to read. We do not need any of it to answer a question.
+              </p>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                If money has gone missing or you are in urgent trouble over a transfer, do
+                not wait on a reply from us. Contact your provider first, and then the{' '}
+                <a
+                  href="https://www.consumerfinance.gov/complaint/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-primary underline underline-offset-2"
+                >
+                  Consumer Financial Protection Bureau
+                </a>
+                , who take complaints about money transfers and can act on them. We are a
+                student research lab and cannot recover money or intervene with a company.
+              </p>
+            </div>
+
+            <p className="mt-6 text-sm text-muted-foreground">
               Or write to{' '}
               <a href={`mailto:${contactEmail}`} className="font-bold text-primary hover:underline">
                 {contactEmail}
@@ -150,13 +231,13 @@ export default function Contact() {
           */}
           <aside>
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              What to write about
+              What each option is for
             </p>
 
             <dl className="mt-5 border-t border-border">
-              {reasons.map((r) => (
-                <div key={r.title} className="border-b border-border py-5">
-                  <dt className="font-bold">{r.title}</dt>
+              {topics.map((r) => (
+                <div key={r.value} className="border-b border-border py-5">
+                  <dt className="font-bold">{r.label}</dt>
                   <dd className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                     {r.body}
                   </dd>

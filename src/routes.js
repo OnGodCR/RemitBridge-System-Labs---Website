@@ -60,17 +60,17 @@ export const navGroups = [
       {
         path: '/leadership',
         label: 'Leadership',
-        blurb: 'The student roles, and the adult board that reviews the work.',
+        blurb: 'Who is accountable for what, which seats are open, and who reviews the work.',
       },
       {
         path: '/impact',
         label: 'What we measure',
-        blurb: 'The evidence we keep for each thing we claim, and the annual brief.',
+        blurb: 'What has actually been measured so far, and every correction we have published.',
       },
       {
         path: '/contact',
         label: 'Contact',
-        blurb: 'Questions, corrections, workshop requests, or joining the lab.',
+        blurb: 'Questions, corrections, workshop requests, or joining the lab. Read by students.',
       },
     ],
   },
