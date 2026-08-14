@@ -1,19 +1,20 @@
-import Section, { PageHeader } from '@/components/Section'
+import { Link } from 'react-router-dom'
+import Section from '@/components/Section'
 import { papers, statuses } from '@/data/researchPapers'
 import { cn } from '@/lib/utils'
+
+/*
+ * No standing header. A centred title and a one-line description above a page
+ * whose real message is "nothing is published yet" put a lid on it and pushed
+ * the honest part below the fold. The status panel opens the page instead.
+ */
 
 export default function Papers() {
   const published = papers.filter((p) => p.status === 'published')
 
   return (
     <>
-      <PageHeader
-        eyebrow="Reading"
-        title="Research papers"
-        intro="Long-form work by lab members, with methods and references. Shorter explainers live on the blog."
-      />
-
-      <Section>
+      <Section className="pt-12">
         {published.length === 0 && (
           <div className="mb-10 rounded-2xl border border-border bg-muted p-6">
             <p className="text-sm font-bold uppercase tracking-widest text-primary">
@@ -31,6 +32,16 @@ export default function Papers() {
               advisory group, and once the data and code behind it can be published
               alongside it. Until then this page lists what is being worked on and how far
               along it is.
+            </p>
+            {/* Kept from the header that used to sit above this. Losing the
+                pointer to the blog would leave the page a dead end. */}
+            <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
+              These are long-form, with methods and references. The shorter explainers are
+              on the{' '}
+              <Link to="/blog" className="font-medium text-primary hover:underline">
+                blog
+              </Link>
+              .
             </p>
           </div>
         )}
