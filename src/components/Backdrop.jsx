@@ -151,38 +151,34 @@ export default function Backdrop({ fadeClass = 'from-background', fixed = false,
       {/* Tiled bridge marks. Two arcs at 3% opacity: present when you look for
           it, invisible when you are reading the form.
 
-          On a green band the marks have to be drawn in the foreground colour.
-          Green on green is the same colour twice and shows nothing, whatever
-          the opacity. */}
-      <svg
-        className={cn(
-          'absolute inset-0 size-full',
-          onDark ? 'text-primary-foreground opacity-[0.09]' : 'text-primary opacity-[0.06]',
-        )}
-        aria-hidden
-      >
-        <defs>
-          <pattern
-            id={patternId}
-            width="120"
-            height="90"
-            patternUnits="userSpaceOnUse"
-            patternTransform="rotate(-8)"
-          >
-            <g
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              transform="translate(36 30) scale(1.05)"
+          Left off the green bands, which take the light alone. The marks read
+          much louder against green than against white, and a band that already
+          carries four figures does not need the extra pattern behind them. */}
+      {!onDark && (
+        <svg className="absolute inset-0 size-full text-primary opacity-[0.06]" aria-hidden>
+          <defs>
+            <pattern
+              id={patternId}
+              width="120"
+              height="90"
+              patternUnits="userSpaceOnUse"
+              patternTransform="rotate(-8)"
             >
-              <path d="M2 17Q24 3 46 17" />
-              <path d="M14 30v-6q10-9 20 0v6" />
-            </g>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
-      </svg>
+              <g
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                transform="translate(36 30) scale(1.05)"
+              >
+                <path d="M2 17Q24 3 46 17" />
+                <path d="M14 30v-6q10-9 20 0v6" />
+              </g>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+        </svg>
+      )}
 
       {/*
         The light. Follows the pointer through --x and --y, and rests at a
