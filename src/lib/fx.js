@@ -1,14 +1,17 @@
 /**
  * Mid-market reference rates.
  *
- * Two paths, in this order:
+ * Three paths, in this order:
  *
- *   1. The `fx` edge function, which talks to a live rate provider with a key
- *      that cannot live in this bundle, and caches the answer in Postgres so
- *      a metered provider is not billed once per visitor. It reports which
- *      source answered and whether that source updates intraday.
- *   2. Frankfurter directly, when the function is not deployed, the backend is
- *      not configured, or the call fails.
+ *   1. The stored rates table, read straight from Postgres. Public reference
+ *      data, so this needs no function and no key: about 100ms. Almost every
+ *      lookup ends here, because one upstream call stores every pair for a
+ *      base currency on a given day.
+ *   2. The `fx` edge function, on a miss. It talks to a live rate provider with
+ *      a key that cannot live in this bundle, fills the table for the whole
+ *      base, and answers. About 1.5s, once per base per day.
+ *   3. Frankfurter directly, when the backend is not configured at all or both
+ *      of the above fail.
  *
  * The fallback is not a broken state. Frankfurter is a real source with real
  * dated history, and it is what the site used before any provider existed. Both
@@ -37,6 +40,8 @@
  * and sometimes a date. No amount, no fee, no identifier.
  */
 
+import { supabase } from '@/lib/supabase'
+
 const API = 'https://api.frankfurter.dev/v2'
 
 /*
@@ -48,6 +53,19 @@ const FUNCTIONS_URL = import.meta.env.VITE_SUPABASE_URL
   ? `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fx`
   : null
 const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? ''
+
+/** Matches the edge function's rule, so the two never disagree about freshness. */
+const TODAY_TTL_MS = 6 * 60 * 60 * 1000
+
+/**
+ * Today in UTC, which is what the stored `day` column is in.
+ *
+ * Deliberately not `today()` below, which is the user's own timezone and is
+ * what the date field on the form should default to. Comparing a local date
+ * against a UTC one decides "is this in the past" wrongly for anyone west of
+ * Greenwich for part of every day.
+ */
+const todayUtc = () => new Date().toISOString().slice(0, 10)
 
 /** Per-session, in memory. Nothing is written to storage. */
 const rateCache = new Map()
@@ -135,9 +153,51 @@ export async function fetchRate(base, quote, date) {
   const key = `${base}|${quote}|${date ?? 'latest'}`
   if (rateCache.has(key)) return rateCache.get(key)
 
-  const result = (await viaFunction(base, quote, date)) ?? (await viaFrankfurter(base, quote, date))
+  const result =
+    (await viaTable(base, quote, date)) ??
+    (await viaFunction(base, quote, date)) ??
+    (await viaFrankfurter(base, quote, date))
+
   if (!result.error) rateCache.set(key, result)
   return result
+}
+
+/**
+ * The stored rates, read directly. Null means "not stored", not "failed".
+ *
+ * Only serves today's rate if it was fetched recently, matching the function's
+ * own rule. A past day is immutable, so how long ago it was stored does not
+ * matter and it is served whatever its age.
+ */
+async function viaTable(base, quote, date) {
+  if (!supabase) return null
+
+  const today = todayUtc()
+  const day = date && date <= today ? date : null
+
+  let query = supabase
+    .from('fx_rates')
+    .select('rate, day, source, live, fetched_at')
+    .eq('base', base)
+    .eq('quote', quote)
+
+  query = day ? query.eq('day', day) : query.order('day', { ascending: false })
+
+  const { data, error } = await query.limit(1)
+  const row = data?.[0]
+  if (error || !row) return null
+
+  const isPast = Boolean(day && day < today)
+  if (!isPast && Date.now() - Date.parse(row.fetched_at) > TODAY_TTL_MS) return null
+
+  return {
+    rate: Number(row.rate),
+    date: row.day,
+    requestedDate: date ?? null,
+    isStale: Boolean(date && row.day !== date),
+    source: row.source,
+    live: Boolean(row.live),
+  }
 }
 
 /**

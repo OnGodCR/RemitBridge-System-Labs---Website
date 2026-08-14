@@ -91,41 +91,64 @@ everything after it happens on Supabase's side.
 
 ## fx
 
-Serves one mid-market rate to the TrueCost receipt checker.
+Serves mid-market rates to the TrueCost receipt checker.
 
 **It is already deployed and already working.** With no key set it uses
-[Frankfurter](https://frankfurter.dev), which is what the site used before this
-function existed: free, no account, dated history back to 1999, published once a
-day. Nothing below is required. It is only what to do if you want live rates.
+[Frankfurter](https://frankfurter.dev): free, no account, dated history back to
+1999, published once a day. Nothing below is required. It is only what to do if
+you want live rates.
 
-### Why the rate goes through a function at all
+### One call per base per day, not per lookup
 
-Two reasons, and neither is speed. Going through the function is in fact slower
-than calling Frankfurter from the browser, roughly 1.5s against 70ms on a cold
-lookup, because of the function cold start.
+Both providers return **every** quote for a base currency in a single request,
+for past days as well as today. So asking about USD to MXN costs exactly the
+same upstream call as asking about all 165 USD pairs. The function fetches the
+whole base and stores it.
 
-1. **A key cannot live in the browser.** Every live rate provider authenticates.
-   Anything in a Vite bundle is public, so the key has to be read server side.
-2. **Providers charge by the request.** Everyone checking the same corridor on
-   the same day is asking one question. The answer is cached in the `fx_rates`
-   table so one upstream call serves all of them. A 1,500 request monthly
-   allowance is workable with a cache and gone in a week without one.
+Measured, not assumed: one lookup of GBP to NGN stored **163 GBP pairs**. One
+lookup of EUR to PHP on a past date stored **164 EUR pairs for that day**. Every
+other pair on that base and day is then free, forever, because a past day's rate
+cannot change and today's is refetched at most every six hours.
+
+That is the "check once a day and store it" idea, and it is why there is no
+scheduled job. A cron would be a second thing to deploy, a second thing that can
+fail silently, and it would fetch base currencies nobody asked about. The first
+lookup of the day does the same work, only for the bases people actually use.
+
+### Why the browser is fast anyway
+
+The `fx_rates` table is readable by anyone. It holds a currency pair, a date and
+a number: no user data, nothing secret, every figure already published for
+anyone to read. So the browser reads it directly and only calls the function on
+a miss.
+
+Measured on the live site:
+
+| | |
+|---|---|
+| Pair already stored | ~400ms, one PostgREST read, no function, no upstream call |
+| First pair on a new base | ~1.4s, function runs, whole base stored |
+| Any other pair on that base | back to ~400ms |
+
+Writes stay with the service role. Verified: `anon` gets 401 on insert, update
+and delete, and can only select.
 
 ### Turning on live rates
 
 Google has no currency API. The Finance API was retired in 2012, Google Cloud
 only publishes its own billing conversion rates monthly, and `GOOGLEFINANCE()`
-works only inside Sheets. Scraping google.com/finance has no CORS headers, no
+works solely inside Sheets. Scraping google.com/finance has no CORS headers, no
 stability guarantee and is against their terms. So the closest real thing is a
-provider that sells the same mid-market data.
+provider selling the same mid-market data.
 
 The function is written against
 [ExchangeRate-API](https://www.exchangerate-api.com). Their **free tier will not
 help you**: it updates once a day and its history endpoint returns 403 to a free
 key, so it is strictly worse than what you already have. Live rates plus history
-is the Pro plan, $10/month for 30,000 requests and hourly updates.
+is the Pro plan, $10/month for 30,000 requests.
 
-If you take it:
+With one call per base per day, thirty thousand is far more than this site can
+use. Even three hundred would do.
 
 ```bash
 npx supabase secrets set EXCHANGERATE_API_KEY=your-key-here
@@ -135,10 +158,10 @@ npx supabase functions deploy fx --no-verify-jwt
 Never paste that key into a chat, a commit, or any tracked file. `secrets set`
 sends it straight to Supabase.
 
-The function picks it up on the next request. Nothing else changes: it tries the
-provider first and falls through to Frankfurter whenever the provider is unset,
-out of quota, or does not answer. A free-tier key is handled the same way, so
-historical lookups keep working while live lookups start using the provider.
+The function picks it up on the next request. It tries the provider first and
+falls through to Frankfurter whenever the provider is unset, out of quota, or
+does not answer. A free-tier key is handled the same way, so historical lookups
+keep working while live lookups start using the provider.
 
 ### What the page says
 
@@ -147,12 +170,15 @@ readout says whether that source updates through the day or publishes once. A
 page that credits one source while showing another's number is the exact
 unchecked claim this site exists to argue against.
 
+Dates are stored per currency rather than per request, because Frankfurter
+returns different dates for different currencies in one response: a thinly
+traded currency can be a day behind the rest. Stamping them all with the day
+that was asked for would quietly backdate real numbers.
+
 ### Abuse
 
 The function is public and unauthenticated, because the tool is. Requests are
-validated to a three-letter currency pair and a date within the last ten years.
-The date bound is the quota guard: a distinct pair and date is always a cache
-miss and so always an upstream call, and without it a script walking every date
-back to 1999 would empty a month's allowance in one go. The `fx_rates` table
-itself is unreachable from the browser, verified: `anon` gets 401 on both select
-and insert.
+validated to a three-letter pair and a date within the last ten years. The date
+bound is the quota guard: a base and day never asked for is always an upstream
+call, and without it a script walking every date back to 1999 would empty a
+month's allowance in one go.

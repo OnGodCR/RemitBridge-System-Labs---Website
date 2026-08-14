@@ -1,38 +1,32 @@
 /**
- * One mid-market rate, from a live provider when one is configured.
+ * Mid-market rates for the TrueCost receipt checker.
  *
- * Why this is a function and not a fetch from the browser:
+ * The unit of work here is a base currency and a day, not a single pair.
+ * Both providers return every quote for a base in one request, for past days
+ * as well as today, so asking about USD to MXN costs exactly the same upstream
+ * call as asking about all 165 USD pairs. Fetching one pair at a time was
+ * paying full price for a fraction of the answer.
  *
- *   - Every live rate provider authenticates with a key. A key in a Vite bundle
- *     is a public key, so it has to be read server side. It is set with
- *     `supabase secrets set` and never appears in this repo.
- *   - Providers charge by the request. Everyone checking the same corridor on
- *     the same day is asking one question, so the answer is cached in Postgres
- *     and one upstream call serves all of them. A free tier of 1,500 requests a
- *     month is workable with a cache and is gone in a week without one.
+ * What that means in practice: one upstream call per base per day, ever. Not
+ * per visitor, not per corridor, and not again tomorrow for a day already
+ * stored, because a past day's rate cannot change. A 1,500 request monthly
+ * allowance covers roughly fifty base-days a day.
  *
- * Falls back to Frankfurter whenever the provider is unset, out of quota, or
- * does not answer, so the tool works with no key and no bill. That fallback is
- * not a degraded mode to hide: which source answered is returned and the page
- * says so.
+ * There is no scheduled job. The first lookup of the day fills the table for
+ * that whole base and every request after it is served from Postgres, which is
+ * the same daily refresh a cron would give without a second thing to deploy or
+ * a silent failure to notice. The browser reads the table directly, so most
+ * lookups never reach this function at all.
+ *
+ * Why the function exists rather than a fetch from the browser: a live provider
+ * authenticates, and a key in a Vite bundle is a public key. It is set with
+ * `supabase secrets set` and never appears in this repo.
  *
  * Set up: see supabase/functions/README.md.
  */
 
 const FRANKFURTER = 'https://api.frankfurter.dev/v2'
 const EXCHANGERATE = 'https://v6.exchangerate-api.com/v6'
-
-/*
- * How long a cached rate is still worth serving.
- *
- * A rate for a past day never changes, so it is kept forever. Today's rate is
- * only as good as the provider's own update cycle: the paid ExchangeRate-API
- * tiers refresh hourly, Frankfurter publishes once a day. Holding a daily rate
- * for six hours rather than a day means a corridor picks up the new publication
- * within the morning instead of the following one.
- */
-const LIVE_TTL_MS = 55 * 60 * 1000
-const DAILY_TTL_MS = 6 * 60 * 60 * 1000
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -49,7 +43,7 @@ const json = (body: unknown, status = 200) =>
 /*
  * Both inputs are attacker controlled: this endpoint is public and takes no
  * auth. A currency code is three letters and a date is a calendar date, so
- * anything else is rejected before it reaches a URL or a SQL filter.
+ * anything else is rejected before it reaches a URL or a REST filter.
  */
 const isCode = (v: string) => /^[A-Z]{3}$/.test(v)
 const isDay = (v: string) => /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v))
@@ -57,13 +51,11 @@ const isDay = (v: string) => /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date
 /*
  * The oldest date worth answering.
  *
- * The cache only protects the quota for questions that repeat. A distinct pair
- * and date is a guaranteed miss and so a guaranteed upstream call, and this
- * endpoint is public and unauthenticated: without a bound, walking every date
- * back to 1999 across a few pairs empties a month's quota in one script.
- *
- * Ten years is well past any receipt someone would still be checking, and
- * anything older falls back to manual entry rather than being refused outright.
+ * A base and a day that has never been asked for is a guaranteed upstream call,
+ * and this endpoint is public. Without a bound, walking every date back to 1999
+ * empties a month's allowance in one script. Ten years is well past any receipt
+ * someone would still be checking, and anything older falls through to manual
+ * entry rather than being refused outright.
  */
 const OLDEST_DAY = () => {
   const d = new Date()
@@ -71,10 +63,20 @@ const OLDEST_DAY = () => {
   return d.toISOString().slice(0, 10)
 }
 
-type Answer = { rate: number; day: string; source: string; live: boolean }
+/**
+ * How long today's stored rates are still worth serving.
+ *
+ * Only ever applied to today. A past day is immutable and is never refetched.
+ * Six hours rather than a full day so a corridor picks up the new publication
+ * within the morning instead of the following one.
+ */
+const TODAY_TTL_MS = 6 * 60 * 60 * 1000
+
+type Quote = { quote: string; rate: number; day: string }
+type Batch = { rows: Quote[]; source: string; live: boolean }
 
 /** A fetch with a deadline. A provider that hangs must not hang the page. */
-async function getJson(url: string, ms = 6000): Promise<any | null> {
+async function getJson(url: string, ms = 8000): Promise<any | null> {
   const abort = new AbortController()
   const timer = setTimeout(() => abort.abort(), ms)
   try {
@@ -89,59 +91,62 @@ async function getJson(url: string, ms = 6000): Promise<any | null> {
 }
 
 /**
- * The paid provider. Returns null on anything unexpected, including the 403
- * a free-tier key gets from the history endpoint, so the caller falls through.
+ * The paid provider, whole base at a time.
+ *
+ * Returns null on anything unexpected, including the 403 a free-tier key gets
+ * from the history endpoint, so the caller falls through to Frankfurter.
  */
-async function fromExchangeRate(
-  base: string,
-  quote: string,
-  day: string | null,
-): Promise<Answer | null> {
+async function fromExchangeRate(base: string, day: string | null): Promise<Batch | null> {
   const key = Deno.env.get('EXCHANGERATE_API_KEY')
   if (!key) return null
 
-  if (day) {
-    const [y, m, d] = day.split('-').map(Number)
-    const data = await getJson(`${EXCHANGERATE}/${key}/history/${base}/${y}/${m}/${d}`)
-    const rate = data?.conversion_rates?.[quote]
-    if (data?.result !== 'success' || typeof rate !== 'number') return null
-    return { rate, day, source: 'ExchangeRate-API', live: false }
-  }
+  const url = day
+    ? (([y, m, d]) => `${EXCHANGERATE}/${key}/history/${base}/${y}/${m}/${d}`)(
+        day.split('-').map(Number),
+      )
+    : `${EXCHANGERATE}/${key}/latest/${base}`
 
-  const data = await getJson(`${EXCHANGERATE}/${key}/pair/${base}/${quote}`)
-  if (data?.result !== 'success' || typeof data.conversion_rate !== 'number') return null
+  const data = await getJson(url)
+  if (data?.result !== 'success' || typeof data.conversion_rates !== 'object') return null
 
-  // time_last_update_utc is when the provider last recalculated, which is the
-  // day the rate is for. Falling back to today rather than trusting a parse.
+  // For today's rates the provider's own last-update stamp is the day they are
+  // for. Falling back to the current date rather than trusting a bad parse.
   const stamp = Date.parse(data.time_last_update_utc ?? '')
-  const asOf = Number.isNaN(stamp) ? new Date() : new Date(stamp)
-  return {
-    rate: data.conversion_rate,
-    day: asOf.toISOString().slice(0, 10),
-    source: 'ExchangeRate-API',
-    live: true,
+  const asOf = day ?? (Number.isNaN(stamp) ? new Date() : new Date(stamp)).toISOString().slice(0, 10)
+
+  const rows: Quote[] = []
+  for (const [quote, rate] of Object.entries(data.conversion_rates)) {
+    if (isCode(quote) && typeof rate === 'number' && rate > 0) {
+      rows.push({ quote, rate, day: asOf })
+    }
   }
+  return rows.length ? { rows, source: 'ExchangeRate-API', live: !day } : null
 }
 
-/** The no-key fallback. Same source the site used before any of this. */
-async function fromFrankfurter(
-  base: string,
-  quote: string,
-  day: string | null,
-): Promise<Answer | null> {
-  const params = new URLSearchParams({ base, quotes: quote })
+/** The no-key fallback, whole base at a time. */
+async function fromFrankfurter(base: string, day: string | null): Promise<Batch | null> {
+  const params = new URLSearchParams({ base })
   if (day) params.set('date', day)
 
   const data = await getJson(`${FRANKFURTER}/rates?${params}`)
-  const row = Array.isArray(data) ? data.find((r: any) => r.quote === quote) : null
-  if (!row || typeof row.rate !== 'number' || typeof row.date !== 'string') return null
+  if (!Array.isArray(data)) return null
 
-  // v2 returns the day the rate is actually for, which can differ from the day
-  // asked for. That date is what gets stored, never the requested one.
-  return { rate: row.rate, day: row.date, source: 'Frankfurter', live: false }
+  /*
+   * The date is read per row, not taken from the request. This API returns
+   * different dates for different currencies in one response: a thinly traded
+   * currency can be a day behind the rest. Stamping them all with the day that
+   * was asked for would quietly backdate real numbers.
+   */
+  const rows: Quote[] = []
+  for (const r of data) {
+    if (isCode(r?.quote) && typeof r?.rate === 'number' && r.rate > 0 && isDay(r?.date)) {
+      rows.push({ quote: r.quote, rate: r.rate, day: r.date })
+    }
+  }
+  return rows.length ? { rows, source: 'Frankfurter', live: false } : null
 }
 
-/* ---- cache -------------------------------------------------------------- */
+/* ---- storage ------------------------------------------------------------ */
 
 const dbUrl = Deno.env.get('SUPABASE_URL') ?? ''
 const dbKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -167,17 +172,33 @@ async function restGet(path: string): Promise<any[] | null> {
   }
 }
 
-async function restUpsert(row: Record<string, unknown>): Promise<void> {
+/** The whole base in one write. ~165 rows, one round trip. */
+async function store(base: string, batch: Batch): Promise<void> {
   if (!dbUrl || !dbKey) return
+  const now = new Date().toISOString()
+  const rows = batch.rows
+    // A base priced against itself is 1 by definition and not worth a row.
+    .filter((r) => r.quote !== base)
+    .map((r) => ({
+      base,
+      quote: r.quote,
+      day: r.day,
+      rate: r.rate,
+      source: batch.source,
+      live: batch.live,
+      fetched_at: now,
+    }))
+  if (!rows.length) return
+
   try {
     await fetch(`${dbUrl}/rest/v1/fx_rates?on_conflict=base,quote,day`, {
       method: 'POST',
       headers: { ...restHeaders, Prefer: 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify(row),
+      body: JSON.stringify(rows),
     })
   } catch {
-    // A cache write that fails costs one extra upstream call next time. It is
-    // never a reason to fail the request the visitor actually made.
+    // A write that fails costs one extra upstream call next time. It is never a
+    // reason to fail the request the visitor actually made.
   }
 }
 
@@ -207,8 +228,9 @@ Deno.serve(async (req) => {
   }
 
   const today = new Date().toISOString().slice(0, 10)
-  const historical = Boolean(dayParam && dayParam < today)
+  // A future date is not an error, it just means "the most recent".
   const day = dayParam && dayParam <= today ? dayParam : null
+  const isPast = Boolean(day && day < today)
 
   const rows = await restGet(
     day
@@ -218,10 +240,9 @@ Deno.serve(async (req) => {
   const hit = rows?.[0]
 
   if (hit) {
-    const age = Date.now() - Date.parse(hit.fetched_at)
-    const ttl = hit.live ? LIVE_TTL_MS : DAILY_TTL_MS
-    // A past day cannot change, so age is irrelevant to it.
-    if (historical || age < ttl) {
+    const fresh = Date.now() - Date.parse(hit.fetched_at) < TODAY_TTL_MS
+    // A past day cannot change, so how long ago it was fetched is irrelevant.
+    if (isPast || fresh) {
       return json({
         rate: Number(hit.rate),
         day: hit.day,
@@ -232,33 +253,38 @@ Deno.serve(async (req) => {
     }
   }
 
-  const answer = (await fromExchangeRate(base, quote, day)) ?? (await fromFrankfurter(base, quote, day))
+  const batch = (await fromExchangeRate(base, day)) ?? (await fromFrankfurter(base, day))
 
-  if (!answer) {
-    // Serve a stale hit rather than nothing: an hour-old mid-market rate is far
-    // more use than an error, as long as its date travels with it.
-    if (hit) {
+  if (batch) {
+    // Stored before answering, so the next visitor asking about any of the
+    // other 164 pairs for this base is served without another upstream call.
+    await store(base, batch)
+    const row = batch.rows.find((r) => r.quote === quote)
+    if (row) {
       return json({
-        rate: Number(hit.rate),
-        day: hit.day,
-        source: hit.source,
-        live: hit.live,
-        cached: true,
-        stale: true,
+        rate: row.rate,
+        day: row.day,
+        source: batch.source,
+        live: batch.live,
+        cached: false,
       })
     }
-    return json({ error: `No reference rate available for ${base} to ${quote}.` }, 502)
   }
 
-  await restUpsert({
-    base,
-    quote,
-    day: answer.day,
-    rate: answer.rate,
-    source: answer.source,
-    live: answer.live,
-    fetched_at: new Date().toISOString(),
-  })
+  /*
+   * Serve a stale hit rather than nothing. An hour-old mid-market rate is far
+   * more use than an error, as long as its date travels with it, which it does.
+   */
+  if (hit) {
+    return json({
+      rate: Number(hit.rate),
+      day: hit.day,
+      source: hit.source,
+      live: hit.live,
+      cached: true,
+      stale: true,
+    })
+  }
 
-  return json({ ...answer, cached: false })
+  return json({ error: `No reference rate available for ${base} to ${quote}.` }, 502)
 })
