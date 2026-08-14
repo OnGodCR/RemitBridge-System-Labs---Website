@@ -5,9 +5,9 @@ import { useCountUp, useInView, usePrefersReducedMotion } from '@/lib/useInView'
 import { cn } from '@/lib/utils'
 
 /*
- * One colour, two surfaces, strictly alternating. The hero above is white, so
- * this section opens green, then white, then green. The rhythm does the
- * separating that colour was doing before.
+ * One colour, alternating surfaces. The hero above paints nothing, so this
+ * opens green, then the backdrop shows through, then green again. The rhythm
+ * does the separating that colour was doing before.
  *
  * Earlier versions used amber and rose alongside the green to mark "bad" and
  * "worst". It read as a palette borrowed from somewhere else.
@@ -43,11 +43,15 @@ function Stat({ value, decimals = 0, prefix = '', suffix = '', label, note, onGr
 }
 
 /**
- * The cost comparison, on the green band.
+ * The cost comparison, between the two green bands.
  *
- * Bars are white at three weights. Length already encodes the value, and the
- * labels say which is which, so the weight is reinforcing an order the reader
- * can already see rather than being the only signal.
+ * Bars are green at three weights. Length already encodes the value, and the
+ * labels say which is which, so the weight reinforces an order the reader can
+ * already see rather than being the only signal.
+ *
+ * Paints no surface of its own, so the site-wide backdrop shows through. The
+ * rules top and bottom separate it from the green now that a block of white is
+ * not doing that job.
  */
 function CostBars() {
   const [ref, inView] = useInView()
@@ -77,7 +81,7 @@ function CostBars() {
   ]
 
   return (
-    <section ref={ref} className="border-y border-border bg-card py-20 sm:py-24">
+    <section ref={ref} className="border-y border-border py-20 sm:py-24">
       <Container>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h3 className="text-2xl sm:text-3xl">What a $200 transfer costs</h3>
