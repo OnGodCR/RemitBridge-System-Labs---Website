@@ -103,7 +103,7 @@ export function Inbox() {
                 )}
               </p>
               {row.topic && (
-                <span className="rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   {TOPIC_LABEL[row.topic] ?? row.topic}
                 </span>
               )}

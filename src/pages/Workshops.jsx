@@ -52,8 +52,8 @@ export default function Workshops() {
       <Section className="pt-12">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
           <h1 className="text-3xl sm:text-4xl">Money Across Borders workshops</h1>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-            <span className="size-1.5 rounded-full bg-muted-foreground" aria-hidden />
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            <span aria-hidden>○</span>
             Not running yet
           </span>
         </div>
@@ -113,7 +113,7 @@ export default function Workshops() {
                 <p className="text-base">{lang.name}</p>
                 <p className="text-xs text-muted-foreground">{lang.english}</p>
               </div>
-              <span className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-bold text-muted-foreground">
+              <span className="shrink-0 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 Coming soon
               </span>
             </li>

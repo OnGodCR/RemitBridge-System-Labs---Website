@@ -55,14 +55,15 @@ export default function Papers() {
                 className="rounded-2xl border border-border bg-card p-6"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-3">
+                  {/* A word and a shape, not a chip. Same treatment as the
+                      status lines on Leadership and What we measure. */}
                   <span
                     className={cn(
-                      'rounded-full border px-3 py-1 text-xs font-bold',
-                      paper.status === 'published'
-                        ? 'border-primary/30 bg-primary/10 text-primary'
-                        : 'border-border bg-muted text-muted-foreground',
+                      'inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest',
+                      paper.status === 'published' ? 'text-primary' : 'text-muted-foreground',
                     )}
                   >
+                    <span aria-hidden>{paper.status === 'published' ? '●' : '○'}</span>
                     {status.label}
                   </span>
                   <span className="text-sm tabular-nums text-muted-foreground">
@@ -92,16 +93,10 @@ export default function Papers() {
                   {paper.abstract}
                 </p>
 
-                <div className="mt-5 flex flex-wrap items-center gap-2">
-                  {paper.topics.map((t) => (
-                    <span
-                      key={t}
-                      className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
+                <p className="mt-5 text-sm text-muted-foreground">
+                  <span className="font-bold text-foreground">Topics</span>{' '}
+                  {paper.topics.join(' · ')}
+                </p>
 
                 {paper.pdf ? (
                   <a

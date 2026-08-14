@@ -104,7 +104,7 @@ export default function Dashboard() {
         <Container>
           <div className="flex flex-wrap items-baseline justify-between gap-4">
             <h1 className="text-3xl sm:text-4xl">Hi {name}</h1>
-            <span className="rounded-full border border-white/30 px-3 py-1 text-xs font-bold uppercase tracking-widest">
+            <span className="text-xs font-bold uppercase tracking-widest text-current/90">
               {role}
             </span>
           </div>
@@ -130,11 +130,9 @@ export default function Dashboard() {
                 )}
               >
                 {t.label}
-                {t.badge > 0 && (
-                  <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
-                    {t.badge}
-                  </span>
-                )}
+                {/* The count reads as part of the label rather than a dot
+                    stuck to it. Still the first thing you look for. */}
+                {t.badge > 0 && <span className="ml-1.5 tabular-nums">({t.badge})</span>}
               </button>
             ))}
           </nav>

@@ -102,16 +102,16 @@ export function Applications({ profile, myId }) {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-x-6 gap-y-2">
         {STATUSES.map((s) => (
           <button
             key={s.id}
             onClick={() => setFilter(s.id)}
             className={cn(
-              'rounded-full border px-4 py-1.5 text-sm font-medium transition-colors',
+              'border-b-2 pb-1 text-sm font-medium transition-colors',
               filter === s.id
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border text-muted-foreground hover:text-foreground',
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground',
             )}
           >
             {s.label} ({counts[s.id] ?? 0})
@@ -147,7 +147,7 @@ export function Applications({ profile, myId }) {
                   <div className="text-right">
                     <span
                       className={cn(
-                        'rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-widest',
+                        'text-xs font-bold uppercase tracking-widest',
                         TONE[row.status],
                       )}
                     >

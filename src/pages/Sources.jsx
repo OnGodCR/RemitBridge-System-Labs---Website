@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import Section, { PageHeader } from '@/components/Section'
 import { citations, sources } from '@/data/figures'
-import { cn } from '@/lib/utils'
 
 export default function Sources() {
   const cited = citations.filter((c) => c.source)
@@ -33,12 +32,9 @@ export default function Sources() {
               className="rounded-2xl border border-border bg-card p-6"
             >
               <div className="flex flex-wrap items-baseline gap-3">
-                <span
-                  className={cn(
-                    'rounded-full border px-3 py-1 text-lg font-extrabold tabular-nums',
-                    'border-primary/30 bg-primary/10 text-primary',
-                  )}
-                >
+                {/* The figure carries itself at this size. A pill around a
+                    number makes it look like a label for something else. */}
+                <span className="text-3xl font-extrabold tabular-nums text-primary">
                   {c.value}
                 </span>
               </div>
@@ -92,12 +88,7 @@ export default function Sources() {
         <ul className="space-y-6">
           {ours.map((c) => (
             <li key={c.value} className="rounded-2xl border border-border bg-background p-6">
-              <span
-                className={cn(
-                  'inline-block rounded-full border px-3 py-1 text-lg font-extrabold tabular-nums',
-                  'border-border bg-muted text-foreground',
-                )}
-              >
+              <span className="block text-3xl font-extrabold tabular-nums text-foreground">
                 {c.value}
               </span>
               <p className="mt-4 max-w-3xl leading-relaxed">{c.claim}</p>

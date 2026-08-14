@@ -150,23 +150,13 @@ export default function BlogPost() {
 
           <div
             className={cn(
-              'mt-12 flex flex-wrap gap-2 border-t border-border pt-8',
+              'mt-12 border-t border-border pt-8',
               post.tags.length === 0 && 'hidden',
             )}
           >
-            {post.tags.map((t) => (
-              <span
-                key={t}
-                className={cn(
-                  'rounded-full border px-3 py-1 text-xs font-medium',
-                  theme.tint,
-                  theme.ink,
-                  theme.border,
-                )}
-              >
-                {t}
-              </span>
-            ))}
+            <p className={cn('text-sm font-medium', theme.ink)}>
+              {post.tags.join(' · ')}
+            </p>
           </div>
         </Container>
       </article>

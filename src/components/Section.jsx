@@ -31,21 +31,6 @@ export function DisplayTitle({ lead, accent, className }) {
   )
 }
 
-/** Small capsule for context labels — grant names, status, affiliation. */
-export function Pill({ icon: Icon, children, className }) {
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground',
-        className,
-      )}
-    >
-      {Icon && <Icon className="size-4 text-primary" aria-hidden />}
-      {children}
-    </span>
-  )
-}
-
 /**
  * Top of a page. Centred, because the display type is the point.
  */

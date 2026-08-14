@@ -104,12 +104,12 @@ export default function Fellowships() {
               <CardContent>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm text-muted-foreground">{p.stage}</span>
+                  {/* Keeps the colour, which carries the stage, and drops the
+                      chip around it. */}
                   <span
                     className={cn(
-                      'rounded-full border px-3 py-1 text-xs font-bold',
-                      seriesTheme[phaseHues[i]].tint,
+                      'text-xs font-bold uppercase tracking-widest',
                       seriesTheme[phaseHues[i]].ink,
-                      seriesTheme[phaseHues[i]].border,
                     )}
                   >
                     {p.badge}

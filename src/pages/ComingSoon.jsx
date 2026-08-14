@@ -49,10 +49,10 @@ export default function ComingSoon() {
         <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-start">
           {upcoming.map((item) => (
             <div key={item.title} className="rounded-2xl border border-border bg-card p-8">
-              <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-primary">
                 {/* A dot rather than a spinner. Nothing is happening on this
                     page, and a spinner would imply something is. */}
-                <span className="size-1.5 rounded-full bg-primary" aria-hidden />
+                <span aria-hidden>○</span>
                 {item.stage}
               </span>
 

@@ -103,10 +103,8 @@ export function People({ myId, profile }) {
                       : `Only someone above ${ROLE_LABEL[row.role]} can change this`
                   }
                   className={cn(
-                    'rounded-full border px-3 py-1 text-xs font-bold',
-                    rankOf(row) >= ROLE_RANK.owner
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-border text-muted-foreground',
+                    'text-xs font-bold uppercase tracking-widest',
+                    rankOf(row) >= ROLE_RANK.owner ? 'text-primary' : 'text-muted-foreground',
                   )}
                 >
                   {ROLE_LABEL[row.role] ?? row.role}

@@ -61,7 +61,7 @@ export default function Blog() {
           Each series carries its own colour, so the filter row doubles as a key
           for the cards below it.
         */}
-        <div className="mb-8 flex flex-wrap gap-2">
+        <div className="mb-8 flex flex-wrap gap-x-6 gap-y-2">
           {seriesCategories.map((s) => {
             const theme = themeFor(s.id)
             const active = series === s.id
@@ -70,11 +70,13 @@ export default function Blog() {
                 key={s.id}
                 onClick={() => setSeries(s.id)}
                 aria-pressed={active}
+                /* Text toggles rather than chips. A control still has to look
+                    pressable, which a bottom rule does as well as a pill. */
                 className={cn(
-                  'rounded-full border px-4 py-2 text-sm font-medium transition-colors',
+                  'border-b-2 pb-1 text-sm font-medium transition-colors',
                   active
-                    ? cn(theme.tint, theme.ink, theme.border)
-                    : 'border-border text-muted-foreground hover:border-muted-foreground/40 hover:text-foreground',
+                    ? cn('border-current', theme.ink)
+                    : 'border-transparent text-muted-foreground hover:text-foreground',
                 )}
               >
                 {s.label}

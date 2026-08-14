@@ -172,7 +172,7 @@ export default function Impact() {
             <li key={group.unlock}>
               <div className="flex items-baseline gap-4">
                 <span
-                  className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border text-sm font-bold tabular-nums text-muted-foreground"
+                  className="w-6 shrink-0 text-lg font-extrabold tabular-nums text-muted-foreground"
                   aria-hidden
                 >
                   {i + 1}
@@ -246,7 +246,7 @@ export default function Impact() {
                   <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
                     <time className="text-sm font-bold tabular-nums">{c.date}</time>
                     <span className="text-sm text-muted-foreground">{c.page}</span>
-                    <span className="rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                       {PROMPT_LABEL[c.prompt] ?? c.prompt}
                     </span>
                   </div>
