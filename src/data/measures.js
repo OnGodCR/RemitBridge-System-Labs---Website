@@ -22,6 +22,10 @@ import { correctionCount } from './corrections'
  * @property {'collected'|'zero'|'not-yet'} status
  * @property {string} [unit]
  * @property {string} [note]    Required for 'not-yet': when it starts.
+ * @property {string|null} [unlock]
+ *   The one event that starts collection, as a short label. Pulled out of the
+ *   note so the page can group by it: two measures waiting on the same thing
+ *   is a fact about the plan, and six identical "not yet" cards hide it.
  */
 
 /** @type {Measure[]} */
@@ -36,6 +40,7 @@ const RAW = [
     asOf: null,
     status: 'not-yet',
     note: 'First collection when the RemitBench methodology is settled and the first full run completes.',
+    unlock: 'The first full RemitBench run',
   },
   {
     id: 'reach',
@@ -46,6 +51,7 @@ const RAW = [
     asOf: null,
     status: 'not-yet',
     note: 'First collection after the pilot workshop. No workshop has run yet.',
+    unlock: 'The pilot workshop',
   },
   {
     id: 'learning',
@@ -57,6 +63,7 @@ const RAW = [
     asOf: null,
     status: 'not-yet',
     note: 'First collection after the pilot workshop, from the before-and-after surveys.',
+    unlock: 'The pilot workshop',
   },
   {
     id: 'students',
@@ -67,6 +74,7 @@ const RAW = [
     asOf: null,
     status: 'not-yet',
     note: 'First collection at the end of the first quarter with fellows on a team.',
+    unlock: 'The first quarter with fellows on a team',
   },
   {
     id: 'tools',
@@ -77,6 +85,7 @@ const RAW = [
     asOf: null,
     status: 'not-yet',
     note: 'First collection one full quarter after the site goes live.',
+    unlock: 'One full quarter after the site goes live',
   },
   {
     id: 'holds-up',
@@ -90,6 +99,7 @@ const RAW = [
     status: 'zero',
     unit: 'corrections published',
     note: null,
+    unlock: null,
   },
 ]
 
@@ -118,3 +128,22 @@ export const STATUS_LABEL = {
 /** Counted from the data so the summary line cannot drift from the table. */
 export const measuredCount = () =>
   measures.filter((m) => m.status === 'collected' || m.status === 'zero').length
+
+/** Everything with a figure today. */
+export const measured = () =>
+  measures.filter((m) => m.status === 'collected' || m.status === 'zero')
+
+/**
+ * The rest, grouped by the one event that starts them.
+ *
+ * Order follows the first appearance in the array rather than being sorted, so
+ * the sequence is editorial and stays where it was put.
+ */
+export const waitingByUnlock = () => {
+  const waiting = measures.filter((m) => m.status === 'not-yet')
+  const order = [...new Set(waiting.map((m) => m.unlock))]
+  return order.map((unlock) => ({
+    unlock,
+    items: waiting.filter((m) => m.unlock === unlock),
+  }))
+}

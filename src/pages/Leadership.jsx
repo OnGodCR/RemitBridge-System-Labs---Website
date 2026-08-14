@@ -232,14 +232,6 @@ export default function Leadership() {
             </li>
           ))}
         </ul>
-
-        {areas.every((a) => !a.advisor) && (
-          <p className="mt-6 max-w-3xl leading-relaxed text-muted-foreground">
-            No reviewer has agreed to be named yet, so none is listed. An advisor appears
-            here only once they have agreed in writing to be named publicly, and any personal
-            connection to someone in the lab is declared alongside them.
-          </p>
-        )}
       </Section>
     </>
   )

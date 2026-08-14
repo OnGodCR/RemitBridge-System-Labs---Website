@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
-import Section, { PageHeader } from '@/components/Section'
-import { measures, measuredCount, STATUS_LABEL } from '@/data/measures'
+import Section, { Container, PageHeader } from '@/components/Section'
+import Backdrop from '@/components/Backdrop'
+import { measures, measuredCount, measured as measuredOnes, waitingByUnlock } from '@/data/measures'
 import { recentCorrections, correctionCount, PROMPT_LABEL } from '@/data/corrections'
 import { cn } from '@/lib/utils'
 
@@ -16,42 +17,52 @@ import { cn } from '@/lib/utils'
  *   a value of zero renders as zero, never a dash and never hidden
  *   a value and its collection date render together or neither renders
  *   nothing renders a projection or a target dressed as an achievement
+ *
+ * The six were six identical cards reading "not measured yet", which is a true
+ * page nobody finishes. They are now split by whether there is a figure today,
+ * and the rest grouped by the one event that starts them. That is the same
+ * information: it was already sitting in each note, one sentence at a time,
+ * where you could not see that two of them are waiting on the same workshop.
  */
 
-/** Status as a word and a shape, so it never depends on colour alone. */
-function StatusTag({ status }) {
-  const measured = status === 'collected' || status === 'zero'
+/** How much of the programme has a figure, at a glance. One segment each. */
+function Meter({ filled, total }) {
   return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-bold',
-        measured ? 'border-primary text-primary' : 'border-border text-muted-foreground',
-      )}
-    >
-      <span aria-hidden>{measured ? '●' : '○'}</span>
-      {STATUS_LABEL[status]}
-    </span>
+    <div className="flex gap-1.5" aria-hidden>
+      {Array.from({ length: total }, (_, i) => (
+        <span
+          key={i}
+          className={cn(
+            'h-2 flex-1 rounded-full',
+            i < filled ? 'bg-primary' : 'bg-border',
+          )}
+        />
+      ))}
+    </div>
   )
 }
 
-/** The measurement itself, or the reason there is not one. Never blank. */
-function Value({ m }) {
-  if (m.status === 'not-yet') {
-    return <p className="text-sm leading-relaxed text-muted-foreground">{m.note}</p>
-  }
+/** The two fields that make a measure checkable, at any width. */
+function Method({ m, muted = false }) {
   return (
-    <>
-      <p className="text-2xl font-extrabold tabular-nums text-primary">
-        {m.value.toLocaleString('en-US')}
-      </p>
-      {m.unit && <p className="text-sm text-muted-foreground">{m.unit}</p>}
-      {m.asOf && <p className="mt-1 text-xs text-muted-foreground">as of {m.asOf}</p>}
-    </>
+    <dl className={cn('space-y-2.5 text-sm leading-relaxed', muted && 'text-muted-foreground')}>
+      <div>
+        <dt className="font-bold text-foreground">How it is counted</dt>
+        <dd className="mt-0.5 text-muted-foreground">{m.measure}</dd>
+      </div>
+      <div>
+        <dt className="font-bold text-foreground">What proves it</dt>
+        <dd className="mt-0.5 text-muted-foreground">{m.evidence}</dd>
+      </div>
+    </dl>
   )
 }
 
 export default function Impact() {
-  const measured = measuredCount()
+  const total = measures.length
+  const done = measuredCount()
+  const withFigures = measuredOnes()
+  const waiting = waitingByUnlock()
   const corrections = recentCorrections()
 
   return (
@@ -59,71 +70,137 @@ export default function Impact() {
       <PageHeader
         eyebrow="About"
         title="What we measure"
-        intro="Six things we track, the evidence we keep for each, and what has actually been measured so far. Where nothing has been measured, the page says so."
+        intro="Six things we track, the record that would prove each one, and what has actually been measured so far."
       />
 
+      {/* The state of it, before any explanation. A reader who leaves after the
+          first screen should still have the honest answer. */}
       <Section>
-        <p className="max-w-3xl leading-relaxed">
-          It is easy for a student project to say it helped people and never check. Each
-          entry below pairs something we measure with the record that would prove it, and
-          with the current figure. {measured} of {measures.length} have a figure today.
-          The rest say when collection starts.
+        <div className="grid gap-10 lg:grid-cols-[22rem_1fr] lg:items-start">
+          <div>
+            <p className="text-5xl font-extrabold tabular-nums text-primary sm:text-6xl">
+              {done}
+              <span className="text-muted-foreground">/{total}</span>
+            </p>
+            <p className="mt-3 font-bold">have a figure today</p>
+            <div className="mt-4">
+              <Meter filled={done} total={total} />
+            </div>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              The programmes have not run yet. That is the whole reason the other{' '}
+              {total - done} are empty, and it is worth more than a filled-in number
+              would be.
+            </p>
+          </div>
+
+          <div className="max-w-2xl space-y-4 leading-relaxed">
+            <p>
+              It is easy for a student project to say it helped people and never check. So
+              each of the six below is paired with the record that would prove it, and with
+              whatever the current figure is.
+            </p>
+            <p className="text-muted-foreground">
+              Nothing here is a projection or a goal. A target we have not hit is not a
+              measurement, so it does not appear on this page. A figure without the date it
+              was collected does not appear either.
+            </p>
+            <p>
+              <Link to="/sources" className="font-bold text-primary hover:underline">
+                Every statistic on this site, with its source
+              </Link>{' '}
+              is the evidence layer for this page. The two are meant to be read together.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      {/* Green. What has actually been measured, given the room a result gets. */}
+      <section className="relative overflow-hidden bg-primary py-20 text-primary-foreground sm:py-24">
+        <Backdrop onDark fadeClass={null} />
+        <Container className="relative">
+          <h2 className="text-2xl sm:text-3xl">Measured today</h2>
+
+          {/*
+            The closing note is the last cell of the same grid, not a block
+            under it. With one figure measured it sits alongside and fills the
+            empty half; as more land it falls into place after them.
+          */}
+          <ul className="mt-10 grid gap-x-10 gap-y-12 sm:grid-cols-2">
+            {withFigures.map((m) => (
+              <li key={m.id}>
+                <p className="text-5xl font-extrabold tabular-nums sm:text-6xl">
+                  {m.value.toLocaleString('en-US')}
+                </p>
+                {m.unit && <p className="mt-2 font-bold">{m.unit}</p>}
+                <p className="mt-1 text-sm leading-relaxed text-current/90">{m.title}</p>
+                {m.asOf && (
+                  <p className="mt-1 text-xs text-current/80">as of {m.asOf}</p>
+                )}
+                <p className="mt-4 border-t border-white/25 pt-4 text-sm leading-relaxed text-current/90">
+                  {m.evidence}
+                </p>
+              </li>
+            ))}
+
+            <li className="self-center">
+              <p className="leading-relaxed text-current/90">
+                Zero corrections is a measurement, not a blank. It will stop being zero,
+                and when it does the number goes up on this page rather than quietly
+                staying put.
+              </p>
+              <Link
+                to="/contact"
+                className="mt-4 inline-block font-bold underline underline-offset-4"
+              >
+                Tell us if something here is wrong
+              </Link>
+            </li>
+          </ul>
+        </Container>
+      </section>
+
+      {/* White. The rest, as a sequence rather than five identical blanks. */}
+      <Section title="What starts the rest">
+        <p className="max-w-3xl leading-relaxed text-muted-foreground">
+          Each of the remaining {total - done} is waiting on one specific thing. Grouped by
+          what that is, because two of them are waiting on the same workshop and five
+          separate cards saying &ldquo;not yet&rdquo; would hide it.
         </p>
 
-        <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
-          Nothing here is a projection or a goal. A target we have not hit is not a
-          measurement, so it does not appear on this page.
-        </p>
-
-        {/*
-          Cards, not a four-column table. The brief asked for a fourth column and
-          on a 320px screen that becomes a horizontal scroll of unlabelled cells,
-          so each measure is its own block with its fields labelled. It reads the
-          same at every width.
-        */}
-        <ul className="mt-10 grid gap-4 lg:grid-cols-2">
-          {measures.map((m) => (
-            <li
-              key={m.id}
-              className="flex flex-col rounded-2xl border border-border bg-card p-6"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <h2 className="text-xl">{m.title}</h2>
-                <StatusTag status={m.status} />
+        <ol className="mt-10 space-y-10">
+          {waiting.map((group, i) => (
+            <li key={group.unlock}>
+              <div className="flex items-baseline gap-4">
+                <span
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border text-sm font-bold tabular-nums text-muted-foreground"
+                  aria-hidden
+                >
+                  {i + 1}
+                </span>
+                <div>
+                  <h3 className="text-xl">{group.unlock}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    unlocks {group.items.length}{' '}
+                    {group.items.length === 1 ? 'measure' : 'measures'}
+                  </p>
+                </div>
               </div>
 
-              <div className="mt-5">
-                <Value m={m} />
-              </div>
-
-              <dl className="mt-6 space-y-3 border-t border-border pt-5 text-sm leading-relaxed">
-                <div>
-                  <dt className="font-bold">How it is counted</dt>
-                  <dd className="mt-1 text-muted-foreground">{m.measure}</dd>
-                </div>
-                <div>
-                  <dt className="font-bold">What proves it</dt>
-                  <dd className="mt-1 text-muted-foreground">{m.evidence}</dd>
-                </div>
-              </dl>
+              <ul className="mt-5 grid gap-4 sm:ml-12 lg:grid-cols-2">
+                {group.items.map((m) => (
+                  <li key={m.id} className="rounded-2xl border border-border bg-card p-6">
+                    <h4 className="text-lg">{m.title}</h4>
+                    {/* A div, not a p: Method renders a dl, which a p cannot
+                        legally contain and the parser closes early around. */}
+                    <div className="mt-3 border-t border-border pt-4">
+                      <Method m={m} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </li>
           ))}
-        </ul>
-
-        <div className="mt-10 rounded-2xl border border-border p-6">
-          <h2 className="text-xl">Where the published figures come from</h2>
-          <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
-            Every statistic quoted anywhere on this site is listed with its source and
-            every place it is used. That page is the evidence layer for this one, and the
-            two are meant to be read together.
-          </p>
-          <Link
-            to="/sources"
-            className="mt-4 inline-block font-bold text-primary hover:underline"
-          >
-            See the sources for every number
-          </Link>
-        </div>
+        </ol>
       </Section>
 
       {/* Corrections. The second half of the page, at the same weight as the first. */}
