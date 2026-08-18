@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import Section, { Container } from '@/components/Section'
 import Backdrop from '@/components/Backdrop'
 import TeamDirectory from '@/components/TeamDirectory'
+import founderPhoto from '@/assets/founder.jpg'
 import { cn } from '@/lib/utils'
 
 /*
@@ -22,6 +23,7 @@ const filled = [
     title: 'Founder and director',
     name: 'Angad',
     since: '2026',
+    photo: founderPhoto,
     desc: 'Decides what the lab works on, runs the leadership team, handles community partnerships, and checks that what the site claims matches what we actually found.',
   },
 ]
@@ -146,11 +148,23 @@ export default function Leadership() {
                 key={r.title}
                 className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
               >
-                <p className="text-xs font-bold uppercase tracking-widest text-primary">
-                  {r.title}
-                </p>
-                <h2 className="mt-3 text-2xl">{r.name}</h2>
-                <p className="mt-0.5 text-xs text-muted-foreground">Since {r.since}</p>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                      {r.title}
+                    </p>
+                    <h2 className="mt-3 text-2xl">{r.name}</h2>
+                    <p className="mt-0.5 text-xs text-muted-foreground">Since {r.since}</p>
+                  </div>
+                  {r.photo && (
+                    <img
+                      src={r.photo}
+                      alt={`${r.name}, ${r.title.toLowerCase()}`}
+                      loading="lazy"
+                      className="size-20 shrink-0 rounded-2xl border border-border object-cover"
+                    />
+                  )}
+                </div>
                 <p className="mt-4 border-t border-border pt-4 text-sm leading-relaxed text-muted-foreground">
                   {r.desc}
                 </p>

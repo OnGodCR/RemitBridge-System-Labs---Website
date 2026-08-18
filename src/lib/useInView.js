@@ -31,9 +31,11 @@ export function useInView({ fallbackMs = 1800, ...options } = {}) {
     if (!el) return
 
     let done = false
+    let timer
     const reveal = () => {
       if (done) return
       done = true
+      clearInterval(timer)
       setInView(true)
     }
 
@@ -60,12 +62,22 @@ export function useInView({ fallbackMs = 1800, ...options } = {}) {
      * Safety net. If the observer never fires — unsupported, throttled, or a
      * rendering context that does not composite — the numbers would otherwise
      * stay at zero permanently. Content must not depend on an animation to
-     * become readable, so reveal regardless after a short delay.
+     * become readable.
+     *
+     * It checks visibility before acting. The old version revealed on a plain
+     * timeout, which meant everything below the fold revealed 1.8s after MOUNT,
+     * off screen, and the scroll-triggered animation was effectively dead: by
+     * the time you scrolled to a section its bars had already grown. Desktop
+     * masked it because the first animated band is often on the first screen;
+     * on a phone nothing is, so every animation appeared broken.
      */
-    const timer = setTimeout(reveal, fallbackMs)
+    timer = setInterval(() => {
+      const r = el.getBoundingClientRect()
+      if (r.top < window.innerHeight && r.bottom > 0) reveal()
+    }, fallbackMs)
 
     return () => {
-      clearTimeout(timer)
+      clearInterval(timer)
       observer?.disconnect()
     }
   }, [fallbackMs])
