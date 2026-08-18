@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import Section from '@/components/Section'
-import { Card, CardContent } from '@/components/ui/card'
+import Section, { Container } from '@/components/Section'
+import Backdrop from '@/components/Backdrop'
 import TeamDirectory from '@/components/TeamDirectory'
 import { cn } from '@/lib/utils'
 
@@ -90,65 +90,110 @@ const withConsent = (advisor) =>
 
 const areas = AREAS.map((a) => ({ ...a, advisor: withConsent(a.advisor) }))
 
+/**
+ * How much of the lab exists, at a glance. One segment per seat.
+ *
+ * The same device as the meter on What we measure, on purpose. Both pages are
+ * answering "how much of this is real yet", and answering it the same way twice
+ * is worth more than two different pictures of the same idea.
+ */
+function SeatMeter({ filled: taken, total }) {
+  return (
+    <div className="flex gap-1.5" aria-hidden>
+      {Array.from({ length: total }, (_, i) => (
+        <span
+          key={i}
+          className={cn('h-2 flex-1 rounded-full', i < taken ? 'bg-primary' : 'bg-border')}
+        />
+      ))}
+    </div>
+  )
+}
+
 export default function Leadership() {
   const seats = filled.length + open.length
 
   return (
     <>
-      {/* No standing header. The seat count is the page: it says who is
-          accountable and how much of the lab does not exist yet, which the
-          heading and the stock photo above it were only delaying. */}
-      <Section tone="card" className="pt-12">
+      {/*
+        Paints no surface of its own, so the site backdrop shows through. The
+        page used to open on a flat white card, which is the one thing on this
+        site that reads as unfinished rather than plain.
+      */}
+      <Section className="pt-12">
         <h1 className="text-3xl sm:text-4xl">The team</h1>
 
-        {/* Computed, so it cannot go stale when a seat is filled. */}
-        <p className="mt-5 max-w-3xl leading-relaxed">
-          Students run the work and make the calls. The roles below are what each person
-          is responsible for, not job titles.
-        </p>
-        <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
-          {filled.length} of {seats} seats filled. The rest are open and are listed as open.
-        </p>
+        <div className="mt-10 grid gap-10 lg:grid-cols-[20rem_1fr] lg:items-start">
+          <div>
+            {/* Computed, so it cannot go stale when a seat is filled. */}
+            <p className="text-5xl font-extrabold tabular-nums text-primary sm:text-6xl">
+              {filled.length}
+              <span className="text-muted-foreground">/{seats}</span>
+            </p>
+            <p className="mt-3 font-bold">seats filled</p>
+            <div className="mt-4">
+              <SeatMeter filled={filled.length} total={seats} />
+            </div>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              Students run the work and make the calls. The roles are what each person is
+              responsible for, not job titles.
+            </p>
+          </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filled.map((r) => (
-            <Card key={r.title}>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{r.title}</p>
-                <h3 className="mt-2 text-xl">{r.name}</h3>
-                <p className="text-xs text-muted-foreground">Since {r.since}</p>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.desc}</p>
-              </CardContent>
-            </Card>
-          ))}
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {filled.map((r) => (
+              <li
+                key={r.title}
+                className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+              >
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                  {r.title}
+                </p>
+                <h2 className="mt-3 text-2xl">{r.name}</h2>
+                <p className="mt-0.5 text-xs text-muted-foreground">Since {r.since}</p>
+                <p className="mt-4 border-t border-border pt-4 text-sm leading-relaxed text-muted-foreground">
+                  {r.desc}
+                </p>
+              </li>
+            ))}
+          </ul>
         </div>
+      </Section>
 
-        {open.length > 0 && (
-          <div className="mt-12">
-            <h3 className="text-xl">{open.length} seats are open</h3>
-            <p className="mt-2 max-w-3xl leading-relaxed text-muted-foreground">
-              These roles are defined and nobody is in them. They are listed so the shape of
-              the lab is honest about where the gaps are, not to suggest a team that exists.
+      {/*
+        Green. Five of six seats being empty is the largest true thing on this
+        page, so it gets the band rather than a heading two thirds of the way
+        down a white one. It reads as an invitation instead of a gap.
+      */}
+      {open.length > 0 && (
+        <section className="relative overflow-hidden bg-primary py-20 text-primary-foreground sm:py-24">
+          <Backdrop onDark fadeClass={null} />
+          <Container className="relative">
+            <h2 className="text-2xl sm:text-3xl">{open.length} seats are open</h2>
+            <p className="mt-4 max-w-3xl leading-relaxed text-current/90">
+              These roles are defined and nobody is in them. They are listed so the shape
+              of the lab is honest about where the gaps are, not to suggest a team that
+              exists.
             </p>
 
             {/* Rows, not cards. The difference from a filled seat has to be
                 visible before the words are read. */}
-            <ul className="mt-6 border-t border-border">
+            <ul className="mt-10 border-t border-white/25">
               {open.map((r) => (
-                <li key={r.title} className="border-b border-border">
+                <li key={r.title} className="border-b border-white/25">
                   <Link
                     to="/fellowships"
                     className="group flex flex-col gap-2 py-5 sm:flex-row sm:items-baseline sm:gap-8"
                   >
                     <span className="sm:w-56 sm:shrink-0">
-                      <span className="block font-bold group-hover:text-primary">
+                      <span className="block font-bold underline-offset-4 group-hover:underline">
                         {r.title}
                       </span>
-                      <span className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <span className="mt-0.5 flex items-center gap-1.5 text-xs text-current/80">
                         <span aria-hidden>○</span> Open · {r.team}
                       </span>
                     </span>
-                    <span className="flex-1 text-sm leading-relaxed text-muted-foreground">
+                    <span className="flex-1 text-sm leading-relaxed text-current/90">
                       {r.desc}
                     </span>
                   </Link>
@@ -158,13 +203,13 @@ export default function Leadership() {
 
             <Link
               to="/fellowships"
-              className="mt-6 inline-block font-bold text-primary hover:underline"
+              className="mt-8 inline-block font-bold underline underline-offset-4"
             >
               How students join the lab
             </Link>
-          </div>
-        )}
-      </Section>
+          </Container>
+        </section>
+      )}
 
       {/* Renders nothing, section and all, until somebody opts in. */}
       <TeamDirectory />
