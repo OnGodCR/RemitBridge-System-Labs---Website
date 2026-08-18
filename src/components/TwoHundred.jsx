@@ -79,10 +79,21 @@ export default function TwoHundred() {
       panels.forEach((panel) => observer.observe(panel))
     }
 
+    /*
+     * Third trigger. Measured, not hypothetical: in at least one embedded
+     * browser context this page runs in, the document scrolls while zero
+     * scroll events fire and IntersectionObserver stays silent, which froze
+     * the number at $200 through all four stages. Four getBoundingClientRect
+     * calls every 300ms is nothing, and it is the difference between a
+     * countdown and a broken page wherever events are throttled or absent.
+     */
+    const poll = setInterval(recompute, 300)
+
     return () => {
       window.removeEventListener('scroll', recompute)
       window.removeEventListener('resize', recompute)
       observer?.disconnect()
+      clearInterval(poll)
     }
   }, [reduced])
 
@@ -111,8 +122,10 @@ export default function TwoHundred() {
     <section className="border-b border-border bg-card">
       <Container>
         <div ref={trackRef} className="grid gap-10 py-16 md:grid-cols-2">
-          {/* Sticky number. Stays put while the stages scroll past it. */}
-          <div className="md:sticky md:top-28 md:h-fit md:py-10">
+          {/* Sticky number. Stays put while the stages scroll past it. On a
+              phone there is no second column and nothing for it to stick
+              beside, so it hides and each stage carries its own amount. */}
+          <div className="hidden md:sticky md:top-28 md:block md:h-fit md:py-10">
             <p className="text-sm font-bold uppercase tracking-widest text-primary">
               Where a $200 transfer goes
             </p>
@@ -143,6 +156,10 @@ export default function TwoHundred() {
                   i === active ? 'opacity-100' : 'opacity-60',
                 )}
               >
+                {/* The running total, on the stage itself, small screens only. */}
+                <p className="mb-3 text-4xl font-extrabold tabular-nums text-primary md:hidden">
+                  ${s.amount.toFixed(2)}
+                </p>
                 <h3 className="text-2xl">{s.heading}</h3>
                 <p className="mt-3 max-w-md leading-relaxed text-muted-foreground">
                   {s.body}

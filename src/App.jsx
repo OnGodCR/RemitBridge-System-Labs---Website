@@ -10,6 +10,7 @@ import Reckoner from './pages/Reckoner'
 import RateHistory from './pages/RateHistory'
 import ScamCheck from './pages/ScamCheck'
 import Workshops from './pages/Workshops'
+import Glossary from './pages/Glossary'
 import Blog from './pages/Blog'
 import Papers from './pages/Papers'
 import BlogPost from './pages/BlogPost'
@@ -45,6 +46,7 @@ export default function App() {
             <Route path="rate-history" element={<RateHistory />} />
             <Route path="scam-check" element={<ScamCheck />} />
             <Route path="workshops" element={<Workshops />} />
+            <Route path="glossary" element={<Glossary />} />
             <Route path="blog" element={<Blog />} />
             <Route path="papers" element={<Papers />} />
             <Route path="blog/:slug" element={<BlogPost />} />

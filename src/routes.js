@@ -67,6 +67,11 @@ export const navGroups = [
         blurb: 'Free sessions and guides for families in King County, in six languages.',
       },
       {
+        path: '/glossary',
+        label: 'Glossary',
+        blurb: 'Every term the research relies on, in plain language. Six translations planned.',
+      },
+      {
         path: '/fellowships',
         label: 'Fellowships',
         blurb: 'How students join the lab, and what each team works on.',
