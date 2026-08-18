@@ -164,7 +164,7 @@ export default function Leadership() {
                       src={r.photo}
                       alt={`${r.name}, ${r.title.toLowerCase()}`}
                       loading="lazy"
-                      className="h-32 w-24 shrink-0 rounded-2xl border border-border object-cover"
+                      className="h-36 w-24 shrink-0 rounded-2xl border border-border object-cover"
                     />
                   )}
                 </div>
