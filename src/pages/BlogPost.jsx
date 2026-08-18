@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { Container } from '@/components/Section'
@@ -75,6 +76,13 @@ function Block({ block, theme }) {
 export default function BlogPost() {
   const { slug } = useParams()
   const { post, loading } = usePost(slug)
+
+  // The layout falls back to the site name for routes it does not know, so the
+  // post sets its own once it exists. No cleanup: navigating away retitles via
+  // the layout effect anyway.
+  useEffect(() => {
+    if (post?.title) document.title = `${post.title} · RemitBridge Systems Lab`
+  }, [post])
 
   if (loading) {
     return (

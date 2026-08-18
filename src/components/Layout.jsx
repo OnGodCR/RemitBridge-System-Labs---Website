@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
+import { routes } from '@/routes'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import ErrorBoundary from './ErrorBoundary'
@@ -23,8 +24,28 @@ export default function Layout() {
     window.scrollTo(0, 0)
   }, [pathname])
 
+  /*
+   * The tab title, from the same routes list that drives the header and the
+   * footer. Every page showed the site name alone, so two open tabs were
+   * indistinguishable and history was a column of identical entries. Pages
+   * outside the list (the dashboard, a blog post) keep the base title unless
+   * they set a better one themselves.
+   */
+  useEffect(() => {
+    const route = routes.find((r) => r.path === pathname)
+    document.title = route ? `${route.label} · RemitBridge Systems Lab` : 'RemitBridge Systems Lab'
+  }, [pathname])
+
   return (
     <div className="flex min-h-screen flex-col">
+      {/* Invisible until focused. The first tab stop on every page: without it
+          a keyboard user walks the full menu before reaching any content. */}
+      <a
+        href="#content"
+        className="sr-only z-50 focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:font-bold focus:text-primary-foreground"
+      >
+        Skip to content
+      </a>
       {/* Site-wide. The ground is painted on body in index.css, so this can sit
           behind every page at -z-10. Sections that paint their own surface, the
           white cards and the green and ink bands, cover it, which is what keeps
@@ -33,7 +54,7 @@ export default function Layout() {
       <Navbar />
       {/* Inside the layout, not around it, so a page that throws still leaves
           the reader a header and a footer to navigate away with. */}
-      <main className="flex-1">
+      <main id="content" className="flex-1">
         <ErrorBoundary resetKey={pathname}>
           <Outlet />
         </ErrorBoundary>

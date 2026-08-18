@@ -227,15 +227,6 @@ create table if not exists public.fellowship_applications (
 
 alter table public.fellowship_applications enable row level security;
 
-drop policy if exists "apply for yourself" on public.fellowship_applications;
-create policy "apply for yourself"
-  on public.fellowship_applications for insert to authenticated
-  with check (
-    auth.uid() = user_id
-    and char_length(why) between 1 and 4000
-    and char_length(team) between 1 and 100
-  );
-
 drop policy if exists "read own application" on public.fellowship_applications;
 create policy "read own application"
   on public.fellowship_applications for select to authenticated
@@ -251,6 +242,30 @@ alter table public.fellowship_applications add column if not exists review_note 
 alter table public.fellowship_applications drop constraint if exists applications_status_check;
 alter table public.fellowship_applications add constraint applications_status_check
   check (status in ('submitted', 'reading', 'accepted', 'declined'));
+
+drop policy if exists "apply for yourself" on public.fellowship_applications;
+-- Pins every workflow column. Without status = 'submitted' an applicant could
+-- insert themselves straight into the accepted pile of the review dashboard,
+-- and preset reviewed_by would forge a review trail.
+create policy "apply for yourself"
+  on public.fellowship_applications for insert to authenticated
+  with check (
+    auth.uid() = user_id
+    and char_length(why) between 1 and 4000
+    and char_length(team) between 1 and 100
+    and (experience is null or char_length(experience) <= 4000)
+    and status = 'submitted'
+    and reviewed_by is null
+    and reviewed_at is null
+    and review_note is null
+    and created_at = now()
+  );
+
+-- One live application per person: apply again after a decision, not
+-- alongside. Also the flood guard for the review queue.
+create unique index if not exists applications_one_live_per_user
+  on public.fellowship_applications (user_id)
+  where status in ('submitted', 'reading');
 
 drop policy if exists "staff review applications" on public.fellowship_applications;
 create policy "staff review applications"
@@ -286,12 +301,29 @@ alter table public.messages enable row level security;
 
 -- Anyone may send one, signed in or not — it is a public contact form.
 drop policy if exists "anyone can send a message" on public.messages;
+-- Counts with definer rights because anon has no select on messages: a count
+-- run as the sender would see zero rows and the rate check would always pass.
+create or replace function public.recent_message_count()
+returns int
+language sql stable security definer set search_path = '' as $$
+  select count(*)::int
+  from public.messages
+  where created_at > now() - interval '1 minute'
+$$;
+
+-- The last three lines pin what a sender may not choose: they cannot pre-mark
+-- the message handled, cannot backdate it (created_at = now() lets the default
+-- through, since both sides are the transaction timestamp), and cannot script
+-- more than five sends a minute site-wide.
 create policy "anyone can send a message"
   on public.messages for insert to anon, authenticated
   with check (
     char_length(name) between 1 and 200
     and char_length(body) between 1 and 5000
     and (email is null or char_length(email) <= 320)
+    and not handled
+    and created_at = now()
+    and public.recent_message_count() < 5
   );
 
 -- Staff only. Anyone can now create an account, so "authenticated" is far too
