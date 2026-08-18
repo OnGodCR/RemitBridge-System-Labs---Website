@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { fetchCurrencies, fetchRate, today, sourceOf } from '@/lib/fx'
 import { computeReceipt, validateReceipt, annualise } from '@/lib/receipt'
+import { saveCheck } from '@/lib/savedChecks'
+import SavedChecks from './SavedChecks'
 import { figures } from '@/data/figures'
 import { getBenchmarks } from '@/data/corridors'
 import { cn } from '@/lib/utils'
@@ -154,6 +156,11 @@ export default function ReceiptChecker() {
         hasInput={form.sent !== '' || form.rate !== ''}
         rateSource={rateSource}
       />
+
+      {/* Full width, under both columns. Renders nothing until a save. */}
+      <div className="lg:col-span-2">
+        <SavedChecks />
+      </div>
     </div>
   )
 }
@@ -373,7 +380,8 @@ function Result({
         <h3 className="text-xl">Your result appears here</h3>
         <p className="mt-3 max-w-prose leading-relaxed text-muted-foreground">
           Fill in the amount, the fee and the exchange rate from your receipt. Nothing is
-          sent anywhere and nothing is saved.
+          sent anywhere, and nothing is saved unless you choose to keep a check on this
+          device.
         </p>
         {hasInput && problems.length > 0 && (
           <ul className="mt-5 space-y-2">
@@ -490,6 +498,10 @@ function Result({
             )}
           </span>
         </label>
+
+        {/* Keeps the check on this device, nothing more. The archive under the
+            calculator only exists once this has been pressed. */}
+        <SaveRow result={result} form={form} />
       </div>
 
       <Scale
@@ -497,6 +509,46 @@ function Result({
         corridor={`${form.from}_${form.to}`}
         source={rateSource}
       />
+    </div>
+  )
+}
+
+/** One press, one row in localStorage, and an event so the list updates. */
+function SaveRow({ result, form }) {
+  const [saved, setSaved] = useState(false)
+
+  // A new result is a new check to save.
+  useEffect(() => {
+    setSaved(false)
+  }, [result.totalCostPct, form.from, form.to, form.sent])
+
+  const keep = () => {
+    const row = saveCheck({
+      from: form.from,
+      to: form.to,
+      sent: Number(form.sent),
+      date: form.date || null,
+      totalCostPct: result.totalCostPct,
+      totalCostSend: result.totalCostSend,
+    })
+    if (row) {
+      setSaved(true)
+      window.dispatchEvent(new Event('truecost:saved'))
+    }
+  }
+
+  return (
+    <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border pt-5">
+      <button
+        onClick={keep}
+        disabled={saved}
+        className="text-sm font-bold text-primary underline-offset-4 hover:underline disabled:no-underline disabled:opacity-60"
+      >
+        {saved ? 'Saved on this device' : 'Save this check on this device'}
+      </button>
+      <p className="text-xs text-muted-foreground">
+        Stays in this browser. Never sent anywhere.
+      </p>
     </div>
   )
 }

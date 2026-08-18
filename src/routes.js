@@ -7,12 +7,32 @@
 export const navGroups = [
   {
     label: 'Tools',
-    blurb: 'The two things you can actually run.',
+    blurb: 'Things you can actually run, today.',
     items: [
       {
         path: '/truecost',
         label: 'TrueCost',
         blurb: 'Work out what a transfer really costs once the exchange rate is counted.',
+      },
+      {
+        path: '/fair-rate',
+        label: 'Fair rate',
+        blurb: 'See the mid-market rate now, and what each point of markup takes.',
+      },
+      {
+        path: '/reckoner',
+        label: 'Yearly cost',
+        blurb: 'The same transfer, every month for a year, against the benchmarks.',
+      },
+      {
+        path: '/rate-history',
+        label: 'Rate history',
+        blurb: 'The mid-market rate for your corridor, day by day, as this site records it.',
+      },
+      {
+        path: '/scam-check',
+        label: 'Scam check',
+        blurb: 'Warning signs of a transfer scam, checked against your situation.',
       },
       {
         path: '/coming-soon',

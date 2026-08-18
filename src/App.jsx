@@ -5,6 +5,10 @@ import Home from './pages/Home'
 import RemitBench from './pages/RemitBench'
 import ComingSoon from './pages/ComingSoon'
 import TrueCost from './pages/TrueCost'
+import FairRate from './pages/FairRate'
+import Reckoner from './pages/Reckoner'
+import RateHistory from './pages/RateHistory'
+import ScamCheck from './pages/ScamCheck'
 import Workshops from './pages/Workshops'
 import Blog from './pages/Blog'
 import Papers from './pages/Papers'
@@ -36,6 +40,10 @@ export default function App() {
             {/* Kept: the design write-up is linked from Coming soon. */}
             <Route path="remitbench" element={<RemitBench />} />
             <Route path="truecost" element={<TrueCost />} />
+            <Route path="fair-rate" element={<FairRate />} />
+            <Route path="reckoner" element={<Reckoner />} />
+            <Route path="rate-history" element={<RateHistory />} />
+            <Route path="scam-check" element={<ScamCheck />} />
             <Route path="workshops" element={<Workshops />} />
             <Route path="blog" element={<Blog />} />
             <Route path="papers" element={<Papers />} />
