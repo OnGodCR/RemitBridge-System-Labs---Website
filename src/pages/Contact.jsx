@@ -50,13 +50,15 @@ const topics = [
 ]
 
 /*
- * Languages a message can be written in.
+ * Languages a message can be written in: any of them.
  *
- * Deliberately not the six the workshop material is planned in: those handouts
- * are not written yet, and a language nobody can currently read a reply in
- * would be a promise the lab cannot keep this week.
+ * The four the lab can actually read are still named, because the difference
+ * matters. Those get a reply written by a person. Everything else goes through
+ * machine translation both ways, which is good enough to understand a question
+ * and not good enough to be silent about, on a site where the answer is usually
+ * about somebody's money.
  */
-const LANGUAGES = 'English, Hindi, Punjabi or Spanish'
+const READ_HERE = 'English, Hindi, Punjabi and Spanish'
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', topic: '', message: '' })
@@ -151,8 +153,10 @@ export default function Contact() {
             <label className="mt-4 block">
               <span className="mb-1.5 block text-sm font-medium">Message</span>
               <span className="mb-2 block text-sm text-muted-foreground">
-                Write in {LANGUAGES}. Anything else still reaches us and we will find someone
-                to read it, which takes longer.
+                Write in whichever language you are most comfortable in. We read{' '}
+                {READ_HERE} here. Anything else we put through machine translation, so
+                give us a little more detail than you otherwise would and expect the
+                reply to read roughly.
               </span>
               <textarea
                 value={form.message}
