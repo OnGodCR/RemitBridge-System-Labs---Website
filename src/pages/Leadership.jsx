@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom'
-import Section, { SectionImage } from '@/components/Section'
+import Section from '@/components/Section'
 import { Card, CardContent } from '@/components/ui/card'
 import TeamDirectory from '@/components/TeamDirectory'
-import teamImage from '@/assets/team-people.jpg'
 import { cn } from '@/lib/utils'
 
 /*
@@ -96,32 +95,18 @@ export default function Leadership() {
 
   return (
     <>
-      <Section className="pt-12">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-          <div>
-            <h1 className="text-3xl sm:text-4xl">Who runs the lab</h1>
-            <p className="mt-5 text-lg leading-relaxed">
-              Students run the work and make the calls. A group of adults reviews it before
-              anything goes public, which is mostly there to catch us being wrong.
-            </p>
-            <p className="mt-4 leading-relaxed text-muted-foreground">
-              The roles below are what each person is responsible for, not job titles. Where
-              a seat is filled, that person is accountable for the work under it. Where it is
-              open, nobody is, and the page says so rather than showing a placeholder.
-            </p>
-          </div>
+      {/* No standing header. The seat count is the page: it says who is
+          accountable and how much of the lab does not exist yet, which the
+          heading and the stock photo above it were only delaying. */}
+      <Section tone="card" className="pt-12">
+        <h1 className="text-3xl sm:text-4xl">The team</h1>
 
-          <SectionImage
-            src={teamImage}
-            alt="A group working together at a shared table"
-            className="mb-0"
-          />
-        </div>
-      </Section>
-
-      <Section tone="card" title="The team">
         {/* Computed, so it cannot go stale when a seat is filled. */}
-        <p className="max-w-3xl leading-relaxed text-muted-foreground">
+        <p className="mt-5 max-w-3xl leading-relaxed">
+          Students run the work and make the calls. The roles below are what each person
+          is responsible for, not job titles.
+        </p>
+        <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
           {filled.length} of {seats} seats filled. The rest are open and are listed as open.
         </p>
 
