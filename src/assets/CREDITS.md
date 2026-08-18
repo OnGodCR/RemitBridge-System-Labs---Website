@@ -12,4 +12,4 @@ stays auditable and the images can be re-verified or replaced.
 | `community-meeting.jpg` | Businessmeeting People | CC0 | [source](https://stocksnap.io/photo/businessmeeting-people-AEENLCARXY) |
 | `fellowships-library.jpg` | Library Books | CC0 | [source](https://stocksnap.io/photo/library-books-4TDHSPIMJ6) |
 | `team-people.jpg` | Business People | CC0 | [source](https://stocksnap.io/photo/business-people-IS1XRUWYW4) |
-| `founder.jpg` | Photo of the founder, provided by the founder | own photo | — |
+| `founder.jpg` | Photo of the founder, provided by the founder (their own photo, shared in chat) | own photo | — |

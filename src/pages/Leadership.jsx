@@ -156,12 +156,15 @@ export default function Leadership() {
                     <h2 className="mt-3 text-2xl">{r.name}</h2>
                     <p className="mt-0.5 text-xs text-muted-foreground">Since {r.since}</p>
                   </div>
+                  {/* 3:4, not a square avatar: the photo is a full scene,
+                      and an 80px square of it would keep the wall and lose
+                      the person. */}
                   {r.photo && (
                     <img
                       src={r.photo}
                       alt={`${r.name}, ${r.title.toLowerCase()}`}
                       loading="lazy"
-                      className="size-20 shrink-0 rounded-2xl border border-border object-cover"
+                      className="h-32 w-24 shrink-0 rounded-2xl border border-border object-cover"
                     />
                   )}
                 </div>
