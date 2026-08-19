@@ -22,12 +22,11 @@ Deferred by choice, not forgotten. Update this list as things land.
 - [ ] **RemitBench needs four decisions** before it can be rebuilt as the
       provider comparison tool. Asked several times, not yet answered, and
       nothing should be built until they are. See `HANDOFF.md`.
-- [ ] **Live intraday FX rates.** Optional, and probably not needed: the
-      mid-market rate moves a fraction of a percent intraday against provider
-      markups of two to eight, so daily is already an order of magnitude below
-      the signal. If wanted anyway it is **free**, not $10/mo: Twelve Data's
-      free tier carries real-time forex at 800 calls a day, and this cache
-      needs about twenty. See `supabase/functions/README.md`.
+- [ ] **Live intraday FX rates.** Written and deployed against Twelve Data,
+      dormant until `TWELVEDATA_API_KEY` is set. Free tier, no card. Optional
+      and probably not needed: the mid-market rate moves a fraction of a
+      percent intraday against provider markups of two to eight. See
+      `supabase/functions/README.md`.
 - [ ] **`data/measures.seed.md`.** Five of the six measures on What we measure
       ship `null` until the lab supplies real collected values with dates.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and

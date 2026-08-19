@@ -162,7 +162,7 @@ Checked against the live APIs rather than their marketing:
 | **Frankfurter** (current) | none | daily | to 1999 | no account, no quota, 165 currencies |
 | Fawaz Ahmed currency-api | none | daily | dated URLs | CDN-hosted, 200+ incl. crypto |
 | open.er-api.com | none | daily | no | same cadence, nothing gained |
-| **Twelve Data** | free key | **real-time** | yes | 800 calls/day, 8/min |
+| **Twelve Data** | free key | **real-time** | yes | 800 calls/day, 8/min — **what this function uses** |
 | Alpha Vantage | free key | **real-time** | yes | 25 calls/day, one pair per call |
 | exchangerate.host / Fixer | free key | daily | paid | tiny free quotas |
 
@@ -178,22 +178,58 @@ The catch that applies to all of them and not to Frankfurter: they need an
 account and a key, and a free tier is a promise a company can withdraw. A lab
 run by students has a real interest in a dependency with no account attached.
 
-### If you take a paid one anyway
+### Turning it on
 
-The function is currently written against
-[ExchangeRate-API](https://www.exchangerate-api.com). Their **free tier will not
-help you**: it updates once a day and its history endpoint returns 403 to a free
-key, so it is strictly worse than what you already have. Live rates plus history
-is the Pro plan, $10/month for 30,000 requests. Given the table above there is
-no reason to pay it.
-
-With one call per base per day, thirty thousand is far more than this site can
-use. Even three hundred would do.
+The function is written against **Twelve Data**, whose free tier is the one
+that actually adds something. Get a key at
+[twelvedata.com](https://twelvedata.com) — free, no card — then:
 
 ```bash
-npx supabase secrets set EXCHANGERATE_API_KEY=your-key-here
+npx supabase secrets set TWELVEDATA_API_KEY=your-key-here
 npx supabase functions deploy fx --no-verify-jwt
 ```
+
+Never paste that key into a chat, a commit, or any tracked file. `secrets set`
+sends it straight to Supabase.
+
+Nothing else changes. With no key the function behaves exactly as it does
+today, so this is reversible by unsetting the secret.
+
+### What it does once the key is set
+
+Twelve Data prices **one pair per credit**, unlike Frankfurter which returns a
+whole base in one free request. So the function asks it only for the corridors
+in `CORE_QUOTES` — the currencies people send from, plus the receiving
+currencies this research is about — plus whatever pair was actually requested.
+About forty credits a fill, at most four fills a day per base under the
+six-hour TTL, and only when somebody uses the tool. Against 800 a day that is a
+wide margin.
+
+Frankfurter still runs behind it and fills the rest of the base for free, so a
+visitor asking about an unlisted corridor is still served from Postgres rather
+than another credit.
+
+Two details worth knowing before changing this code:
+
+- **Write order matters.** The upsert conflicts on `(base, quote, day)`, so
+  whichever source stores last wins the row. Frankfurter is written first and
+  Twelve Data second, deliberately. Swapping those two lines silently
+  downgrades every pair Twelve Data just priced back to the daily reference.
+- **Two response shapes.** A single symbol returns a flat object; several
+  symbols return an object keyed by `"USD/INR"`. The parser handles both,
+  because the batch request degrades to a single-pair request when a plan does
+  not allow batching.
+
+Historical lookups stay with Frankfurter on purpose. Twelve Data's history is a
+different endpoint costing a credit per day per pair, where Frankfurter serves
+any past date free and with a longer record.
+
+### If you would rather pay
+
+The earlier version of this function used
+[ExchangeRate-API](https://www.exchangerate-api.com), whose Pro plan is
+$10/month. Given the table above there is no reason to. That path was removed
+rather than left as dead code recommending against itself.
 
 Never paste that key into a chat, a commit, or any tracked file. `secrets set`
 sends it straight to Supabase.

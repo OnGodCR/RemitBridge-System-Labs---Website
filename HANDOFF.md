@@ -148,10 +148,11 @@ a folder named for the uploader, which is what makes the delete policy work.
 
 **`fx`** — one mid-market rate. Reads the cache, else fetches the **whole base
 currency for that day** in a single upstream call (~165 pairs) and stores it.
-Works today with no key using Frankfurter. Setting `EXCHANGERATE_API_KEY`
-switches it to a live provider with no code change and no site redeploy.
-Intraday rates are available free (Twelve Data, 800 calls/day, against the ~20
-this cache needs) and are probably not worth having: see the comparison in
+Works today with no key using Frankfurter. Setting `TWELVEDATA_API_KEY` adds
+real-time rates for the corridors in `CORE_QUOTES` with no code change and no
+site redeploy; Frankfurter keeps filling the rest of the base and all
+historical dates behind it. Free tier, 800 calls a day against the ~40 a fill
+costs. Probably not worth having at all: see the comparison in
 `supabase/functions/README.md`.
 Public and unauthenticated; input is bounded to a three-letter pair and a date
 within ten years, which is the quota guard.
@@ -162,7 +163,7 @@ all user input, sends table-layout HTML plus a plain-text alternative.
 
 Secrets, all set with `npx supabase secrets set` and never pasted into a chat:
 `RESEND_API_KEY`, `NOTIFY_TO`, `WEBHOOK_SECRET`, optionally `NOTIFY_FROM` and
-`EXCHANGERATE_API_KEY`.
+`TWELVEDATA_API_KEY`.
 
 Deploy: `npx supabase functions deploy <name> --no-verify-jwt`
 

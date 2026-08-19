@@ -273,11 +273,11 @@ const SOURCES = {
     description:
       'Daily reference rates aggregated from central bank publications. A daily snapshot, not the rate at the moment any particular transfer was processed.',
   },
-  'ExchangeRate-API': {
-    name: 'ExchangeRate-API',
-    href: 'https://www.exchangerate-api.com',
+  'Twelve Data': {
+    name: 'Twelve Data',
+    href: 'https://twelvedata.com',
     description:
-      'Mid-market rates updated through the day. Still a reference rate: it is the market midpoint, not a price any provider offered you.',
+      'Real-time mid-market rates, priced to the second. Still a reference rate: it is the market midpoint, not a price any provider offered you.',
   },
 }
 

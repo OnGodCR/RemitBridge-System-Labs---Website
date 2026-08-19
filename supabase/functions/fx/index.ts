@@ -2,15 +2,21 @@
  * Mid-market rates for the TrueCost receipt checker.
  *
  * The unit of work here is a base currency and a day, not a single pair.
- * Both providers return every quote for a base in one request, for past days
- * as well as today, so asking about USD to MXN costs exactly the same upstream
- * call as asking about all 165 USD pairs. Fetching one pair at a time was
- * paying full price for a fraction of the answer.
+ * Frankfurter returns every quote for a base in one free request, for past days
+ * as well as today, so asking about USD to MXN costs the same upstream call as
+ * asking about all 165 USD pairs. Fetching one pair at a time was paying full
+ * price for a fraction of the answer.
  *
  * What that means in practice: one upstream call per base per day, ever. Not
  * per visitor, not per corridor, and not again tomorrow for a day already
- * stored, because a past day's rate cannot change. A 1,500 request monthly
- * allowance covers roughly fifty base-days a day.
+ * stored, because a past day's rate cannot change.
+ *
+ * Twelve Data sits in front of that when TWELVEDATA_API_KEY is set. It prices
+ * one pair per credit rather than a whole base, so it is asked only for the
+ * corridors listed in CORE_QUOTES plus whatever was actually requested, and
+ * only for today. Frankfurter still fills the rest of the base behind it. Rows
+ * carry the source that produced them, so a real-time rate and a daily one can
+ * sit in the same table without either being misattributed.
  *
  * There is no scheduled job. The first lookup of the day fills the table for
  * that whole base and every request after it is served from Postgres, which is
@@ -26,7 +32,7 @@
  */
 
 const FRANKFURTER = 'https://api.frankfurter.dev/v2'
-const EXCHANGERATE = 'https://v6.exchangerate-api.com/v6'
+const TWELVEDATA = 'https://api.twelvedata.com/exchange_rate'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -90,37 +96,98 @@ async function getJson(url: string, ms = 8000): Promise<any | null> {
   }
 }
 
-/**
- * The paid provider, whole base at a time.
+/*
+ * The corridors worth spending a credit on.
  *
- * Returns null on anything unexpected, including the 403 a free-tier key gets
- * from the history endpoint, so the caller falls through to Frankfurter.
+ * Twelve Data prices one pair per credit, unlike Frankfurter which returns a
+ * whole base in one free request. So a metered provider gets asked for a
+ * bounded list rather than all 165 pairs: the currencies people send from,
+ * so cross-rates between them work, plus the receiving currencies this lab
+ * exists for. The pair actually requested is always added, whatever is here.
+ *
+ * Roughly 40 credits per fill, at most four fills a day per base under the
+ * six-hour TTL, and only when somebody actually uses the tool. Against a free
+ * allowance of 800 a day that leaves a wide margin.
  */
-async function fromExchangeRate(base: string, day: string | null): Promise<Batch | null> {
-  const key = Deno.env.get('EXCHANGERATE_API_KEY')
-  if (!key) return null
+const CORE_QUOTES = [
+  // Sending side.
+  'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'CHF', 'JPY', 'SGD', 'NZD', 'NOK', 'SEK',
+  'AED', 'SAR', 'QAR', 'KWD', 'ILS',
+  // Receiving side: the high-cost corridors the research is about.
+  'MXN', 'INR', 'PHP', 'NGN', 'KES', 'PKR', 'BDT', 'GHS', 'NPR', 'VND',
+  'GTQ', 'HTG', 'EGP', 'LKR', 'IDR', 'THB', 'COP', 'PEN', 'BRL', 'MAD',
+  'UGX', 'TZS', 'ZAR', 'ETB', 'KHR', 'DOP', 'HNL', 'JMD', 'MMK', 'UZS',
+]
 
-  const url = day
-    ? (([y, m, d]) => `${EXCHANGERATE}/${key}/history/${base}/${y}/${m}/${d}`)(
-        day.split('-').map(Number),
-      )
-    : `${EXCHANGERATE}/${key}/latest/${base}`
-
-  const data = await getJson(url)
-  if (data?.result !== 'success' || typeof data.conversion_rates !== 'object') return null
-
-  // For today's rates the provider's own last-update stamp is the day they are
-  // for. Falling back to the current date rather than trusting a bad parse.
-  const stamp = Date.parse(data.time_last_update_utc ?? '')
-  const asOf = day ?? (Number.isNaN(stamp) ? new Date() : new Date(stamp)).toISOString().slice(0, 10)
-
+/**
+ * Reads one Twelve Data payload into rows.
+ *
+ * Two response shapes, which is the trap: a single symbol returns a flat
+ * object, several symbols return an object keyed by "USD/INR". Both are
+ * handled rather than assumed, because the batch call degrades to a single
+ * call below and the parser has to survive either.
+ */
+function readTwelveData(payload: unknown, base: string): Quote[] {
   const rows: Quote[] = []
-  for (const [quote, rate] of Object.entries(data.conversion_rates)) {
-    if (isCode(quote) && typeof rate === 'number' && rate > 0) {
-      rows.push({ quote, rate, day: asOf })
-    }
+
+  const take = (entry: any) => {
+    const rate = Number(entry?.rate)
+    if (!Number.isFinite(rate) || rate <= 0) return
+    const quote = String(entry?.symbol ?? '').split('/')[1]?.toUpperCase()
+    if (!isCode(quote) || quote === base) return
+    // The provider stamps each quote with the second it was priced. That
+    // second, in UTC, is the day the row belongs to.
+    const at = Number(entry?.timestamp)
+    const day = new Date(Number.isFinite(at) ? at * 1000 : Date.now())
+      .toISOString()
+      .slice(0, 10)
+    rows.push({ quote, rate, day })
   }
-  return rows.length ? { rows, source: 'ExchangeRate-API', live: !day } : null
+
+  const data = payload as Record<string, any>
+  if (!data || typeof data !== 'object') return rows
+  if (typeof data.symbol === 'string') take(data)
+  else for (const entry of Object.values(data)) take(entry)
+  return rows
+}
+
+/**
+ * The live provider. Real-time mid-market rates, free tier, 800 calls a day.
+ *
+ * Today only. Its history lives behind a different endpoint that costs a
+ * credit per day per pair, where Frankfurter serves any past date for free and
+ * with a longer record, so historical lookups are left to Frankfurter
+ * deliberately rather than for want of trying.
+ *
+ * Returns null on anything unexpected, so the caller falls through.
+ */
+async function fromTwelveData(
+  base: string,
+  quote: string,
+  day: string | null,
+): Promise<Batch | null> {
+  const key = Deno.env.get('TWELVEDATA_API_KEY')
+  if (!key || day) return null
+
+  const quotes = [...new Set([quote, ...CORE_QUOTES])].filter((q) => q !== base)
+  const ask = (symbols: string[]) =>
+    getJson(
+      `${TWELVEDATA}?symbol=${symbols.map((q) => `${base}/${q}`).join(',')}` +
+        `&apikey=${encodeURIComponent(key)}`,
+    )
+
+  /*
+   * Batch first, then the single pair.
+   *
+   * Whether a free key may batch is a plan detail that can change under us, so
+   * the fallback is not defensive padding: it is the difference between a live
+   * rate for the pair somebody asked about and no live rate at all. Frankfurter
+   * still fills the rest of the base behind it either way.
+   */
+  let rows = readTwelveData(await ask(quotes), base)
+  if (!rows.length) rows = readTwelveData(await ask([quote]), base)
+
+  return rows.length ? { rows, source: 'Twelve Data', live: true } : null
 }
 
 /** The no-key fallback, whole base at a time. */
@@ -253,12 +320,28 @@ Deno.serve(async (req) => {
     }
   }
 
-  const batch = (await fromExchangeRate(base, day)) ?? (await fromFrankfurter(base, day))
+  /*
+   * Twelve Data answers with a real-time rate but only for the pairs it was
+   * asked about. Frankfurter then fills the rest of the base for free, so the
+   * next visitor asking about a different corridor is served from Postgres.
+   * Each row records which source it came from, so a live rate and a daily one
+   * sitting in the same table are still each attributed correctly.
+   */
+  const live = await fromTwelveData(base, quote, day)
+  const daily = await fromFrankfurter(base, day)
+
+  /*
+   * Daily first, then live. The upsert conflicts on (base, quote, day), so
+   * whichever writes last wins the row, and the real-time rate has to be the
+   * one that survives. Reversing these two lines silently downgrades every
+   * pair Twelve Data just priced back to the daily reference.
+   */
+  if (daily) await store(base, daily)
+  if (live) await store(base, live)
+
+  const batch = live ?? daily
 
   if (batch) {
-    // Stored before answering, so the next visitor asking about any of the
-    // other 164 pairs for this base is served without another upstream call.
-    await store(base, batch)
     const row = batch.rows.find((r) => r.quote === quote)
     if (row) {
       return json({
