@@ -141,11 +141,51 @@ works solely inside Sheets. Scraping google.com/finance has no CORS headers, no
 stability guarantee and is against their terms. So the closest real thing is a
 provider selling the same mid-market data.
 
-The function is written against
+### Do you actually need intraday?
+
+Probably not. The mid-market rate for a major corridor moves a fraction of a
+percent through a day. The thing this site measures is provider markups of two
+to eight percent. Intraday precision is an order of magnitude below the signal.
+
+It is also the wrong input for the main tool: TrueCost checks a receipt from a
+past date, and for that the reference rate published **for that date** is more
+correct than a live tick. Rate history is a daily chart by construction. Only
+the Fair rate page shows "the rate right now", and it names its source and date
+either way.
+
+### The free options, measured
+
+Checked against the live APIs rather than their marketing:
+
+| Source | Key | Cadence | Historical | Notes |
+|---|---|---|---|---|
+| **Frankfurter** (current) | none | daily | to 1999 | no account, no quota, 165 currencies |
+| Fawaz Ahmed currency-api | none | daily | dated URLs | CDN-hosted, 200+ incl. crypto |
+| open.er-api.com | none | daily | no | same cadence, nothing gained |
+| **Twelve Data** | free key | **real-time** | yes | 800 calls/day, 8/min |
+| Alpha Vantage | free key | **real-time** | yes | 25 calls/day, one pair per call |
+| exchangerate.host / Fixer | free key | daily | paid | tiny free quotas |
+
+**Twelve Data's free tier is the one that would actually change anything**, and
+it is free. This cache needs roughly twenty calls a day: four refreshes of the
+six-hour TTL across the five currencies people send from. That is under three
+percent of their free allowance.
+
+Alpha Vantage is genuinely real-time too but prices one pair per call, so 25 a
+day only covers a handful of corridors.
+
+The catch that applies to all of them and not to Frankfurter: they need an
+account and a key, and a free tier is a promise a company can withdraw. A lab
+run by students has a real interest in a dependency with no account attached.
+
+### If you take a paid one anyway
+
+The function is currently written against
 [ExchangeRate-API](https://www.exchangerate-api.com). Their **free tier will not
 help you**: it updates once a day and its history endpoint returns 403 to a free
 key, so it is strictly worse than what you already have. Live rates plus history
-is the Pro plan, $10/month for 30,000 requests.
+is the Pro plan, $10/month for 30,000 requests. Given the table above there is
+no reason to pay it.
 
 With one call per base per day, thirty thousand is far more than this site can
 use. Even three hundred would do.

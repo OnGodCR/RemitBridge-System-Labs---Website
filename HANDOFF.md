@@ -150,6 +150,9 @@ a folder named for the uploader, which is what makes the delete policy work.
 currency for that day** in a single upstream call (~165 pairs) and stores it.
 Works today with no key using Frankfurter. Setting `EXCHANGERATE_API_KEY`
 switches it to a live provider with no code change and no site redeploy.
+Intraday rates are available free (Twelve Data, 800 calls/day, against the ~20
+this cache needs) and are probably not worth having: see the comparison in
+`supabase/functions/README.md`.
 Public and unauthenticated; input is bounded to a three-letter pair and a date
 within ten years, which is the quota guard.
 
