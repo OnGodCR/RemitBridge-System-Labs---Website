@@ -18,9 +18,6 @@ import { cn } from '@/lib/utils'
 
 const COMMON = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'MXN', 'INR', 'PHP', 'NGN', 'KES', 'PKR', 'BDT']
 
-const FIELD =
-  'w-full rounded-xl border border-border bg-card px-4 py-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
-
 const num = (n, dp = 4) =>
   Number.isFinite(n)
     ? n.toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp })
