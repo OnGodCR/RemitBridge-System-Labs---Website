@@ -1,5 +1,4 @@
 import Section, { Container, SectionImage } from '@/components/Section'
-import TwoHundred from '@/components/TwoHundred'
 import ReceiptChecker from '@/components/truecost/ReceiptChecker'
 import { FX_SOURCE } from '@/lib/fx'
 import calculatorImage from '@/assets/truecost-calculator.jpg'
@@ -17,7 +16,6 @@ import calculatorImage from '@/assets/truecost-calculator.jpg'
 export default function TrueCost() {
   return (
     <>
-      <TwoHundred />
 
       <Section
         title="Check my receipt"

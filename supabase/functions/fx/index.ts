@@ -11,10 +11,10 @@
  * per visitor, not per corridor, and not again tomorrow for a day already
  * stored, because a past day's rate cannot change.
  *
- * Twelve Data sits in front of that when TWELVEDATA_API_KEY is set. It prices
- * one pair per credit rather than a whole base, so it is asked only for the
- * corridors listed in CORE_QUOTES plus whatever was actually requested, and
- * only for today. Frankfurter still fills the rest of the base behind it. Rows
+ * Twelve Data sits in front of that when TWELVEDATA_API_KEY is set. It bills a
+ * credit per symbol and caps the free tier at eight a minute, so it is asked
+ * for exactly the pair somebody requested and nothing else, and only for
+ * today. Frankfurter fills the other ~164 pairs of that base behind it. Rows
  * carry the source that produced them, so a real-time rate and a daily one can
  * sit in the same table without either being misattributed.
  *
@@ -73,10 +73,16 @@ const OLDEST_DAY = () => {
  * How long today's stored rates are still worth serving.
  *
  * Only ever applied to today. A past day is immutable and is never refetched.
- * Six hours rather than a full day so a corridor picks up the new publication
- * within the morning instead of the following one.
+ *
+ * Two windows, because the row says which it is. A daily reference gets six
+ * hours rather than a full day, so a corridor picks up the new publication
+ * within the morning instead of the following one. A row marked live is one
+ * the page describes as "updated through the day", and a six-hour-old number
+ * would make that sentence false, so it gets an hour.
  */
-const TODAY_TTL_MS = 6 * 60 * 60 * 1000
+const DAILY_TTL_MS = 6 * 60 * 60 * 1000
+const LIVE_TTL_MS = 60 * 60 * 1000
+const ttlFor = (live: boolean) => (live ? LIVE_TTL_MS : DAILY_TTL_MS)
 
 type Quote = { quote: string; rate: number; day: string }
 type Batch = { rows: Quote[]; source: string; live: boolean }
@@ -96,36 +102,13 @@ async function getJson(url: string, ms = 8000): Promise<any | null> {
   }
 }
 
-/*
- * The corridors worth spending a credit on.
- *
- * Twelve Data prices one pair per credit, unlike Frankfurter which returns a
- * whole base in one free request. So a metered provider gets asked for a
- * bounded list rather than all 165 pairs: the currencies people send from,
- * so cross-rates between them work, plus the receiving currencies this lab
- * exists for. The pair actually requested is always added, whatever is here.
- *
- * Roughly 40 credits per fill, at most four fills a day per base under the
- * six-hour TTL, and only when somebody actually uses the tool. Against a free
- * allowance of 800 a day that leaves a wide margin.
- */
-const CORE_QUOTES = [
-  // Sending side.
-  'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'CHF', 'JPY', 'SGD', 'NZD', 'NOK', 'SEK',
-  'AED', 'SAR', 'QAR', 'KWD', 'ILS',
-  // Receiving side: the high-cost corridors the research is about.
-  'MXN', 'INR', 'PHP', 'NGN', 'KES', 'PKR', 'BDT', 'GHS', 'NPR', 'VND',
-  'GTQ', 'HTG', 'EGP', 'LKR', 'IDR', 'THB', 'COP', 'PEN', 'BRL', 'MAD',
-  'UGX', 'TZS', 'ZAR', 'ETB', 'KHR', 'DOP', 'HNL', 'JMD', 'MMK', 'UZS',
-]
-
 /**
- * Reads one Twelve Data payload into rows.
+ * Reads one Twelve Data payload into a row.
  *
- * Two response shapes, which is the trap: a single symbol returns a flat
- * object, several symbols return an object keyed by "USD/INR". Both are
- * handled rather than assumed, because the batch call degrades to a single
- * call below and the parser has to survive either.
+ * Handles both documented shapes: a single symbol returns a flat object, and
+ * several symbols return an object keyed by "USD/INR". Only the first is asked
+ * for below, but a provider that changes its mind about that should not take
+ * the rate down with it.
  */
 function readTwelveData(payload: unknown, base: string): Quote[] {
   const rows: Quote[] = []
@@ -135,8 +118,8 @@ function readTwelveData(payload: unknown, base: string): Quote[] {
     if (!Number.isFinite(rate) || rate <= 0) return
     const quote = String(entry?.symbol ?? '').split('/')[1]?.toUpperCase()
     if (!isCode(quote) || quote === base) return
-    // The provider stamps each quote with the second it was priced. That
-    // second, in UTC, is the day the row belongs to.
+    // The provider stamps the second it priced the pair. That second, in UTC,
+    // is the day the row belongs to.
     const at = Number(entry?.timestamp)
     const day = new Date(Number.isFinite(at) ? at * 1000 : Date.now())
       .toISOString()
@@ -152,12 +135,20 @@ function readTwelveData(payload: unknown, base: string): Quote[] {
 }
 
 /**
- * The live provider. Real-time mid-market rates, free tier, 800 calls a day.
+ * The live provider: one pair, one credit.
  *
- * Today only. Its history lives behind a different endpoint that costs a
- * credit per day per pair, where Frankfurter serves any past date for free and
- * with a longer record, so historical lookups are left to Frankfurter
- * deliberately rather than for want of trying.
+ * Deliberately not a batch. Twelve Data bills a credit per symbol and caps the
+ * free tier at eight credits a minute, so a request naming forty corridors is
+ * not a large request, it is a 429 every time. Measured, after writing it the
+ * other way first: "47 API credits were used, with the current limit being 8".
+ *
+ * So it prices exactly the corridor somebody asked about, which is the one
+ * they care about, and Frankfurter fills the remaining ~164 pairs of that base
+ * for free behind it. One credit per lookup against eight a minute and 800 a
+ * day leaves room the batch never had.
+ *
+ * Today only. History is a separate endpoint costing a credit per day per
+ * pair, where Frankfurter serves any past date free and further back.
  *
  * Returns null on anything unexpected, so the caller falls through.
  */
@@ -169,24 +160,10 @@ async function fromTwelveData(
   const key = Deno.env.get('TWELVEDATA_API_KEY')
   if (!key || day) return null
 
-  const quotes = [...new Set([quote, ...CORE_QUOTES])].filter((q) => q !== base)
-  const ask = (symbols: string[]) =>
-    getJson(
-      `${TWELVEDATA}?symbol=${symbols.map((q) => `${base}/${q}`).join(',')}` +
-        `&apikey=${encodeURIComponent(key)}`,
-    )
-
-  /*
-   * Batch first, then the single pair.
-   *
-   * Whether a free key may batch is a plan detail that can change under us, so
-   * the fallback is not defensive padding: it is the difference between a live
-   * rate for the pair somebody asked about and no live rate at all. Frankfurter
-   * still fills the rest of the base behind it either way.
-   */
-  let rows = readTwelveData(await ask(quotes), base)
-  if (!rows.length) rows = readTwelveData(await ask([quote]), base)
-
+  const data = await getJson(
+    `${TWELVEDATA}?symbol=${base}/${quote}&apikey=${encodeURIComponent(key)}`,
+  )
+  const rows = readTwelveData(data, base)
   return rows.length ? { rows, source: 'Twelve Data', live: true } : null
 }
 
@@ -307,7 +284,7 @@ Deno.serve(async (req) => {
   const hit = rows?.[0]
 
   if (hit) {
-    const fresh = Date.now() - Date.parse(hit.fetched_at) < TODAY_TTL_MS
+    const fresh = Date.now() - Date.parse(hit.fetched_at) < ttlFor(hit.live)
     // A past day cannot change, so how long ago it was fetched is irrelevant.
     if (isPast || fresh) {
       return json({

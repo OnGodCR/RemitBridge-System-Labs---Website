@@ -54,8 +54,14 @@ const FUNCTIONS_URL = import.meta.env.VITE_SUPABASE_URL
   : null
 const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? ''
 
-/** Matches the edge function's rule, so the two never disagree about freshness. */
-const TODAY_TTL_MS = 6 * 60 * 60 * 1000
+/*
+ * Matches the edge function's rule, so the two never disagree about freshness.
+ * A daily reference is good for six hours; a row marked live is described to
+ * the reader as updated through the day, so it gets an hour before this stops
+ * trusting it and asks the function for a fresh one.
+ */
+const DAILY_TTL_MS = 6 * 60 * 60 * 1000
+const LIVE_TTL_MS = 60 * 60 * 1000
 
 /**
  * Today in UTC, which is what the stored `day` column is in.
@@ -188,7 +194,8 @@ async function viaTable(base, quote, date) {
   if (error || !row) return null
 
   const isPast = Boolean(day && day < today)
-  if (!isPast && Date.now() - Date.parse(row.fetched_at) > TODAY_TTL_MS) return null
+  const ttl = row.live ? LIVE_TTL_MS : DAILY_TTL_MS
+  if (!isPast && Date.now() - Date.parse(row.fetched_at) > ttl) return null
 
   return {
     rate: Number(row.rate),

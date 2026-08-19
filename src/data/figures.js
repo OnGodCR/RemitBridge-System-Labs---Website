@@ -105,7 +105,6 @@ export const citations = [
       { page: 'Home', where: 'Figure: "What it should be"' },
       { page: 'Home', where: 'Cost comparison bar, "UN target for 2030"' },
       { page: 'Home', where: 'Input to our own $30bn gap calculation' },
-      { page: 'TrueCost', where: 'The $200 countdown, comparing against the target' },
       { page: 'TrueCost', where: 'Benchmark marker on the receipt-check result scale' },
       { page: 'Yearly cost', where: 'The "at the UN target" row and the yearly saving line' },
       { page: 'Fair rate', where: 'The for-scale note under the result' },
@@ -118,7 +117,6 @@ export const citations = [
     source: sources.rpwQ1,
     usedOn: [
       { page: 'Home', where: 'Cost comparison bar, "Sub-Saharan Africa"' },
-      { page: 'TrueCost', where: 'The $200 countdown, the deduction applied' },
     ],
   },
   {
@@ -127,7 +125,6 @@ export const citations = [
       'The benchmark transfer amount the World Bank uses to price every corridor it tracks, which is why it appears throughout this research.',
     source: sources.rpw,
     usedOn: [
-      { page: 'TrueCost', where: 'The $200 countdown' },
       { page: 'TrueCost', where: 'Default amount in the calculator' },
     ],
   },
