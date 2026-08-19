@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import Section from '@/components/Section'
+import CurrencyPicker from '@/components/CurrencyPicker'
 import { supabase, backendEnabled } from '@/lib/supabase'
 import { fetchCurrencies, fetchRate } from '@/lib/fx'
 import { cn } from '@/lib/utils'
@@ -132,27 +133,19 @@ export default function RateHistory() {
           grows as the site is used.
         </p>
 
-        <div className="mt-10 grid max-w-md grid-cols-2 gap-3">
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium">From</span>
-            <select value={pair.from} onChange={set('from')} className={FIELD}>
-              {options.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.code}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium">To</span>
-            <select value={pair.to} onChange={set('to')} className={FIELD}>
-              {options.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.code}
-                </option>
-              ))}
-            </select>
-          </label>
+        <div className="mt-10 grid max-w-lg gap-3 sm:grid-cols-2">
+          <CurrencyPicker
+            label="From"
+            value={pair.from}
+            onChange={(code) => setPair((p) => ({ ...p, from: code }))}
+            options={options}
+          />
+          <CurrencyPicker
+            label="To"
+            value={pair.to}
+            onChange={(code) => setPair((p) => ({ ...p, to: code }))}
+            options={options}
+          />
         </div>
 
         <div className="mt-8 max-w-3xl">

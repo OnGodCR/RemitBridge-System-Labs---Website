@@ -4,6 +4,7 @@ import { fetchCurrencies, fetchRate, today, sourceOf } from '@/lib/fx'
 import { computeReceipt, validateReceipt, annualise } from '@/lib/receipt'
 import { saveCheck } from '@/lib/savedChecks'
 import SavedChecks from './SavedChecks'
+import CurrencyPicker from '@/components/CurrencyPicker'
 import { figures } from '@/data/figures'
 import { getBenchmarks } from '@/data/corridors'
 import { cn } from '@/lib/utils'
@@ -63,6 +64,8 @@ export default function ReceiptChecker() {
   const [annual, setAnnual] = useState(false)
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
+  // The currency pickers hand back a code, not an event.
+  const setPair = (key, code) => setForm((f) => ({ ...f, [key]: code }))
 
   /* Currency list, once. A failure here is not fatal: the selects fall back to
      the short list and the manual rate path still works. */
@@ -137,6 +140,7 @@ export default function ReceiptChecker() {
       <Form
         form={form}
         set={set}
+        setPair={setPair}
         options={options}
         fx={fx}
         manualRate={manualRate}
@@ -177,7 +181,7 @@ function Field({ label, hint, children }) {
   )
 }
 
-function Form({ form, set, options, fx, manualRate, setManualRate, usingManual }) {
+function Form({ form, set, setPair, options, fx, manualRate, setManualRate, usingManual }) {
   return (
     <div className="space-y-6 rounded-2xl border border-border bg-card p-6 print:border-0 print:p-0">
       <Field label="Amount you sent" hint={`In ${form.from}, before any fee`}>
@@ -191,25 +195,19 @@ function Form({ form, set, options, fx, manualRate, setManualRate, usingManual }
         />
       </Field>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="From">
-          <select value={form.from} onChange={set('from')} className={FIELD}>
-            {options.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.code}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="To">
-          <select value={form.to} onChange={set('to')} className={FIELD}>
-            {options.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.code}
-              </option>
-            ))}
-          </select>
-        </Field>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <CurrencyPicker
+          label="From"
+          value={form.from}
+          onChange={(code) => setPair('from', code)}
+          options={options}
+        />
+        <CurrencyPicker
+          label="To"
+          value={form.to}
+          onChange={(code) => setPair('to', code)}
+          options={options}
+        />
       </div>
 
       <Field label="Fee charged" hint="The fee on the receipt. Enter 0 if there was none.">

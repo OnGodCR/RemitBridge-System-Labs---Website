@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Section from '@/components/Section'
+import CurrencyPicker from '@/components/CurrencyPicker'
 import { fetchCurrencies, fetchRate, sourceOf } from '@/lib/fx'
 import { figures } from '@/data/figures'
 import { cn } from '@/lib/utils'
@@ -87,27 +88,19 @@ export default function FairRate() {
                 className={cn(FIELD, 'mt-2')}
               />
             </label>
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block">
-                <span className="mb-1.5 block text-sm font-medium">From</span>
-                <select value={form.from} onChange={set('from')} className={FIELD}>
-                  {options.map((c) => (
-                    <option key={c.code} value={c.code}>
-                      {c.code}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-sm font-medium">To</span>
-                <select value={form.to} onChange={set('to')} className={FIELD}>
-                  {options.map((c) => (
-                    <option key={c.code} value={c.code}>
-                      {c.code}
-                    </option>
-                  ))}
-                </select>
-              </label>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <CurrencyPicker
+                label="From"
+                value={form.from}
+                onChange={(code) => setForm((f) => ({ ...f, from: code }))}
+                options={options}
+              />
+              <CurrencyPicker
+                label="To"
+                value={form.to}
+                onChange={(code) => setForm((f) => ({ ...f, to: code }))}
+                options={options}
+              />
             </div>
 
             <label className="block">
