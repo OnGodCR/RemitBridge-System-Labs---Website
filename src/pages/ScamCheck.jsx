@@ -1,154 +1,339 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Section from '@/components/Section'
 import { cn } from '@/lib/utils'
 
 /*
- * Warning signs of a transfer scam, as a checklist.
+ * Warning signs of a transfer scam, asked one at a time.
  *
- * Every sign below is drawn from published FTC and CFPB consumer guidance, and
- * the links go to the actual agencies rather than to our summaries of them. No
- * statistics, because we have none of our own and quoting someone else's out
- * of context is how numbers go wrong.
+ * This was a list of eight tickboxes. A list is something you scan: the eye
+ * goes down it, nothing catches, and you arrive at the bottom having read
+ * none of it. Somebody halfway through being defrauded is exactly the person
+ * who skims, because they have already decided and are looking for permission.
  *
- * The result is deliberately blunt. One sign checked gets "stop and check",
- * not a score out of ten: scam risk is not additive, and a single "pay with
- * gift cards" outweighs five unchecked boxes.
+ * So it is one question per screen, phrased about the reader's own situation,
+ * and there is no way past a question except by answering it. That is the
+ * whole design: the friction is the feature.
+ *
+ * Every question is drawn from published FTC and CFPB consumer guidance, and
+ * the links go to the agencies rather than to our summary of them. No
+ * statistics, because we have none of our own.
+ *
+ * The risk numbers are the lab's own reading of how diagnostic each sign is on
+ * its own, not a figure anybody published, and the page says so where they are
+ * shown. They rank the signs against each other; they do not measure anybody's
+ * odds of being defrauded.
+ *
+ * The verdict follows the HIGHEST risk answered yes, never a total. Summing
+ * would let somebody who was asked to pay in gift cards, which is close to
+ * proof of fraud by itself, come out "low risk" for having answered no to the
+ * other seven. That is precisely backwards, and it is the kind of arithmetic a
+ * scoring quiz invites, so it is written down here and enforced below.
  */
 
-const SIGNS = [
+const QUESTIONS = [
   {
     id: 'payment-method',
-    text: 'They want payment by gift card, cryptocurrency, a crypto ATM, or a wire to a person you have never met',
-    why: 'These payment types are hard to reverse and hard to trace, which is why scammers pick them. A legitimate business or agency does not demand them.',
+    risk: 10,
+    ask: 'Have you been asked to pay with a gift card, cryptocurrency, a crypto ATM, or a wire to someone you have never met in person?',
+    why: 'These are hard to reverse and hard to trace, which is exactly why scammers ask for them. No legitimate business or government agency demands payment this way.',
   },
   {
     id: 'urgency',
-    text: 'You are being rushed, or told to keep the transfer secret',
-    why: 'Pressure and secrecy stop you asking someone you trust. Real institutions give you time and put things in writing.',
+    risk: 5,
+    ask: 'Are you being rushed, or told to keep this transfer to yourself?',
+    why: 'Pressure and secrecy exist to stop you asking someone you trust. Real institutions give you time and put things in writing.',
   },
   {
     id: 'prize',
-    text: 'You have to pay a fee before receiving a prize, lottery win, or inheritance',
-    why: 'A real prize does not cost money to collect. The fee is the scam.',
+    risk: 10,
+    ask: 'Do you have to send money first in order to receive a prize, a lottery win, or an inheritance?',
+    why: 'A real prize never costs money to collect. The fee is the scam.',
   },
   {
     id: 'romance',
-    text: 'Someone you know only online is asking for money',
-    why: 'A person you have never met in real life asking for a transfer is one of the most common patterns the FTC records, however long the relationship has run.',
+    risk: 6,
+    ask: 'Is the person asking for money someone you have only ever met online?',
+    why: 'Someone you have never met in person asking for a transfer is among the most common patterns the FTC records, however long you have been talking and however well you feel you know them.',
   },
   {
     id: 'imposter',
-    text: 'A caller says they are the government, your bank, or a company, and money must move now',
-    why: 'Agencies do not demand transfers by phone. Hang up and call the organisation back on a number you looked up yourself.',
+    risk: 8,
+    ask: 'Did someone contact you saying they are from the government, your bank, or a company, and that money has to move right now?',
+    why: 'Agencies do not demand transfers by phone. Hang up and call the organisation back on a number you looked up yourself, not one they gave you.',
   },
   {
     id: 'overpayment',
-    text: 'Someone paid you too much and wants the difference sent back',
-    why: 'The original payment reverses later and the refund you sent is gone. Classic overpayment fraud.',
+    risk: 9,
+    ask: 'Did someone pay you too much and ask you to send the difference back?',
+    why: 'The original payment reverses later and the money you sent back is gone. This is classic overpayment fraud.',
   },
   {
     id: 'emergency',
-    text: 'A relative is suddenly in trouble abroad and needs money quietly and fast',
-    why: 'The grandparent emergency is scripted. Verify with the person directly, or with family, before anything moves.',
+    risk: 7,
+    ask: 'Did you get a sudden message that a relative is in trouble somewhere and needs money quickly and quietly?',
+    why: 'The family emergency is scripted, and the "tell nobody" is part of the script. Verify with the person directly, or with other family, before anything moves.',
   },
   {
     id: 'mule',
-    text: 'A job, a prize, or a new friend involves receiving money and forwarding it on',
-    why: 'Moving money for someone else is how money mules are recruited. It can make you part of laundering someone else’s fraud, with real legal consequences.',
+    risk: 9,
+    ask: 'Does a job, a prize, or a new friend involve you receiving money and passing it on to someone else?',
+    why: 'Moving money for someone else is how money mules are recruited. It can make you part of laundering somebody else’s fraud, with real legal consequences, even if you did not know.',
   },
 ]
 
+/**
+ * What a number means in words, because "8" alone tells a reader nothing.
+ * Colour is never the only signal: the label carries it.
+ */
+function riskLabel(risk) {
+  if (risk >= 9) return 'Very high risk'
+  if (risk >= 8) return 'High risk'
+  if (risk >= 6) return 'Moderate risk'
+  return 'Lower risk on its own'
+}
+
+/** Anything at or above this, answered yes, stops the transfer on its own. */
+const STOP_AT = 8
+
+const ANSWERS = [
+  { id: 'yes', label: 'Yes' },
+  { id: 'unsure', label: 'I am not sure' },
+  { id: 'no', label: 'No' },
+]
+
 export default function ScamCheck() {
-  const [checked, setChecked] = useState(() => new Set())
+  const [step, setStep] = useState(0)
+  const [answers, setAnswers] = useState({})
+  const headingRef = useRef(null)
 
-  const toggle = (id) =>
-    setChecked((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
+  const done = step >= QUESTIONS.length
+  const current = QUESTIONS[step]
 
-  const count = checked.size
+  /*
+   * Move focus to the new question rather than leaving it on a button that no
+   * longer exists. Without this a keyboard or screen reader user answers one
+   * question and lands back at the top of the document each time.
+   */
+  useEffect(() => {
+    headingRef.current?.focus()
+  }, [step])
+
+  const answer = (id) => {
+    setAnswers((prev) => ({ ...prev, [current.id]: id }))
+    setStep((s) => s + 1)
+  }
+
+  const bySeverity = (a, b) => b.risk - a.risk
+  const flagged = QUESTIONS.filter((q) => answers[q.id] === 'yes').sort(bySeverity)
+  const unsure = QUESTIONS.filter((q) => answers[q.id] === 'unsure').sort(bySeverity)
+
+  /*
+   * The highest single yes, never the sum. See the note at the top of the file:
+   * adding these up would dilute one near-certain sign with seven clean
+   * answers and report the reverse of the truth.
+   */
+  const topRisk = flagged.length ? flagged[0].risk : 0
+
+  const restart = () => {
+    setAnswers({})
+    setStep(0)
+  }
 
   return (
     <>
       <Section className="pt-12">
         <h1 className="text-3xl sm:text-4xl">Does this transfer look like a scam?</h1>
         <p className="mt-5 max-w-3xl text-lg leading-relaxed">
-          Tick anything that matches your situation. The signs come from published FTC and
-          CFPB guidance, and nothing you tick leaves this page.
+          Eight questions about your situation, one at a time. Nothing you answer leaves
+          this page, and the questions come from published FTC and CFPB guidance.
         </p>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_20rem] lg:items-start">
-          <ul className="space-y-3">
-            {SIGNS.map((s) => (
-              <li key={s.id}>
-                <label
-                  className={cn(
-                    'flex cursor-pointer items-start gap-4 rounded-2xl border p-5 transition-colors',
-                    checked.has(s.id) ? 'border-primary bg-primary/5' : 'border-border bg-card',
-                  )}
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked.has(s.id)}
-                    onChange={() => toggle(s.id)}
-                    className="mt-1 size-4 shrink-0 accent-[var(--primary)]"
+          <div>
+            {/* Progress. Counted, not a bar alone: "3 of 8" tells you how much
+                is left in a way a filled rectangle does not. */}
+            <div className="mb-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                {done ? 'All eight answered' : `Question ${step + 1} of ${QUESTIONS.length}`}
+              </p>
+              <div className="mt-2 flex gap-1.5" aria-hidden>
+                {QUESTIONS.map((q, i) => (
+                  <span
+                    key={q.id}
+                    className={cn(
+                      'h-1.5 flex-1 rounded-full',
+                      i < step ? 'bg-primary' : 'bg-border',
+                    )}
                   />
-                  <span>
-                    <span className="block font-medium leading-relaxed">{s.text}</span>
-                    <span className="mt-1.5 block text-sm leading-relaxed text-muted-foreground">
-                      {s.why}
-                    </span>
-                  </span>
-                </label>
-              </li>
-            ))}
-          </ul>
-
-          <aside className="lg:sticky lg:top-24">
-            <div
-              className={cn(
-                'rounded-2xl border p-6',
-                count > 0 ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card',
-              )}
-              role="status"
-            >
-              {count === 0 ? (
-                <>
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    Nothing ticked
-                  </p>
-                  <p className="mt-3 leading-relaxed">
-                    No signs from this list. That is not a guarantee, because this list is
-                    not everything. If something still feels off, it costs nothing to wait
-                    a day and ask someone you trust.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="text-xs font-bold uppercase tracking-widest text-current/80">
-                    {count} {count === 1 ? 'sign' : 'signs'} ticked
-                  </p>
-                  <p className="mt-3 text-xl font-bold leading-snug">
-                    Stop. Do not send anything yet.
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-current/90">
-                    Even one of these is how most transfer scams start, and money sent this
-                    way is rarely recoverable. Talk to someone you trust before anything
-                    moves, and check the situation against the guidance below.
-                  </p>
-                </>
-              )}
+                ))}
+              </div>
             </div>
 
-            <div className="mt-4 rounded-2xl border border-border p-6">
+            {!done ? (
+              <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                  {riskLabel(current.risk)} · {current.risk}/10
+                </p>
+                <h2
+                  ref={headingRef}
+                  tabIndex={-1}
+                  aria-live="polite"
+                  className="mt-3 text-xl leading-snug outline-none sm:text-2xl"
+                >
+                  {current.ask}
+                </h2>
+
+                <div
+                  role="group"
+                  aria-label="Your answer"
+                  className="mt-8 flex flex-col gap-3 sm:flex-row"
+                >
+                  {ANSWERS.map((a) => (
+                    <button
+                      key={a.id}
+                      onClick={() => answer(a.id)}
+                      className={cn(
+                        'flex-1 rounded-xl border px-5 py-3.5 text-base font-bold transition-colors',
+                        answers[current.id] === a.id
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-border bg-card hover:border-muted-foreground/50',
+                      )}
+                    >
+                      {a.label}
+                    </button>
+                  ))}
+                </div>
+
+                {step > 0 && (
+                  <button
+                    onClick={() => setStep((s) => s - 1)}
+                    className="mt-6 text-sm font-bold text-muted-foreground hover:text-foreground"
+                  >
+                    Back to the previous question
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div>
+                <div
+                  role="status"
+                  className={cn(
+                    'rounded-2xl border p-6 sm:p-8',
+                    flagged.length > 0
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : unsure.length > 0
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border bg-card',
+                  )}
+                >
+                  {flagged.length > 0 ? (
+                    <>
+                      <h2 ref={headingRef} tabIndex={-1} className="text-2xl outline-none sm:text-3xl">
+                        {topRisk >= STOP_AT
+                          ? 'Stop. Do not send anything yet.'
+                          : 'Slow down and check this properly.'}
+                      </h2>
+                      <p className="mt-4 leading-relaxed text-current/90">
+                        The most serious thing you answered yes to scores{' '}
+                        <span className="font-bold tabular-nums">{topRisk}/10</span>
+                        {flagged.length > 1 && `, and there ${flagged.length === 2 ? 'is' : 'are'} ${flagged.length - 1} more below`}
+                        .{' '}
+                        {topRisk >= STOP_AT
+                          ? 'A sign that serious is close to proof on its own, and money sent this way is rarely recoverable.'
+                          : 'On its own this is a warning rather than proof, but it is a good reason to verify before anything moves.'}{' '}
+                        Talk to somebody you trust first.
+                      </p>
+                    </>
+                  ) : unsure.length > 0 ? (
+                    <>
+                      <h2 ref={headingRef} tabIndex={-1} className="text-2xl outline-none sm:text-3xl">
+                        Worth checking before you send
+                      </h2>
+                      <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
+                        Nothing here is a definite warning sign, but you were unsure about{' '}
+                        {unsure.length} of them. Being unsure is a good reason to slow down,
+                        not to press on. Find out for certain first.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h2 ref={headingRef} tabIndex={-1} className="text-2xl outline-none sm:text-3xl">
+                        None of the common warning signs
+                      </h2>
+                      <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
+                        You answered no to all eight. That is not a guarantee, because this
+                        list is not everything and new scams appear constantly. If something
+                        still feels wrong, it costs nothing to wait a day and ask somebody
+                        you trust.
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                {/* Only what they actually flagged, with the reason. Reprinting
+                    all eight here would bury the ones that matter. */}
+                {(flagged.length > 0 || unsure.length > 0) && (
+                  <ul className="mt-6 border-t border-border">
+                    {[...flagged, ...unsure].map((q) => (
+                      <li key={q.id} className="border-b border-border py-5">
+                        <p className="flex flex-wrap items-baseline gap-x-2 text-xs font-bold uppercase tracking-widest">
+                          <span
+                            aria-hidden
+                            className={
+                              answers[q.id] === 'yes' ? 'text-primary' : 'text-muted-foreground'
+                            }
+                          >
+                            {answers[q.id] === 'yes' ? '●' : '○'}
+                          </span>
+                          <span
+                            className={
+                              answers[q.id] === 'yes' ? 'text-primary' : 'text-muted-foreground'
+                            }
+                          >
+                            {answers[q.id] === 'yes' ? 'You said yes' : 'You were not sure'}
+                          </span>
+                          <span className="text-muted-foreground">
+                            · {riskLabel(q.risk)} · {q.risk}/10
+                          </span>
+                        </p>
+                        <p className="mt-2 font-bold">{q.ask}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                          {q.why}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                <p className="mt-6 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+                  The risk numbers are our own reading of how strongly each sign points to
+                  fraud on its own, drawn from the FTC and CFPB guidance linked here. They
+                  are not a published statistic and they are not a measure of your odds of
+                  being defrauded. The verdict above follows the most serious thing you
+                  answered yes to, not a total, because one sign at ten out of ten is not
+                  cancelled out by seven clean answers.
+                </p>
+
+                <button
+                  onClick={restart}
+                  className="mt-6 text-sm font-bold text-primary underline-offset-4 hover:underline"
+                >
+                  Start again
+                </button>
+              </div>
+            )}
+          </div>
+
+          <aside className="lg:sticky lg:top-24">
+            <div className="rounded-2xl border border-border p-6">
               <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 If money already went
               </p>
               <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-relaxed">
-                <li>Contact your transfer provider immediately and ask them to stop or reverse it.</li>
+                <li>
+                  Contact your transfer provider immediately and ask them to stop or reverse
+                  it.
+                </li>
                 <li>
                   Report it to the FTC at{' '}
                   <a
