@@ -180,86 +180,127 @@ export function CostComparison({ theme }) {
 /**
  * The same bank, two products, priced on the same $200.
  *
- * The paragraph beside this makes a comparison the reader has to hold in
- * their head: $6.00 on the Mexico rail against a flat $25 to $40 on the
- * ordinary wire. Fee only, before any exchange rate markup, which is the
- * comparison the paragraph is actually making.
+ * An earlier version of this charted the fee alone, which flattered both
+ * products and did not match the paragraph beside it. The direct rail's fee
+ * is 3% but its measured total is 4.12%, and the ordinary wire's flat fee
+ * carries another 3% to 6% of markup on top. Fee against fee is not the
+ * comparison anyone is actually making.
  *
- * The standard wire is a range rather than a number, so it is drawn as one:
- * solid to the low end, hollow to the high end. Drawing a range as a single
- * bar would invent a precision the sources do not have.
+ * So: total cost, with the fee and the markup as separate segments, because
+ * the split is the post's whole argument.
  *
- * The benchmark line lands where it lands: 3% of $200 is $6.00, which is
- * exactly the Mexico rail's fee. The direct product spends the whole UN
- * target on its fee alone, and the ordinary one spends four to nearly seven
- * times it.
+ * The two bars are not equally certain and are not drawn as if they were.
+ * The direct rail is one measured RPW row. The ordinary wire is a range from
+ * independent fee analyses, so it runs solid to its low end and hollow to
+ * its high end. Collapsing that range to a single bar would invent a
+ * precision the sources do not have.
+ *
+ * Second green #5CA88E: CVD separation dE 18.5 against the house green,
+ * normal vision 18.6. It sits at 2.82:1 on white rather than 3:1, which is
+ * allowed only alongside visible labels, so every segment is named in text
+ * under its bar. Two steps of one accent, not a second hue.
  */
+const MARKUP_FILL = '#5CA88E'
+
 export function TwoProducts({ theme }) {
-  const railPct = (usMxQ3.wellsFargo.feeUsd / figures.benchmarkUsd) * 100
-  const lowPct = (wfStandardWire.flatFeeUsdLow / figures.benchmarkUsd) * 100
-  const highPct = (wfStandardWire.flatFeeUsdHigh / figures.benchmarkUsd) * 100
-  const scale = highPct
+  const rail = usMxQ3.wellsFargo
+  const railFeePct = (rail.feeUsd / figures.benchmarkUsd) * 100
+  const railMarginPct = rail.totalPct - railFeePct
+
+  const wireFeeLow = (wfStandardWire.flatFeeUsdLow / figures.benchmarkUsd) * 100
+  const wireFeeHigh = (wfStandardWire.flatFeeUsdHigh / figures.benchmarkUsd) * 100
+  const wireLow = wireFeeLow + wfStandardWire.markupPctLow
+  const wireHigh = wireFeeHigh + wfStandardWire.markupPctHigh
+  const scale = wireHigh
+
+  const pct = (v) => `${(v / scale) * 100}%`
+  const usd = (v) => ((v / 100) * figures.benchmarkUsd).toFixed(0)
 
   return (
     <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
       <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-        Wells Fargo, two products, fee only on a ${figures.benchmarkUsd} send
+        Wells Fargo, two products, total cost of a ${figures.benchmarkUsd} send
       </figcaption>
+
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+        <span className="inline-flex items-center gap-2">
+          <span className={cn('size-2.5 rounded-sm', theme.bar)} aria-hidden />
+          <span className="font-bold">Fee</span>
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="size-2.5 rounded-sm" style={{ backgroundColor: MARKUP_FILL }} aria-hidden />
+          <span className="font-bold">Exchange rate markup</span>
+        </span>
+      </div>
 
       <div className="mt-5 space-y-5">
         <div>
           <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
             <span className="text-sm font-bold">Direct rail to Mexico</span>
-            <span className="text-sm tabular-nums text-muted-foreground">
-              {railPct}% &middot; ${usMxQ3.wellsFargo.feeUsd.toFixed(2)}
+            <span className="text-sm font-bold tabular-nums">
+              {rail.totalPct}% &middot; ${rail.totalUsd.toFixed(2)}
             </span>
           </div>
           <div className="relative h-3 rounded-full bg-muted">
-            <div
-              className={cn('h-3 rounded-l-full rounded-r-[4px]', theme.bar)}
-              style={{ width: `${(railPct / scale) * 100}%` }}
-            />
+            <div className="absolute inset-y-0 left-0 flex">
+              <span className={cn('h-3 rounded-l-full', theme.bar)} style={{ width: pct(railFeePct) }} />
+              <span
+                className="h-3 rounded-r-[4px]"
+                style={{ width: pct(railMarginPct), backgroundColor: MARKUP_FILL, marginLeft: 2 }}
+              />
+            </div>
             <div
               className="absolute inset-y-[-4px] w-px border-l border-dashed border-foreground/40"
-              style={{ left: `${(figures.targetPct / scale) * 100}%` }}
+              style={{ left: pct(figures.targetPct) }}
               aria-hidden
             />
           </div>
+          <p className="mt-1.5 text-xs tabular-nums text-muted-foreground">
+            fee {railFeePct}% &middot; markup {railMarginPct.toFixed(2)}%, measured
+          </p>
         </div>
 
         <div>
           <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
             <span className="text-sm font-bold">Standard international wire</span>
-            <span className="text-sm tabular-nums text-muted-foreground">
-              {lowPct}% to {highPct}% &middot; ${wfStandardWire.flatFeeUsdLow} to $
-              {wfStandardWire.flatFeeUsdHigh}
+            <span className="text-sm font-bold tabular-nums">
+              {wireLow}% to {wireHigh}% &middot; ${usd(wireLow)} to ${usd(wireHigh)}
             </span>
           </div>
           <div className="relative h-3 rounded-full bg-muted">
-            {/* Hollow to the top of the range, solid to the bottom of it. */}
+            {/* Hollow out to the top of the range. */}
             <div
               className={cn('absolute inset-y-0 left-0 rounded-full border', theme.border)}
-              style={{ width: `${(highPct / scale) * 100}%` }}
+              style={{ width: pct(wireHigh) }}
               aria-hidden
             />
-            <div
-              className={cn('relative h-3 rounded-l-full rounded-r-[4px]', theme.bar)}
-              style={{ width: `${(lowPct / scale) * 100}%` }}
-            />
+            <div className="absolute inset-y-0 left-0 flex">
+              <span className={cn('h-3 rounded-l-full', theme.bar)} style={{ width: pct(wireFeeLow) }} />
+              <span
+                className="h-3 rounded-r-[4px]"
+                style={{
+                  width: pct(wfStandardWire.markupPctLow),
+                  backgroundColor: MARKUP_FILL,
+                  marginLeft: 2,
+                }}
+              />
+            </div>
             <div
               className="absolute inset-y-[-4px] w-px border-l border-dashed border-foreground/40"
-              style={{ left: `${(figures.targetPct / scale) * 100}%` }}
+              style={{ left: pct(figures.targetPct) }}
               aria-hidden
             />
           </div>
+          <p className="mt-1.5 text-xs tabular-nums text-muted-foreground">
+            fee {wireFeeLow}% to {wireFeeHigh}% &middot; markup {wfStandardWire.markupPctLow}% to{' '}
+            {wfStandardWire.markupPctHigh}%, estimated
+          </p>
         </div>
       </div>
 
       <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-        Dashed line: the UN target of {figures.targetPct}% for the whole transfer, which is $
-        {((figures.targetPct / 100) * figures.benchmarkUsd).toFixed(2)} on $
-        {figures.benchmarkUsd}. The hollow bar is the top of the quoted fee range. Scale runs
-        to {scale}%.
+        Solid is the low end of each range, hollow the high end. Dashed line: the UN target of{' '}
+        {figures.targetPct}%, which the direct rail spends on its fee alone. Scale runs to {scale}%.
       </p>
     </figure>
   )

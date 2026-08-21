@@ -268,4 +268,10 @@ export const citations = [
       { page: 'Blog', where: 'Post 2, the total cost figure' },
     ],
   },
+  {
+    value: `${(wfStandardWire.flatFeeUsdLow / figures.benchmarkUsd) * 100 + wfStandardWire.markupPctLow}% to ${(wfStandardWire.flatFeeUsdHigh / figures.benchmarkUsd) * 100 + wfStandardWire.markupPctHigh}%`,
+    claim: `What Wells Fargo's ordinary international wire would cost on $${figures.benchmarkUsd}, fee and markup together. Method: the flat $${wfStandardWire.flatFeeUsdLow} to $${wfStandardWire.flatFeeUsdHigh} expressed as a share of $${figures.benchmarkUsd}, plus the ${wfStandardWire.markupPctLow}% to ${wfStandardWire.markupPctHigh}% markup cited above. Both ends are estimates on estimates, which is why the figure draws the range hollow rather than picking a number in it.`,
+    source: null,
+    usedOn: [{ page: 'Blog', where: 'Post 2, the two-products figure' }],
+  },
 ]
