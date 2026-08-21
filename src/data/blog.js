@@ -1,6 +1,6 @@
 import { posts as raw, seriesCategories } from './posts'
 import { bodies } from './postBodies'
-import cover2 from '@/assets/truecost-calculator.jpg'
+import cover2 from '@/assets/remittance-counter.jpg'
 
 /**
  * Cover photographs, by post id. Only for posts that have earned one.
