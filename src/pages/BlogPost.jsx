@@ -10,11 +10,53 @@ import { themeFor } from '@/lib/palette'
 import { cn } from '@/lib/utils'
 import NotFound from './NotFound'
 
-/** One content block. Kept deliberately small — this is an article, not a CMS. */
+/**
+ * A bare domain inside a reference line, made clickable in place.
+ *
+ * Citations are written the way they would be written on paper, with the URL
+ * as part of the sentence. Splitting on the domain keeps that text exactly as
+ * the author wrote it and only wraps the address itself in an anchor.
+ */
+const DOMAIN = /((?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s,"]*)?)/g
+/* Not the same regex with .test(): a global regex carries lastIndex between
+   calls and would match every other token. */
+const IS_DOMAIN = /^(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s,"]*)?$/
+
+function linkify(text, keyPrefix) {
+  return text
+    .split(DOMAIN)
+    .filter(Boolean)
+    .map((token, i) => {
+      const key = `${keyPrefix}-${i}`
+      if (!IS_DOMAIN.test(token)) return <span key={key}>{token}</span>
+      return (
+        <a
+          key={key}
+          href={`https://${token}`}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="break-words text-primary underline underline-offset-2"
+        >
+          {token}
+        </a>
+      )
+    })
+}
+
+/** One content block. Kept deliberately small: this is an article, not a CMS. */
 function Block({ block, theme }) {
   switch (block.type) {
     case 'h':
-      return <h2 className="mt-12 mb-4 text-2xl">{block.text}</h2>
+      return block.level === 3 ? (
+        <h3 className="mt-10 mb-3 text-xl">{block.text}</h3>
+      ) : (
+        <h2 className="mt-12 mb-4 text-2xl">{block.text}</h2>
+      )
+
+    /* A run-in label above a list. Not a heading: it names the list rather
+       than opening a section, so it stays out of the document outline. */
+    case 'label':
+      return <p className="mt-6 mb-1 font-bold">{block.text}</p>
 
     case 'quote':
       return (
@@ -66,6 +108,61 @@ function Block({ block, theme }) {
             </figcaption>
           )}
         </figure>
+      )
+
+    /* Scrolls rather than wraps below the prose column. A comparison table
+       that reflows into two columns stops being a comparison. */
+    case 'table':
+      return (
+        <div className="-mx-6 my-8 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+          <table className="w-full min-w-[26rem] border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-border">
+                <th scope="col" className="py-2 pr-4">
+                  <span className="sr-only">{block.rowHeader}</span>
+                </th>
+                {block.columns.map((col) => (
+                  <th key={col} scope="col" className="py-2 pr-4 font-bold last:pr-0">
+                    {col}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {block.rows.map(([label, ...cells]) => (
+                <tr key={label} className="border-b border-border last:border-0">
+                  <th scope="row" className="py-2.5 pr-4 text-left font-bold">
+                    {label}
+                  </th>
+                  {cells.map((cell, i) => (
+                    <td key={i} className="py-2.5 pr-4 tabular-nums last:pr-0">
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+
+    /* A diagram component rather than a picture file. It gets the series
+       theme so a figure never hardcodes a colour the palette owns. */
+    case 'figure': {
+      const Figure = block.render
+      return <Figure theme={theme} />
+    }
+
+    case 'sources':
+      return (
+        <ol className="my-6 space-y-3 text-sm">
+          {block.items.map((item, i) => (
+            <li key={item} className="flex gap-3 leading-relaxed">
+              <span className="shrink-0 tabular-nums text-muted-foreground">{i + 1}.</span>
+              <span className="min-w-0 break-words">{linkify(item, i)}</span>
+            </li>
+          ))}
+        </ol>
       )
 
     default:

@@ -46,7 +46,7 @@ export const posts = [
     "seriesName": "Why people send money",
     "title": "Where does a $200 transfer actually go?",
     "abstract": "We follow one $200 transfer the whole way through: the fee at the counter, the exchange rate markup, whatever the middle banks take, what the receiving bank deducts, and the pickup charge at the end. Then we work out how much is left.",
-    "readTime": "7 min read",
+    "readTime": "10 min read",
     "tags": [
       "Corridor Fee Anatomy",
       "Intermediary Chains"

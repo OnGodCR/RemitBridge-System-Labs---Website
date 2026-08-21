@@ -63,7 +63,7 @@ src/
     Layout.jsx         backdrop, navbar, skip link, per-page <title>, scroll reset
     Backdrop.jsx       tiled bridge SVG + pointer light; onDark for green bands
     Section.jsx        Section / Container / PageHeader / DisplayTitle / FeatureBand
-    TwoHundred.jsx     the $200 breakdown, plain list (scroll version removed)
+    blog/Diagrams.jsx  post figures: correspondent chain, liquidity pools, cost bars
     truecost/          ReceiptChecker.jsx, SavedChecks.jsx
     dashboard/         Inbox, People, Applications, Panels, PostEditor, ...
   lib/
@@ -99,7 +99,7 @@ supabase/
 sending versus the benchmarks · `/rate-history` day-by-day corridor chart from
 our own records · `/scam-check` FTC/CFPB warning signs · `/coming-soon`
 
-**Reading** — `/blog` (30 planned, 0 written) · `/papers` (one, drafting)
+**Reading** — `/blog` (30 planned, 1 written) · `/papers` (one, drafting)
 
 **Community** — `/workshops` (none running yet, says so) · `/glossary` ·
 `/fellowships`
@@ -228,4 +228,5 @@ Recommended if a tie-break is ever needed: RPW, cheapest-first without the word
   only when it is populated.
 - Glossary translations — six languages listed, all "no reviewer yet". A column
   publishes only when a named speaker consents in writing.
-- Blog — 30 planned, 0 written. The page says so.
+- Blog — 30 planned, 1 written. The page counts entries in `postBodies.jsx`
+  and says so. Post 2 is the first one through review.

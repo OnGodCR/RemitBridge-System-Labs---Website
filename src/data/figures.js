@@ -37,6 +37,34 @@ export const sources = {
     date: 'Fetched live, dated per rate',
     href: 'https://frankfurter.dev',
   },
+  rpwWellsFargo: {
+    id: 'rpwWellsFargo',
+    title: 'Remittance Prices Worldwide: Wells Fargo, USA to Mexico, bank account transfer',
+    publisher: 'World Bank',
+    date: 'Q3 2025 collection, recorded August 2025',
+    href: 'https://remittanceprices.worldbank.org/node/396138',
+  },
+  rpwDelgado: {
+    id: 'rpwDelgado',
+    title: 'Remittance Prices Worldwide: Delgado Travel, USA to Mexico, cash agent',
+    publisher: 'World Bank',
+    date: 'Q3 2025 collection',
+    href: 'https://remittanceprices.worldbank.org/node/396082',
+  },
+  wfStandardWire: {
+    id: 'wfStandardWire',
+    title: 'Wells Fargo standard international wire: fee and exchange rate markup',
+    publisher: 'Independent fee analyses by Monito, Wise, MoneyTransfer.store and IdealRemit',
+    date: 'Compared 2025',
+    href: 'https://www.monito.com/en/wiki/international-wire-transfers-wells-fargo-us',
+  },
+  corridorUsMx: {
+    id: 'corridorUsMx',
+    title: 'Western Union advances brick-and-mortar push with Mexico rollout',
+    publisher: 'EMARKETER briefing',
+    date: '2025',
+    href: 'https://www.emarketer.com',
+  },
   sdg: {
     id: 'sdg',
     title: 'Sustainable Development Goal 10.c: reduce remittance costs to less than 3 percent',
@@ -44,6 +72,51 @@ export const sources = {
     date: 'Target year 2030',
     href: 'https://sdgs.un.org/goals/goal10',
   },
+}
+
+/**
+ * The two US to Mexico products compared in blog post 2, both priced on the
+ * $200 benchmark in the same Q3 2025 collection.
+ *
+ * `totalUsd` is fee plus the margin converted back to dollars, which is how
+ * the post works it out. It is not `totalPct` x 200: RPW publishes the
+ * percentage rounded to two places, so that route gives $9.98 for Delgado
+ * against the $9.95 the underlying rates actually produce. The rates are the
+ * more precise input, so they win.
+ */
+export const usMxQ3 = {
+  wellsFargo: {
+    label: 'Wells Fargo, bank account',
+    feeUsd: 6.0,
+    midRate: 18.75,
+    appliedRate: 18.54,
+    marginPct: 1.12,
+    totalPct: 4.12,
+    totalUsd: 8.24,
+    receivedMxn: '3,708.00',
+    speed: 'Under 1 hour',
+    source: sources.rpwWellsFargo,
+  },
+  delgadoTravel: {
+    label: 'Delgado Travel, cash agent',
+    feeUsd: 6.0,
+    midRate: 18.74,
+    appliedRate: 18.37,
+    marginPct: 1.99,
+    totalPct: 4.99,
+    totalUsd: 9.95,
+    receivedMxn: '3,674.00',
+    speed: 'Next day',
+    source: sources.rpwDelgado,
+  },
+}
+
+/** Wells Fargo's ordinary SWIFT wire, which is a different product entirely. */
+export const wfStandardWire = {
+  markupPctLow: 3,
+  markupPctHigh: 6,
+  flatFeeUsdLow: 25,
+  flatFeeUsdHigh: 40,
 }
 
 export const figures = {
@@ -108,6 +181,7 @@ export const citations = [
       { page: 'TrueCost', where: 'Benchmark marker on the receipt-check result scale' },
       { page: 'Yearly cost', where: 'The "at the UN target" row and the yearly saving line' },
       { page: 'Fair rate', where: 'The for-scale note under the result' },
+      { page: 'Blog', where: 'Post 2, on the Wells Fargo result, and the dashed benchmark on its cost figure' },
     ],
   },
   {
@@ -126,6 +200,7 @@ export const citations = [
     source: sources.rpw,
     usedOn: [
       { page: 'TrueCost', where: 'Default amount in the calculator' },
+      { page: 'Blog', where: 'Post 2 follows one $200 transfer, and prices both providers on it' },
     ],
   },
   {
@@ -139,9 +214,56 @@ export const citations = [
     ],
   },
   {
+    value: `${usMxQ3.wellsFargo.totalPct}%`,
+    claim:
+      `Total cost of sending $${figures.benchmarkUsd} from the US to Mexico with Wells Fargo's bank account transfer: a $${usMxQ3.wellsFargo.feeUsd.toFixed(2)} fee plus a ${usMxQ3.wellsFargo.marginPct}% exchange rate margin, against a mid-market reference of ${usMxQ3.wellsFargo.midRate} MXN per USD. Delivered in under an hour.`,
+    source: sources.rpwWellsFargo,
+    usedOn: [
+      { page: 'Blog', where: 'Post 2, the Wells Fargo figures list' },
+      { page: 'Blog', where: 'Post 2, the side-by-side comparison table' },
+      { page: 'Blog', where: 'Post 2, the total cost figure' },
+    ],
+  },
+  {
+    value: `${usMxQ3.delgadoTravel.totalPct}%`,
+    claim:
+      `Total cost of the same $${figures.benchmarkUsd} send through Delgado Travel's cash agent product, collected the same quarter: the same $${usMxQ3.delgadoTravel.feeUsd.toFixed(2)} fee against a wider ${usMxQ3.delgadoTravel.marginPct}% margin. Delivered next day.`,
+    source: sources.rpwDelgado,
+    usedOn: [
+      { page: 'Blog', where: 'Post 2, the Delgado Travel figures list' },
+      { page: 'Blog', where: 'Post 2, the side-by-side comparison table' },
+      { page: 'Blog', where: 'Post 2, the total cost figure' },
+    ],
+  },
+  {
+    value: `${wfStandardWire.markupPctLow}% to ${wfStandardWire.markupPctHigh}%`,
+    claim:
+      `Exchange rate markup on Wells Fargo's standard international wire, on top of a flat $${wfStandardWire.flatFeeUsdLow} to $${wfStandardWire.flatFeeUsdHigh} fee. A different product from the Mexico corridor rate above, and the reason a $${figures.benchmarkUsd} transfer is not sent through it. Not a World Bank figure: these are independent fee comparisons, which is why the post names four of them rather than one.`,
+    source: sources.wfStandardWire,
+    usedOn: [
+      { page: 'Blog', where: 'Post 2, the paragraph separating the direct rail from the classic SWIFT wire' },
+    ],
+  },
+  {
+    value: 'Largest corridor',
+    claim:
+      'US to Mexico is the largest single country-to-country remittance corridor in the world by dollar volume, which is why the case study uses it: a heavily tracked route has prices worth comparing.',
+    source: sources.corridorUsMx,
+    usedOn: [{ page: 'Blog', where: 'Post 2, choosing the corridor for the case study' }],
+  },
+  {
     value: `~$${derived.annualOverpayUsdBn} billion`,
     claim: `Our own estimate of what closing the gap would return to families each year. Method: (${figures.globalCostPct}% − ${figures.targetPct}%) × $${figures.flowsUsdBn}bn. It is arithmetic on the two cited figures above, not a published number, and it assumes the average rate applies evenly across all flows.`,
     source: null,
     usedOn: [{ page: 'Home', where: 'Figure: "The gap, every year"' }],
+  },
+  {
+    value: `$${usMxQ3.wellsFargo.totalUsd.toFixed(2)} and $${usMxQ3.delgadoTravel.totalUsd.toFixed(2)}`,
+    claim: `What each provider keeps out of $${figures.benchmarkUsd} on the US to Mexico corridor. Method: the fee, plus the gap between the mid-market rate and the rate applied, converted back to dollars. Wells Fargo, $${usMxQ3.wellsFargo.feeUsd.toFixed(2)} + (${usMxQ3.wellsFargo.midRate} - ${usMxQ3.wellsFargo.appliedRate}) x ${figures.benchmarkUsd} / ${usMxQ3.wellsFargo.midRate}. Delgado Travel, the same sum on ${usMxQ3.delgadoTravel.midRate} and ${usMxQ3.delgadoTravel.appliedRate}. Both rates are cited above; the subtraction is ours.`,
+    source: null,
+    usedOn: [
+      { page: 'Blog', where: 'Post 2, the worked arithmetic under each provider' },
+      { page: 'Blog', where: 'Post 2, the total cost figure' },
+    ],
   },
 ]

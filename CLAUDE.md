@@ -27,6 +27,14 @@ Deferred by choice, not forgotten. Update this list as things land.
       and probably not needed: the mid-market rate moves a fraction of a
       percent intraday against provider markups of two to eight. See
       `supabase/functions/README.md`.
+- [ ] **Blog post 2 has three copy questions and three missing images.**
+      Published as approved, verbatim. One sentence contradicts the post's own
+      figures: it says both costs are "dominated more by the FX margin than by
+      the visible fee", but the $6.00 fee is the larger share of both ($6.00 of
+      $8.24, and $6.00 of $9.95). There are also four typos left in on purpose
+      rather than edited without asking. The hero graphic, the corridor map and
+      the pros/cons icon set were not built; the three diagrams that carry the
+      argument were.
 - [ ] **`data/measures.seed.md`.** Five of the six measures on What we measure
       ship `null` until the lab supplies real collected values with dates.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and
