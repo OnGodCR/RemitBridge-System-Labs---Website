@@ -32,10 +32,6 @@ export const bodies = {
   2: [
     {
       type: 'p',
-      text: 'This blog post follows one $200 transfer the whole way through: the fee at the counter, the exchange rate markup, whatever the middle banks take, what the receiving bank deducts, and the pickup charge at the end.',
-    },
-    {
-      type: 'p',
       text: 'There are two main paths that a $200 {{remittance|remittance}} can take, especially when transacted through bigger institutions that already have set guidelines on how they transfer money internationally (such as big banks and {{money-transfer-operator|MTO}} organizations with the sole purpose of assisting with remittances, which are actually the 2 different categories). **These paths are especially important to understand as they are the foundation for understanding who takes cuts throughout the process.**',
     },
     { type: 'h', text: 'Path A: Traditional Bank Wire' },
@@ -57,7 +53,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'The total cost of this transfer is the visible wire fee plus whatever got deducted at each correspondent hop plus the FX spread/markup. **The FX markup is especially important to be vary of since it is not clearly advertised** and can lead to misunderstandings between remittance senders and recipients.',
+      text: 'The total cost of this transfer is the visible wire fee plus whatever got deducted at each correspondent hop plus the FX spread/markup. **The FX markup is especially important to be wary of since it is not clearly advertised** and can lead to misunderstandings between remittance senders and recipients.',
     },
     { type: 'figure', render: CorrespondentChain },
     { type: 'h', text: 'Path B: Digital-First Fintech or MTO' },
@@ -77,7 +73,7 @@ export const bodies = {
     { type: 'h', text: 'Case Study: A $200 Transfer From the US to Mexico' },
     {
       type: 'p',
-      text: 'The two paths above are the general pattern that most remittance providers follow. To fully contextualize the information above, we must also take a look of a real $200 transaction. For the purposes of this post, we will follow the transaction from the USA to Mexico. **It\'s widely tracked as the largest single country-to-country {{corridor|remittance corridor}} in the world by dollar volume**, allowing for credible metrics that can support this case study.',
+      text: 'The two paths above are the general pattern that most remittance providers follow. To fully contextualize the information above, we must also take a look at a real $200 transaction. For the purposes of this post, we will follow the transaction from the USA to Mexico. **It\'s widely tracked as the largest single country-to-country {{corridor|remittance corridor}} in the world by dollar volume**, allowing for credible metrics that can support this case study.',
     },
     { type: 'h', text: 'Path A: Wells Fargo, Bank Account Transfer', level: 3 },
     {
@@ -101,7 +97,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'Once we add on the $6.00 fee, the 4.12% fee becomes clear. **In USD the sender incurs a transaction cost of about $8.24 out of $200**, split between the flat fee and the FX margin. This is much better than several other corridors, specifically in the sub-saharan region but still does not fall under the UN\'s 3% target for remittance based transactions.',
+      text: 'Once we add on the $6.00 fee, the 4.12% fee becomes clear. **In USD the sender incurs a transaction cost of about $8.24 out of $200**, split between the flat fee and the FX margin. This is much better than several other corridors, specifically in the Sub-Saharan region but still does not fall under the UN\'s 3% target for remittance based transactions.',
     },
     { type: 'h', text: 'Path B: Delgado Travel, Cash Agent', level: 3 },
     {
@@ -121,7 +117,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'We can apply the same math we applied previously here. $200 at the mid-market rate of 18.74 would deliver 3,748.00 MXN. At Delgado Travel\'s actual rate of 18.37, the recipient gets 3,674.00 MXN. **This opens a 74 MXN gap from the {{exchange-rate-margin|FX margin}} alone, plus the $6.00 fee, landing at roughly $9.95 of total cost out of $200.** Again, this is better than other corridors in sub-saharan Africa, but there\'s room to improve.',
+      text: 'We can apply the same math we applied previously here. $200 at the mid-market rate of 18.74 would deliver 3,748.00 MXN. At Delgado Travel\'s actual rate of 18.37, the recipient gets 3,674.00 MXN. **This opens a 74 MXN gap from the {{exchange-rate-margin|FX margin}} alone, plus the $6.00 fee, landing at roughly $9.95 of total cost out of $200.** Again, this is better than other corridors in Sub-Saharan Africa, but there\'s room to improve.',
     },
     { type: 'h', text: 'What the Real Numbers Show' },
     {
@@ -159,7 +155,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'For this specific $200, US-to-Mexico, this specific week: the bank kept about $8.24 and the MTO kept about $9.95, out of every $200 sent. Both numbers sit in a very similar range, the flat fee is the larger share of both, with the FX margin accounting for the entire difference between them, and neither one matches the "bank are slow and expensive while MTOs are automatically fast and cheap" assumption.',
+      text: 'For this specific $200, US-to-Mexico, this specific week: the bank kept about $8.24 and the MTO kept about $9.95, out of every $200 sent. Both numbers sit in a very similar range, the flat fee is the larger share of both, with the FX margin accounting for the entire difference between them, and neither one matches the "banks are slow and expensive while MTOs are automatically fast and cheap" assumption.',
     },
     {
       type: 'p',
