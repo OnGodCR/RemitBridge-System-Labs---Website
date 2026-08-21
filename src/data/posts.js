@@ -258,7 +258,7 @@ export const posts = [
     "id": 19,
     "series": "series4",
     "seriesName": "Cost, speed, failure",
-    "title": "How many transactions per second would this really need?",
+    "title": "How many transactions per second would a remittance network really need?",
     "author": {
       "name": "Angad Kochar",
       "role": "RemitBridge Systems Lab",
