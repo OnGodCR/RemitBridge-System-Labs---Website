@@ -282,9 +282,9 @@ export const citations = [
     usedOn: [{ page: 'Blog', where: 'Post 7, the section on what SWIFT is' }],
   },
   {
-    value: 'Fedwire and TARGET2',
+    value: 'Fedwire and T2',
     claim:
-      'The real-time gross settlement systems named in blog post 7. Settlement in these happens in central bank money, which is what makes it final. Two caveats the post does not carry: TARGET2 was replaced by T2 in March 2023, and CHIPS nets rather than settling gross, so grouping it with Fedwire as an RTGS system is a common simplification rather than a precise description.',
+      'The real-time gross settlement systems named in blog post 7. Settlement in these happens in central bank money, which is what makes it final. The post names T2 rather than TARGET2, which it replaced in March 2023, and it separates CHIPS from Fedwire: CHIPS nets payments against each other and settles through Fedwire, so it is not itself a gross settlement system.',
     source: sources.fedwire,
     usedOn: [{ page: 'Blog', where: 'Post 7, the RTGS section' }],
   },

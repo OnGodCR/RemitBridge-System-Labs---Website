@@ -6,6 +6,8 @@ import {
   SwiftMessage,
   SwiftChain,
   ThreeLayers,
+  SettlementSystems,
+  SymptomsByLayer,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -295,8 +297,9 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'These systems are typically run by a country\'s central bank. In the US, Fedwire and CHIPS run the RTGS system. In the Eurozone, it\'s TARGET2. When a payment settles through one of these systems, it settles in central bank money, meaning the balances actually being debited and credited sit at the central bank itself, not at a commercial intermediary. **That\'s why RTGS settlement is considered the final, risk-free layer underneath the entire system.** Once it happens, it\'s done. There\'s no bank in the chain that can reverse it or claim it never happened, because the central bank\'s ledger says otherwise.',
+      text: 'These systems are typically run by a country\'s central bank. In the US, Fedwire is the RTGS system, and CHIPS runs alongside it, netting payments against each other rather than settling every one in full. In the Eurozone, it\'s T2, which replaced TARGET2 in March 2023. When a payment settles through one of these systems, it settles in central bank money, meaning the balances actually being debited and credited sit at the central bank itself, not at a commercial intermediary. **That\'s why RTGS settlement is considered the final, risk-free layer underneath the entire system.** Once it happens, it\'s done. There\'s no bank in the chain that can reverse it or claim it never happened, because the central bank\'s ledger says otherwise.',
     },
+    { type: 'figure', render: SettlementSystems },
     {
       type: 'p',
       text: 'RTGS systems also run on limited hours, tied to the business day of the country they operate in. **This is where the "wire submitted Friday evening might not settle until Monday" problem stems from.** SWIFT messages can technically be sent at any hour, and correspondent banks can process internal steps outside business hours in some cases, but final {{settlement|settlement}} through RTGS is stuck. It can only happen during business hours. A payment can be instructed and even routed through its entire correspondent chain, and still sit unsettled until the relevant RTGS system opens for business again.',
@@ -324,6 +327,7 @@ export const bodies = {
       type: 'p',
       text: 'Why did my bank say the payment was "sent" three days ago and the recipient still hasn\'t gotten it? **Because "sent" usually means the SWIFT message went out, not that RTGS settlement happened.** Why did a fee show up that nobody told me about? Probably a correspondent bank in the middle of the chain, invisible from either end, taking its cut on the way through. Why did a Friday transfer not show up until Tuesday? Because RTGS systems run on business hours, and a weekend sitting between the correspondent chain and final settlement adds unavoidable delay.',
     },
+    { type: 'figure', render: SymptomsByLayer },
     {
       type: 'p',
       text: '**Understanding SWIFT, correspondent banking, and RTGS as three separate systems, each with a distinct and limited job, is the difference between finding international payments mysterious and understanding exactly where your money is, and isn\'t, at any point along the way.**',

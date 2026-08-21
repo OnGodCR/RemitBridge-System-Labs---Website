@@ -444,3 +444,131 @@ export function ThreeLayers({ theme }) {
     </figure>
   )
 }
+
+/**
+ * The named settlement systems, grounding "these are real institutions".
+ *
+ * The filled and hollow dot is the site's status convention, doing real work
+ * here: filled means the system settles gross, hollow means it nets. That is
+ * exactly the distinction the post's corrected sentence draws, and CHIPS is
+ * the reason it matters. Listing all three as RTGS systems, which the draft
+ * did, is the error this figure would otherwise repeat in pictures.
+ */
+const SETTLEMENT_SYSTEMS = [
+  {
+    name: 'Fedwire',
+    where: 'United States',
+    operator: 'Federal Reserve',
+    how: 'settles gross, one payment at a time',
+    gross: true,
+  },
+  {
+    name: 'CHIPS',
+    where: 'United States',
+    operator: 'The Clearing House, privately owned',
+    how: 'nets payments, then settles through Fedwire',
+    gross: false,
+  },
+  {
+    name: 'T2',
+    where: 'Eurozone',
+    operator: 'European Central Bank',
+    how: 'settles gross, replaced TARGET2 in 2023',
+    gross: true,
+  },
+]
+
+export function SettlementSystems({ theme }) {
+  return (
+    <figure
+      className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5"
+      role="group"
+      aria-label="Three named large-value payment systems. Fedwire in the United States and T2 in the Eurozone settle gross, one payment at a time. CHIPS nets payments against each other and settles through Fedwire, so it is not itself a gross settlement system."
+    >
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Where final settlement actually happens
+      </figcaption>
+
+      <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+        {SETTLEMENT_SYSTEMS.map((sys) => (
+          <li key={sys.name} className="rounded-2xl border border-border bg-card p-3">
+            <p className="text-sm font-bold">{sys.name}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{sys.where}</p>
+            <p className="mt-2 text-xs leading-snug text-muted-foreground">{sys.operator}</p>
+            <p className="mt-2 flex items-start gap-2 border-t border-border pt-2 text-xs leading-snug">
+              <span
+                aria-hidden
+                className={cn(
+                  'mt-1 size-2 shrink-0 rounded-full',
+                  sys.gross ? theme.bar : cn('border-2 border-current bg-card', theme.ink),
+                )}
+              />
+              <span className={cn('font-bold', theme.ink)}>{sys.how}</span>
+            </p>
+          </li>
+        ))}
+      </ul>
+
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        Filled dot settles gross, hollow dot nets first. All three run on the business day of the
+        country they serve, which is where the Friday-to-Monday delay comes from.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * The three questions the closing section asks, answered by layer.
+ *
+ * Every row here is the post's own question and its own answer, rearranged
+ * so the pattern is visible at a glance: each familiar complaint about
+ * international transfers is really a question about which of the three
+ * layers you are looking at.
+ */
+const SYMPTOMS = [
+  {
+    ask: 'Sent three days ago, still not there',
+    layer: 'SWIFT',
+    why: '"sent" means the message went out, not that settlement happened',
+  },
+  {
+    ask: 'A fee nobody mentioned',
+    layer: 'Correspondent banks',
+    why: 'a bank in the middle of the chain, invisible from either end',
+  },
+  {
+    ask: 'Friday transfer, arrives Tuesday',
+    layer: 'RTGS',
+    why: 'settlement runs on business hours, and a weekend sits in the middle',
+  },
+]
+
+export function SymptomsByLayer({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Which layer explains which complaint
+      </figcaption>
+
+      <ul className="mt-4 space-y-2">
+        {SYMPTOMS.map((row) => (
+          <li
+            key={row.layer}
+            className="grid gap-1 rounded-2xl border border-border bg-card p-3 sm:grid-cols-[1fr_auto] sm:items-baseline sm:gap-4"
+          >
+            <p className="text-sm font-bold leading-snug">{row.ask}</p>
+            <p
+              className={cn(
+                'order-first text-[11px] font-bold uppercase tracking-widest sm:order-none',
+                theme.ink,
+              )}
+            >
+              {row.layer}
+            </p>
+            <p className="text-xs leading-snug text-muted-foreground sm:col-span-2">{row.why}</p>
+          </li>
+        ))}
+      </ul>
+    </figure>
+  )
+}

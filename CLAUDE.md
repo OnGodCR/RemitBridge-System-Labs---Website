@@ -22,27 +22,10 @@ Deferred by choice, not forgotten. Update this list as things land.
 - [ ] **RemitBench needs four decisions** before it can be rebuilt as the
       provider comparison tool. Asked several times, not yet answered, and
       nothing should be built until they are. See `HANDOFF.md`.
-- [ ] **Live intraday FX rates.** Written and deployed against Twelve Data,
-      dormant until `TWELVEDATA_API_KEY` is set. Free tier, no card. Optional
-      and probably not needed: the mid-market rate moves a fraction of a
-      percent intraday against provider markups of two to eight. See
-      `supabase/functions/README.md`.
-- [ ] **Blog post 2 is missing the corridor map**, the one image from the
-      original plan never built: a simple US to Mexico graphic under the case
-      study intro. Everything else is there: a cover photo, the three
-      argument diagrams, a two-products fee chart, and check/cross marks on
-      the pros and cons. A stock skyline was tried in the second half and
-      pulled: none of the six CC0 photos in `src/assets` relate to a passage
-      about payout rails, and decoration is not illustration. All copy fixes
-      are done and the summary now says what the post found.
-- [ ] **Blog post 7 carries two known inaccuracies, left in on purpose.**
-      TARGET2 was replaced by T2 in March 2023, so the name is out of date
-      though everything the post says about how it worked is right. And CHIPS
-      nets multilaterally rather than settling gross, so grouping it with
-      Fedwire as "the RTGS system" is a common simplification, not a precise
-      one. Both are flagged on the SWIFT citation in `figures.js` and neither
-      was silently fixed. Post 7 also has no cover photo and three of its five
-      suggested images: the hero row and the RTGS map were not built.
+- [ ] **One figure per section is the standing rule for blog posts**, set
+      2026-08-21. Posts 2 and 7 both meet it. Post 2's corridor map and post
+      7's hero row were dropped rather than built: the sections they were
+      planned for already carry a figure each.
 - [ ] **`data/measures.seed.md`.** Five of the six measures on What we measure
       ship `null` until the lab supplies real collected values with dates.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and
