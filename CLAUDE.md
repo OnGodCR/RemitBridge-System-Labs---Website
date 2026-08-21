@@ -19,6 +19,11 @@ list is short on purpose; if it stops being short, that is worth saying.
 
 Deferred by choice, not forgotten. Update this list as things land.
 
+- [ ] **Social previews still show the site-wide title.** The tab title is
+      fixed, but `og:title` and `twitter:title` are static in `index.html`, so
+      a link pasted into Slack or iMessage reads "RemitBridge Systems Lab"
+      whatever page it points at. Per-page og: needs prerendering or a server
+      render, which is a different job from `document.title`.
 - [ ] **RemitBench needs four decisions** before it can be rebuilt as the
       provider comparison tool. Asked several times, not yet answered, and
       nothing should be built until they are. See `HANDOFF.md`.

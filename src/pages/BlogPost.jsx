@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { ArrowLeft, Check, X } from 'lucide-react'
 import { Container } from '@/components/Section'
 import PostCard, { PostCover } from '@/components/PostCard'
@@ -8,6 +8,7 @@ import { usePost } from '@/lib/usePosts'
 import { renderMarkdown } from '@/lib/markdown'
 import { themeFor } from '@/lib/palette'
 import { postText } from '@/lib/postText'
+import { claimTitle } from '@/lib/pageTitle'
 import { cn } from '@/lib/utils'
 import NotFound from './NotFound'
 
@@ -193,14 +194,15 @@ function Block({ block, theme }) {
 
 export default function BlogPost() {
   const { slug } = useParams()
+  const { pathname } = useLocation()
   const { post, loading } = usePost(slug)
 
   // The layout falls back to the site name for routes it does not know, so the
-  // post sets its own once it exists. No cleanup: navigating away retitles via
-  // the layout effect anyway.
+  // post claims its own once it exists. No cleanup: navigating away moves the
+  // pathname on, and the layout takes the title back.
   useEffect(() => {
-    if (post?.title) document.title = `${post.title} · RemitBridge Systems Lab`
-  }, [post])
+    if (post?.title) claimTitle(pathname, post.title)
+  }, [post, pathname])
 
   if (loading) {
     return (

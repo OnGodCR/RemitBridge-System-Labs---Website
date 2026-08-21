@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import { routes } from '@/routes'
+import { defaultTitle } from '@/lib/pageTitle'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import ErrorBoundary from './ErrorBoundary'
@@ -27,13 +28,15 @@ export default function Layout() {
   /*
    * The tab title, from the same routes list that drives the header and the
    * footer. Every page showed the site name alone, so two open tabs were
-   * indistinguishable and history was a column of identical entries. Pages
-   * outside the list (the dashboard, a blog post) keep the base title unless
-   * they set a better one themselves.
+   * indistinguishable and history was a column of identical entries.
+   *
+   * Pages outside the list, the dashboard and a blog post, set their own.
+   * This defers to them rather than overwriting: see lib/pageTitle.js for why
+   * that needs a claim instead of just running second.
    */
   useEffect(() => {
     const route = routes.find((r) => r.path === pathname)
-    document.title = route ? `${route.label} · RemitBridge Systems Lab` : 'RemitBridge Systems Lab'
+    defaultTitle(pathname, route?.label)
   }, [pathname])
 
   return (
