@@ -3,6 +3,9 @@ import {
   LiquidityPools,
   CostComparison,
   TwoProducts,
+  SwiftMessage,
+  SwiftChain,
+  ThreeLayers,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -228,6 +231,113 @@ export const bodies = {
         'Wells Fargo standard international wire fee and FX markup figures: moneytransfer.store/guides/wells-fargo-international-money-transfer and idealremit.com/en/blog/wells-fargo-international-money-transfer',
         'Wells Fargo wire fee and exchange rate margin comparison: monito.com/en/wiki/international-wire-transfers-wells-fargo-us and wise.com/us/blog/wells-fargo-international-wire-transfer',
         'US-Mexico as the largest global remittance corridor: EMARKETER briefing, "Western Union advances brick-and-mortar push with Mexico rollout," emarketer.com',
+      ],
+    },
+  ],
+
+  7: [
+    {
+      type: 'p',
+      text: 'When {{swift|SWIFT}} is brought up in the context of the global fintech industry, people instantly think of the global system that powers wire transfers and moves money. This isn\'t exactly what SWIFT is, though, and that\'s what this blog post aims to explore. Simply put, SWIFT is simply a messaging API with built-in security parameters.',
+    },
+    {
+      type: 'p',
+      text: '**Three separate systems are doing three separate jobs every time money crosses a border through the traditional banking system: SWIFT sends the instruction, correspondent banks hold and move the value, and RTGS systems coordinate the final settlement.** After all three of these steps have been followed, the transaction becomes irreversible.',
+    },
+    { type: 'h', text: 'SWIFT: The Messenger, Not the Mover' },
+    {
+      type: 'p',
+      text: 'SWIFT stands for the Society for Worldwide Interbank Financial Telecommunication. SWIFT is a telecommunication network that was founded in 1973. It exists to let banks send each other standardized, secure messages, and that\'s it. **No money or monetary assets touch SWIFT at any point.** It simply connects banks in a secure way.',
+    },
+    {
+      type: 'p',
+      text: 'When a bank wants to pay another bank on a customer\'s behalf, it sends a formatted message over the SWIFT network. Historically this was an MT103, the message type used for a single customer credit transfer. This message basically says "pay this amount, to this account, for this reason." SWIFT messages carry the sender\'s details, the recipient\'s details, the amount, the currency, and routing information. **It does not carry the money itself.** It\'s closer to a very secure, very structured email or an API that many software systems rely on than it is to a payment/money-moving platform.',
+    },
+    { type: 'figure', render: SwiftMessage },
+    {
+      type: 'p',
+      text: 'The misconception is that when people hear "SWIFT payment," they assume SWIFT itself is what physically transferred the funds, which is not what it does. SWIFT simply relays messages across banks. The bank\'s systems are the ones who actually made the money transfer happen.',
+    },
+    {
+      type: 'p',
+      text: 'Once we understand what SWIFT is, we can understand so much more about International wire transfers. For example, people are often confused on why the money they wired seems to "disappear" for a few days, why a bank can confirm they "sent" a payment while the recipient\'s bank swears they never received it, and other such quirks of the system. SWIFT sent a message, which is what allows for these things to be known. **Whether that message actually resulted in money moving depends on what happens next, at a completely different layer of the system.**',
+    },
+    { type: 'h', text: 'Correspondent Banks: Where the Actual Money Moves' },
+    {
+      type: 'p',
+      text: 'If SWIFT is viewed as the messenger, {{correspondent-bank|correspondent banks}} are the ones who read the message and transfer money across bank accounts. These institutions have the ability to move funds internationally because of two specific kinds of account relationships: {{nostro-vostro|Nostro accounts}} and Vostro accounts.',
+    },
+    {
+      type: 'p',
+      text: 'A Nostro account is an account a bank holds with another bank, usually in a foreign currency, in a foreign country. Vostro is the same relationship, described from the other side. If a Mexican bank holds a dollar account with a bank in the US, the Mexican bank calls that account its Nostro account. The US bank calls that same account a Vostro account, because it\'s an account it holds on behalf of another bank. **Basically, a Nostro account can be a Vostro account and a Vostro account can be a Nostro account based on where you stand.** Truly confusing stuff!',
+    },
+    {
+      type: 'p',
+      text: 'These accounts are what let two banks with no direct relationship still get value from one to the other. Let\'s assume a small regional bank in the US wants to pay a small regional bank in Vietnam, and the two of them have never done business together and have no account relationship at all. This payment won\'t take place directly. Instead, the transaction is routed through one or more correspondent banks, larger institutions that do have relationships, sometimes with both original banks, sometimes just with the next bank in the chain.',
+    },
+    {
+      type: 'p',
+      text: 'Each correspondent in that chain debits and credits its own ledger to reflect the payment moving through, and **each one can charge its own fee for the service.** A payment between two smaller, less-connected banks might pass through two or three correspondents before it reaches its destination.',
+    },
+    { type: 'figure', render: SwiftChain },
+    {
+      type: 'p',
+      text: 'This is also the part of the process most senders never see. The SWIFT message that started the payment is visible, at least to the banks involved. The correspondent chain underneath it usually isn\'t. **A sender who wires $200 has no way of knowing whether that payment touched one correspondent bank or four**, and no itemized way of seeing what each one took. That opacity is a big part of why the total cost of a bank wire is so hard to predict from the outside.',
+    },
+    { type: 'h', text: 'RTGS: Where the Money Actually, Finally Moves' },
+    {
+      type: 'p',
+      text: 'SWIFT sends the instructions and money moves through correspondent banks, but what is actually moving the money? That brings us to our next item, {{rtgs|RTGS}}, also known as Real Time Gross Settlement. Correspondent banks passed the value along their chain of Nostro and Vostro accounts. But at some point, for the payment to be real and final, actual money has to move between actual bank accounts in a way that can\'t be reversed or disputed.',
+    },
+    {
+      type: 'p',
+      text: 'Let\'s break the word up and take a look at what this system entails in terms of constraints, features and more. "Real-time" means each transaction settles individually and immediately as it comes in. This means it is not batched up and processed later alongside a pile of others. "Gross" means each transaction settles at its full value, one at a time, rather than getting netted against other transactions between the same two banks. A bank that owes another bank $10 million and is owed $9 million back doesn\'t just settle the $1 million difference in an RTGS system. Each transaction moves in full, on its own.',
+    },
+    {
+      type: 'p',
+      text: 'These systems are typically run by a country\'s central bank. In the US, Fedwire and CHIPS run the RTGS system. In the Eurozone, it\'s TARGET2. When a payment settles through one of these systems, it settles in central bank money, meaning the balances actually being debited and credited sit at the central bank itself, not at a commercial intermediary. **That\'s why RTGS settlement is considered the final, risk-free layer underneath the entire system.** Once it happens, it\'s done. There\'s no bank in the chain that can reverse it or claim it never happened, because the central bank\'s ledger says otherwise.',
+    },
+    {
+      type: 'p',
+      text: 'RTGS systems also run on limited hours, tied to the business day of the country they operate in. **This is where the "wire submitted Friday evening might not settle until Monday" problem stems from.** SWIFT messages can technically be sent at any hour, and correspondent banks can process internal steps outside business hours in some cases, but final {{settlement|settlement}} through RTGS is stuck. It can only happen during business hours. A payment can be instructed and even routed through its entire correspondent chain, and still sit unsettled until the relevant RTGS system opens for business again.',
+    },
+    { type: 'h', text: 'Putting the Three Layers Together' },
+    {
+      type: 'p',
+      text: 'Tracing one $200 international transfer through all three systems allows us to understand how each layer sits on top of another. The sender\'s bank sends a SWIFT message, most likely an MT103 today or its newer ISO 20022 equivalent, saying who\'s getting paid, how much, and why. **That message is instruction only.** It moves at the speed of a network message, which is essentially instant.',
+    },
+    {
+      type: 'p',
+      text: 'The instruction then has to actually get executed by banks with real value to move. If the sender\'s bank and the recipient\'s bank don\'t have a direct account relationship, the payment routes through one or more correspondent banks, each one debiting and crediting its Nostro and Vostro accounts to pass the value along the chain. **This is where fees accumulate and payments start being delayed**, especially if anything about the payment gets flagged for manual review along the way.',
+    },
+    {
+      type: 'p',
+      text: 'Finally, the actual, final, irreversible movement of money between banks happens through the relevant RTGS system, in central bank money, during that system\'s operating hours. Everything before this was instruction and internal bookkeeping between correspondent banks. **RTGS is where the money, in the fullest sense of the word, actually changes hands and truly changes on the ledger of the central bank.**',
+    },
+    { type: 'figure', render: ThreeLayers },
+    { type: 'h', text: 'Why the Distinction Actually Matters' },
+    {
+      type: 'p',
+      text: 'While this knowledge could help you win a SWIFT vs RTGS trivia competition, that\'s not its only purpose. Knowing which layer does what explains most of the questions people actually have about international transfers.',
+    },
+    {
+      type: 'p',
+      text: 'Why did my bank say the payment was "sent" three days ago and the recipient still hasn\'t gotten it? **Because "sent" usually means the SWIFT message went out, not that RTGS settlement happened.** Why did a fee show up that nobody told me about? Probably a correspondent bank in the middle of the chain, invisible from either end, taking its cut on the way through. Why did a Friday transfer not show up until Tuesday? Because RTGS systems run on business hours, and a weekend sitting between the correspondent chain and final settlement adds unavoidable delay.',
+    },
+    {
+      type: 'p',
+      text: '**Understanding SWIFT, correspondent banking, and RTGS as three separate systems, each with a distinct and limited job, is the difference between finding international payments mysterious and understanding exactly where your money is, and isn\'t, at any point along the way.**',
+    },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'SWIFT founding date, structure, and function as a messaging cooperative: en.wikipedia.org/wiki/SWIFT',
+        'SWIFT message types and the MT103 single customer credit transfer format: docs.oracle.com SWIFT Integration Projects reference, Category 1 message types',
+        'Nostro and Vostro account relationships in correspondent banking: standard correspondent banking terminology, cross-referenced against Federal Reserve and ECB payment system documentation',
+        'Fedwire as a real-time gross settlement service operated by the Federal Reserve: federalreserve.gov/paymentsystems/fedfunds_about.htm and en.wikipedia.org/wiki/Fedwire',
+        'CHIPS as the privately-owned US large-value payment system operating alongside Fedwire: en.wikipedia.org/wiki/Clearing_House_Interbank_Payments_System',
+        'TARGET2 as the Eurozone\'s real-time gross settlement system, settlement in central bank money: ecb.europa.eu/paym/target/target2 and en.wikipedia.org/wiki/TARGET2',
       ],
     },
   ],

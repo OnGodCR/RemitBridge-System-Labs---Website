@@ -110,6 +110,11 @@ export const posts = [
     "series": "series2",
     "seriesName": "How banks move it",
     "title": "SWIFT sends the message, so who moves the money?",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "SWIFT is a messaging network, and that is mostly all it is. This one separates the instruction to pay from the actual movement of funds, which is a distinction that gets blurred constantly, including by people who should know better.",
     "readTime": "8 min read",
     "tags": [

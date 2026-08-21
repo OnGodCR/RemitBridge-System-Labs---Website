@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { ArrowDown, ArrowRight } from 'lucide-react'
 import { figures, usMxQ3, wfStandardWire } from '@/data/figures'
 import { cn } from '@/lib/utils'
@@ -38,35 +39,76 @@ function Hop() {
   )
 }
 
-/** Path A: the correspondent chain, and where it leaks money and time. */
-export function CorrespondentChain({ theme }) {
+/** A row of nodes joined by hops. Two posts draw this chain, with different
+    endpoints and different things worth calling out underneath it. */
+function Chain({ theme, stops, aria, footer }) {
   return (
     <figure
       className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5"
       role="group"
-      aria-label="A transfer routes from the sender's bank through two correspondent banks holding Nostro and Vostro accounts to the recipient's bank, with a fee deducted at each correspondent hop and final settlement on RTGS during business hours."
+      aria-label={aria}
     >
       <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
-        <Node theme={theme} title="Sender's bank" sub="compliance screening" />
-        <Hop />
-        <Node theme={theme} title="Correspondent bank" sub="Nostro / Vostro" note="fee deducted" />
-        <Hop />
-        <Node theme={theme} title="Correspondent bank" sub="Nostro / Vostro" note="fee deducted" />
-        <Hop />
-        <Node theme={theme} title="Recipient's bank" sub="pays out" />
+        {stops.map((stop, i) => (
+          <Fragment key={i}>
+            {i > 0 && <Hop />}
+            <Node theme={theme} {...stop} />
+          </Fragment>
+        ))}
       </div>
 
-      <div className="mt-4 grid gap-2 border-t border-border pt-4 text-xs sm:grid-cols-2">
-        <p className="leading-snug">
-          <span className={cn('font-bold', theme.ink)}>FX spread</span>
-          <span className="text-muted-foreground"> applied at one of these points</span>
-        </p>
-        <p className="leading-snug sm:text-right">
-          <span className={cn('font-bold', theme.ink)}>RTGS settlement</span>
-          <span className="text-muted-foreground"> runs business hours only, 1 to 5 business days</span>
-        </p>
-      </div>
+      {footer && (
+        <div className="mt-4 grid gap-2 border-t border-border pt-4 text-xs sm:grid-cols-2">
+          {footer.map((f, i) => (
+            <p key={i} className={cn('leading-snug', i % 2 === 1 && 'sm:text-right')}>
+              <span className={cn('font-bold', theme.ink)}>{f.lead}</span>
+              <span className="text-muted-foreground"> {f.rest}</span>
+            </p>
+          ))}
+        </div>
+      )}
     </figure>
+  )
+}
+
+/** Path A: the correspondent chain, and where it leaks money and time. */
+export function CorrespondentChain({ theme }) {
+  return (
+    <Chain
+      theme={theme}
+      aria="A transfer routes from the sender's bank through two correspondent banks holding Nostro and Vostro accounts to the recipient's bank, with a fee deducted at each correspondent hop and final settlement on RTGS during business hours."
+      stops={[
+        { title: "Sender's bank", sub: 'compliance screening' },
+        { title: 'Correspondent bank', sub: 'Nostro / Vostro', note: 'fee deducted' },
+        { title: 'Correspondent bank', sub: 'Nostro / Vostro', note: 'fee deducted' },
+        { title: "Recipient's bank", sub: 'pays out' },
+      ]}
+      footer={[
+        { lead: 'FX spread', rest: 'applied at one of these points' },
+        { lead: 'RTGS settlement', rest: 'runs business hours only, 1 to 5 business days' },
+      ]}
+    />
+  )
+}
+
+/** The same chain from post 7, where the point is that the two ends have
+    never met and the middle is invisible from either of them. */
+export function SwiftChain({ theme }) {
+  return (
+    <Chain
+      theme={theme}
+      aria="A payment from a small regional bank in the US to a small regional bank in Vietnam routes through two correspondent banks, which hold the Nostro and Vostro accounts that connect institutions with no direct relationship. Each correspondent can charge its own fee."
+      stops={[
+        { title: 'Small US bank', sub: 'no direct relationship' },
+        { title: 'Correspondent bank', sub: 'Nostro / Vostro', note: 'own fee' },
+        { title: 'Correspondent bank', sub: 'Nostro / Vostro', note: 'own fee' },
+        { title: 'Small Vietnamese bank', sub: 'no direct relationship' },
+      ]}
+      footer={[
+        { lead: 'Two or three hops', rest: 'is normal between less-connected banks' },
+        { lead: 'Invisible from both ends', rest: 'neither bank sees the whole chain' },
+      ]}
+    />
   )
 }
 
@@ -242,7 +284,7 @@ export function TwoProducts({ theme }) {
             </span>
           </div>
           <div className="relative h-3 rounded-full bg-muted">
-            <div className="absolute inset-y-0 left-0 flex">
+            <div className="absolute inset-y-0 left-0 right-0 flex">
               <span className={cn('h-3 rounded-l-full', theme.bar)} style={{ width: pct(railFeePct) }} />
               <span
                 className="h-3 rounded-r-[4px]"
@@ -274,7 +316,7 @@ export function TwoProducts({ theme }) {
               style={{ width: pct(wireHigh) }}
               aria-hidden
             />
-            <div className="absolute inset-y-0 left-0 flex">
+            <div className="absolute inset-y-0 left-0 right-0 flex">
               <span className={cn('h-3 rounded-l-full', theme.bar)} style={{ width: pct(wireFeeLow) }} />
               <span
                 className="h-3 rounded-r-[4px]"
@@ -302,6 +344,103 @@ export function TwoProducts({ theme }) {
         Solid is the low end of each range, hollow the high end. Dashed line: the UN target of{' '}
         {figures.targetPct}%, which the direct rail spends on its fee alone. Scale runs to {scale}%.
       </p>
+    </figure>
+  )
+}
+
+/**
+ * One SWIFT message, with what each field is actually saying.
+ *
+ * The post's central claim is that this thing carries no money, which is
+ * hard to feel in the abstract. Showing the message as what it is, a form
+ * with five filled fields and no value attached, makes it concrete.
+ *
+ * The values are obvious placeholders. A realistic-looking account number
+ * on a page about payments is a thing someone will screenshot.
+ */
+const MT103_FIELDS = [
+  { field: 'Pay', value: 'Banco Example, Mexico City' },
+  { field: 'To account', value: 'XXXX XXXX XXXX 0000' },
+  { field: 'Amount', value: '200.00' },
+  { field: 'Currency', value: 'USD' },
+  { field: 'Reason', value: 'Family maintenance' },
+]
+
+export function SwiftMessage({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        What an MT103 actually carries
+      </figcaption>
+
+      <dl className={cn('mt-4 overflow-hidden rounded-2xl border', theme.border)}>
+        {MT103_FIELDS.map((row, i) => (
+          <div
+            key={row.field}
+            className={cn(
+              'flex flex-wrap items-baseline gap-x-4 gap-y-1 px-4 py-2.5',
+              i > 0 && 'border-t',
+              theme.border,
+              i % 2 === 0 ? theme.tint : 'bg-card',
+            )}
+          >
+            <dt className={cn('w-28 shrink-0 text-xs font-bold uppercase tracking-widest', theme.ink)}>
+              {row.field}
+            </dt>
+            <dd className="min-w-0 font-mono text-sm">{row.value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Instruction only, no funds attached. Every field above is an example. The money moves
+        somewhere else entirely, which is the point of the two sections that follow.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * The three layers on one line, which is the post in a single picture.
+ *
+ * Each layer gets what it actually contributes: speed, cost, and finality.
+ * Drawing them as equal boxes would say they are equal jobs, and the whole
+ * argument is that they are three different ones.
+ */
+const LAYERS = [
+  { name: 'SWIFT message', does: 'the instruction', cost: 'essentially instant' },
+  { name: 'Correspondent banks', does: 'the value moves', cost: 'hours to days, fees accumulate' },
+  { name: 'RTGS settlement', does: 'final and irreversible', cost: 'business hours only' },
+]
+
+export function ThreeLayers({ theme }) {
+  return (
+    <figure
+      className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5"
+      role="group"
+      aria-label="Three layers in order: a SWIFT message carries the instruction and is essentially instant, correspondent banks move the value over hours to days while fees accumulate, and RTGS settlement makes the payment final during business hours only."
+    >
+      <figcaption className="mb-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        One transfer, three systems, three jobs
+      </figcaption>
+
+      <ol className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-stretch">
+        {LAYERS.map((layer, i) => (
+          <Fragment key={layer.name}>
+            {i > 0 && <Hop />}
+            <li className={cn('min-w-0 flex-1 rounded-2xl border p-3', theme.border, theme.tint)}>
+              <p className={cn('text-[11px] font-bold uppercase tracking-widest', theme.ink)}>
+                Step {i + 1}
+              </p>
+              <p className="mt-1.5 text-sm font-bold leading-snug">{layer.name}</p>
+              <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{layer.does}</p>
+              <p className={cn('mt-2 border-t pt-2 text-xs font-bold', theme.border, theme.ink)}>
+                {layer.cost}
+              </p>
+            </li>
+          </Fragment>
+        ))}
+      </ol>
     </figure>
   )
 }

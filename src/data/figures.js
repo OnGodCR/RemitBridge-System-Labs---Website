@@ -65,6 +65,27 @@ export const sources = {
     date: '2025',
     href: 'https://www.emarketer.com',
   },
+  swiftNetwork: {
+    id: 'swiftNetwork',
+    title: 'SWIFT: founding, structure, and function as a messaging cooperative',
+    publisher: 'Wikipedia, cross-referenced against SWIFT message type documentation',
+    date: 'Founded 1973',
+    href: 'https://en.wikipedia.org/wiki/SWIFT',
+  },
+  fedwire: {
+    id: 'fedwire',
+    title: 'Fedwire Funds Service: real-time gross settlement operated by the Federal Reserve',
+    publisher: 'Board of Governors of the Federal Reserve System',
+    date: 'Accessed 2026',
+    href: 'https://www.federalreserve.gov/paymentsystems/fedfunds_about.htm',
+  },
+  target2: {
+    id: 'target2',
+    title: 'TARGET2: the Eurozone real-time gross settlement system, settling in central bank money',
+    publisher: 'European Central Bank',
+    date: 'Superseded by T2 in March 2023',
+    href: 'https://www.ecb.europa.eu/paym/target/target2',
+  },
   sdg: {
     id: 'sdg',
     title: 'Sustainable Development Goal 10.c: reduce remittance costs to less than 3 percent',
@@ -252,6 +273,20 @@ export const citations = [
       'US to Mexico is the largest single country-to-country remittance corridor in the world by dollar volume, which is why the case study uses it: a heavily tracked route has prices worth comparing.',
     source: sources.corridorUsMx,
     usedOn: [{ page: 'Blog', where: 'Post 2, choosing the corridor for the case study' }],
+  },
+  {
+    value: '1973',
+    claim:
+      'The year SWIFT was founded. It is a messaging cooperative: it carries payment instructions between banks and never holds or moves funds itself, which is the distinction blog post 7 is built around.',
+    source: sources.swiftNetwork,
+    usedOn: [{ page: 'Blog', where: 'Post 7, the section on what SWIFT is' }],
+  },
+  {
+    value: 'Fedwire and TARGET2',
+    claim:
+      'The real-time gross settlement systems named in blog post 7. Settlement in these happens in central bank money, which is what makes it final. Two caveats the post does not carry: TARGET2 was replaced by T2 in March 2023, and CHIPS nets rather than settling gross, so grouping it with Fedwire as an RTGS system is a common simplification rather than a precise description.',
+    source: sources.fedwire,
+    usedOn: [{ page: 'Blog', where: 'Post 7, the RTGS section' }],
   },
   {
     value: `~$${derived.annualOverpayUsdBn} billion`,

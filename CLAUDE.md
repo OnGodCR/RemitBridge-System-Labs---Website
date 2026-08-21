@@ -35,6 +35,14 @@ Deferred by choice, not forgotten. Update this list as things land.
       pulled: none of the six CC0 photos in `src/assets` relate to a passage
       about payout rails, and decoration is not illustration. All copy fixes
       are done and the summary now says what the post found.
+- [ ] **Blog post 7 carries two known inaccuracies, left in on purpose.**
+      TARGET2 was replaced by T2 in March 2023, so the name is out of date
+      though everything the post says about how it worked is right. And CHIPS
+      nets multilaterally rather than settling gross, so grouping it with
+      Fedwire as "the RTGS system" is a common simplification, not a precise
+      one. Both are flagged on the SWIFT citation in `figures.js` and neither
+      was silently fixed. Post 7 also has no cover photo and three of its five
+      suggested images: the hero row and the RTGS map were not built.
 - [ ] **`data/measures.seed.md`.** Five of the six measures on What we measure
       ship `null` until the lab supplies real collected values with dates.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and
