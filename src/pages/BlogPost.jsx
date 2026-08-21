@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Check, X } from 'lucide-react'
 import { Container } from '@/components/Section'
 import PostCard, { PostCover } from '@/components/PostCard'
 import { relatedTo } from '@/data/blog'
@@ -82,17 +82,35 @@ function Block({ block, theme }) {
         </p>
       )
 
-    case 'list':
+    /* A plain dot by default. `icon` marks a list as advantages or
+       disadvantages, which the two comparison sections need and a list of
+       measured figures does not. */
+    case 'list': {
+      const Mark = block.icon === 'pro' ? Check : block.icon === 'con' ? X : null
       return (
-        <ul className="my-6 space-y-2">
+        <ul className="my-6 space-y-2.5">
           {block.items.map((item) => (
             <li key={item} className="flex gap-3 leading-relaxed">
-              <span className={cn('mt-2.5 size-1.5 shrink-0 rounded-full', theme.bar)} aria-hidden />
+              {Mark ? (
+                <Mark
+                  className={cn(
+                    'mt-1 size-4 shrink-0',
+                    block.icon === 'pro' ? theme.ink : 'text-muted-foreground',
+                  )}
+                  aria-hidden
+                />
+              ) : (
+                <span
+                  className={cn('mt-2.5 size-1.5 shrink-0 rounded-full', theme.bar)}
+                  aria-hidden
+                />
+              )}
               <span>{postText(item, theme, item.slice(0, 12))}</span>
             </li>
           ))}
         </ul>
       )
+    }
 
     case 'image':
       return (
@@ -101,7 +119,7 @@ function Block({ block, theme }) {
             src={block.src}
             alt={block.alt}
             loading="lazy"
-            className="w-full rounded-2xl border border-border object-cover [filter:saturate(0.8)]"
+            className="aspect-[16/9] w-full rounded-2xl border border-border object-cover [filter:saturate(0.8)]"
           />
           {block.caption && (
             <figcaption className="mt-3 text-sm text-muted-foreground">

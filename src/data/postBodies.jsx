@@ -1,3 +1,4 @@
+import skylineImage from '@/assets/hero-skyline.jpg'
 import {
   CorrespondentChain,
   LiquidityPools,
@@ -161,6 +162,13 @@ export const bodies = {
       type: 'p',
       text: '**The corridor a transfer runs through, and the specific product a provider has built for that corridor, matters more than which category of institution is sending it.**',
     },
+    {
+      type: 'image',
+      src: skylineImage,
+      alt: 'A city skyline of high-rise office towers at dusk',
+      caption:
+        'A direct payout rail into one country is a commercial arrangement one bank chose to build. It is not a property of banks in general, which is why the case study above does not generalise.',
+    },
     { type: 'h', text: 'So Which One Is Actually Better?' },
     {
       type: 'p',
@@ -170,6 +178,7 @@ export const bodies = {
     { type: 'label', text: 'Advantages:' },
     {
       type: 'list',
+      icon: 'pro',
       items: [
         '**Highly regulated and predictable.** The compliance screening that adds delay is the same screening that makes the transfer traceable and reversible if something goes wrong.',
         '**No cap on transfer size in most cases.** Bank wires are built for amounts far larger than $200, and the fixed fee structure means the cost as a percentage of the transfer shrinks fast as the amount grows.',
@@ -179,6 +188,7 @@ export const bodies = {
     { type: 'label', text: 'Disadvantages:' },
     {
       type: 'list',
+      icon: 'con',
       items: [
         '**At small amounts like $200, the fee structure is usually a bad fit for remittance based transfers.** A flat $25 to $40 fee on the standard SWIFT wire product eats a huge share of a small transfer.',
         '**Cost is hard to see upfront.** The FX margin is buried in the exchange rate, not listed as a line item, and most senders never find out how many correspondent banks touched their money or what each one took.',
@@ -189,6 +199,7 @@ export const bodies = {
     { type: 'label', text: 'Advantages:' },
     {
       type: 'list',
+      icon: 'pro',
       items: [
         '**Built for small, frequent transfers.** The pricing and speed are designed around amounts like $200, not $20,000.',
         '**Usually faster for the recipient, especially for cash pickup**, because the "instant" delivery comes from a pre-funded local pool rather than waiting on cross-border settlement.',
@@ -198,6 +209,7 @@ export const bodies = {
     { type: 'label', text: 'Disadvantages:' },
     {
       type: 'list',
+      icon: 'con',
       items: [
         '**Cash pickup and agent-based delivery add a commission on top of the transfer**, and that commission is easy to miss if you\'re only comparing headline fees.',
         '**The recipient\'s own time and transportation cost to reach a pickup location is a real cost that never shows up on any receipt.**',

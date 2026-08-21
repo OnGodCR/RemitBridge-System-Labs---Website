@@ -27,11 +27,12 @@ Deferred by choice, not forgotten. Update this list as things land.
       and probably not needed: the mid-market rate moves a fraction of a
       percent intraday against provider markups of two to eight. See
       `supabase/functions/README.md`.
-- [ ] **Blog post 2 is missing two images.** The hero graphic and the
-      corridor map were never built. The three diagrams that carry the
-      argument were, and the pros/cons lists are bolded rather than
-      iconified, which reads fine without icons. All copy fixes are done:
-      the post is now the approved wording plus six agreed corrections.
+- [ ] **Blog post 2 is missing the corridor map.** Everything else in the
+      image plan is there: a cover photo, the three argument diagrams, a
+      stock photo breaking the long stretch after the case study, and
+      check/cross marks on the pros and cons. All copy fixes are done: the
+      post is the approved wording plus six agreed corrections, and the
+      summary was rewritten to say what the post found.
 - [ ] **`data/measures.seed.md`.** Five of the six measures on What we measure
       ship `null` until the lab supplies real collected values with dates.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and

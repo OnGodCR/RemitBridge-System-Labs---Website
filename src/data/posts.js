@@ -50,7 +50,7 @@ export const posts = [
       "role": "RemitBridge Systems Lab",
       "consentOn": "2026-08-21"
     },
-    "abstract": "We follow one $200 transfer the whole way through: the fee at the counter, the exchange rate markup, whatever the middle banks take, what the receiving bank deducts, and the pickup charge at the end. Then we work out how much is left.",
+    "abstract": "Two paths a $200 transfer can take, and what each one takes out of it: correspondent banks on one, pre-funded currency pools on the other. Then we price a real US to Mexico transfer at two providers, where the bank turns out to be both cheaper and faster than the money transfer operator.",
     "readTime": "10 min read",
     "tags": [
       "Corridor Fee Anatomy",
