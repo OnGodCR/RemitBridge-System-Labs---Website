@@ -45,6 +45,11 @@ export const posts = [
     "series": "series1",
     "seriesName": "Why people send money",
     "title": "Where does a $200 transfer actually go?",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "We follow one $200 transfer the whole way through: the fee at the counter, the exchange rate markup, whatever the middle banks take, what the receiving bank deducts, and the pickup charge at the end. Then we work out how much is left.",
     "readTime": "10 min read",
     "tags": [

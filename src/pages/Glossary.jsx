@@ -63,7 +63,7 @@ export default function Glossary() {
         ) : (
           <dl className="mt-6 max-w-3xl border-t border-border">
             {shown.map((t) => (
-              <div key={t.id} className="border-b border-border py-5">
+              <div key={t.id} id={t.id} className="scroll-mt-24 border-b border-border py-5">
                 <dt className="text-lg font-bold">{t.term}</dt>
                 <dd className="mt-1.5 leading-relaxed text-muted-foreground">{t.plain}</dd>
                 {live.map(

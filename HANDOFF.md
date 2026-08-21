@@ -63,7 +63,8 @@ src/
     Layout.jsx         backdrop, navbar, skip link, per-page <title>, scroll reset
     Backdrop.jsx       tiled bridge SVG + pointer light; onDark for green bands
     Section.jsx        Section / Container / PageHeader / DisplayTitle / FeatureBand
-    blog/Diagrams.jsx  post figures: correspondent chain, liquidity pools, cost bars
+    blog/Diagrams.jsx  post figures: correspondent rail, liquidity pools, cost bars
+    blog/GlossaryTerm.jsx  a word in the prose carrying its glossary definition
     truecost/          ReceiptChecker.jsx, SavedChecks.jsx
     dashboard/         Inbox, People, Applications, Panels, PostEditor, ...
   lib/
@@ -79,7 +80,7 @@ src/
     measures.js        the six things the lab measures; mostly null by design
     corrections.js     public corrections log; empty
     corridors.js       Phase 2 provider prices; deliberately empty, shape settled
-    glossary.js        18 terms + six planned languages, consent-gated
+    glossary.js        24 terms + six planned languages, consent-gated
     posts.js/blog.js   blog content
 supabase/
   schema.sql           canonical and re-runnable. The source of truth.

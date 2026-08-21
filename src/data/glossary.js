@@ -137,6 +137,42 @@ export const terms = [
       'The messaging network banks use to instruct each other across borders. It moves instructions, not money: the money follows by settlement between the banks, which is part of why bank transfers take days.',
   },
   {
+    id: 'correspondent-bank',
+    term: 'Correspondent bank',
+    plain:
+      'A bank in the middle, used because the sending bank and the receiving bank have no direct relationship with each other. It passes the payment along and can take a cut for doing so. One transfer may go through several, and the sender is rarely told how many.',
+  },
+  {
+    id: 'nostro-vostro',
+    term: 'Nostro and Vostro accounts',
+    plain:
+      'Two names for one account, depending on who is speaking. A bank holding money at another bank calls it a Nostro, meaning ours; the bank holding it calls the same account a Vostro, meaning yours. They are what lets two banks pay each other without any cash moving.',
+  },
+  {
+    id: 'rtgs',
+    term: 'RTGS',
+    plain:
+      'Real-Time Gross Settlement, the system a country’s banks use to make payments final between themselves, one at a time. It runs during business hours, which is why a transfer handed over on a Friday evening can sit until the next working day.',
+  },
+  {
+    id: 'money-transfer-operator',
+    term: 'Money transfer operator (MTO)',
+    plain:
+      'A company whose actual business is moving money between people across borders, rather than a bank that offers it alongside everything else. Payout is often cash collected from a local agent instead of a deposit into an account.',
+  },
+  {
+    id: 'kyc',
+    term: 'KYC',
+    plain:
+      'Know Your Customer: the identity checks a provider runs before it will move money for someone. It is why a transfer can ask for a passport, and why one can be held while the people involved are checked against sanctions lists.',
+  },
+  {
+    id: 'pre-funded-pool',
+    term: 'Pre-funded pool',
+    plain:
+      'Money a provider keeps waiting in both countries in advance, so a transfer can be paid out on one side without anything arriving from the other. It is why some transfers land in minutes. Nothing crossed a border; the provider squares up with itself later, in bulk.',
+  },
+  {
     id: 'reference-rate',
     term: 'Reference rate',
     plain:

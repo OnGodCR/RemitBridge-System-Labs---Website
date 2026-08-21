@@ -7,6 +7,7 @@ import { relatedTo } from '@/data/blog'
 import { usePost } from '@/lib/usePosts'
 import { renderMarkdown } from '@/lib/markdown'
 import { themeFor } from '@/lib/palette'
+import { postText } from '@/lib/postText'
 import { cn } from '@/lib/utils'
 import NotFound from './NotFound'
 
@@ -56,12 +57,12 @@ function Block({ block, theme }) {
     /* A run-in label above a list. Not a heading: it names the list rather
        than opening a section, so it stays out of the document outline. */
     case 'label':
-      return <p className="mt-6 mb-1 font-bold">{block.text}</p>
+      return <p className="mt-8 mb-1 font-bold">{block.text}</p>
 
     case 'quote':
       return (
         <blockquote className={cn('my-8 border-l-4 pl-5', theme.border)}>
-          <p className="text-lg leading-relaxed">{block.text}</p>
+          <p className="text-lg leading-relaxed">{postText(block.text, theme)}</p>
           {block.cite && (
             <footer className="mt-2 text-sm text-muted-foreground">{block.cite}</footer>
           )}
@@ -77,7 +78,7 @@ function Block({ block, theme }) {
             theme.border,
           )}
         >
-          {block.text}
+          {postText(block.text, theme)}
         </p>
       )
 
@@ -87,7 +88,7 @@ function Block({ block, theme }) {
           {block.items.map((item) => (
             <li key={item} className="flex gap-3 leading-relaxed">
               <span className={cn('mt-2.5 size-1.5 shrink-0 rounded-full', theme.bar)} aria-hidden />
-              <span>{item}</span>
+              <span>{postText(item, theme, item.slice(0, 12))}</span>
             </li>
           ))}
         </ul>
@@ -166,7 +167,7 @@ function Block({ block, theme }) {
       )
 
     default:
-      return <p className="my-5 leading-relaxed">{block.text}</p>
+      return <p className="my-5 leading-relaxed">{postText(block.text, theme)}</p>
   }
 }
 
@@ -214,6 +215,17 @@ export default function BlogPost() {
 
           <h1 className="mt-3 text-3xl leading-tight sm:text-4xl">{post.title}</h1>
           <p className="mt-5 text-lg leading-relaxed text-foreground/70">{post.abstract}</p>
+
+          {/* No consent date, no name. Same rule as the advisor list. */}
+          {post.author?.name && post.author?.consentOn && (
+            <p className="mt-6 border-t border-border/60 pt-5 text-sm">
+              <span className="text-muted-foreground">Written by </span>
+              <span className="font-bold">{post.author.name}</span>
+              {post.author.role && (
+                <span className="text-muted-foreground">, {post.author.role}</span>
+              )}
+            </p>
+          )}
         </Container>
       </header>
 
@@ -225,7 +237,7 @@ export default function BlogPost() {
             <img
               src={post.cover}
               alt=""
-              className="mb-10 aspect-video w-full rounded-2xl border border-border object-cover"
+              className="mb-10 aspect-[21/9] w-full rounded-2xl border border-border object-cover [filter:saturate(0.8)]"
             />
           )}
           {/* Repo posts are block arrays; posts written in the dashboard are

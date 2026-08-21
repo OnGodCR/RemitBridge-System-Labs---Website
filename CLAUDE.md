@@ -27,15 +27,16 @@ Deferred by choice, not forgotten. Update this list as things land.
       and probably not needed: the mid-market rate moves a fraction of a
       percent intraday against provider markups of two to eight. See
       `supabase/functions/README.md`.
-- [ ] **Blog post 2 has six copy fixes left and three missing images.**
-      Published as approved, otherwise verbatim. Waiting on a yes: a missing
-      space in "range.The", "be vary of" for "wary", "take a look of" for
-      "look at", "bank are slow" for "banks are", and "sub-saharan" lowercase
-      twice where the site writes Sub-Saharan. The first body paragraph also
-      restates the abstract almost word for word, so the post opens by saying
-      the same thing twice. The hero graphic, the corridor map and the
-      pros/cons icon set were not built; the three diagrams that carry the
-      argument were.
+- [ ] **Blog post 2 has five copy fixes left and two missing images.**
+      Wording is the approved draft. Waiting on a yes: "be vary of" for
+      "wary", "take a look of" for "look at", "bank are slow" for "banks are",
+      and "sub-saharan" lowercase twice where the site writes Sub-Saharan. The
+      first body paragraph also restates the abstract almost word for word, so
+      the post opens by saying the same thing twice. The missing space in
+      "range.The" is gone: that sentence boundary is now a paragraph break.
+      The hero graphic and the corridor map were not built; the three diagrams
+      that carry the argument were, and the pros/cons lists are bolded rather
+      than iconified.
 - [ ] **`data/measures.seed.md`.** Five of the six measures on What we measure
       ship `null` until the lab supplies real collected values with dates.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and
