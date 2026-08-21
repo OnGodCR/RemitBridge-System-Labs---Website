@@ -65,6 +65,7 @@ src/
     Section.jsx        Section / Container / PageHeader / DisplayTitle / FeatureBand
     blog/Diagrams.jsx  post figures: correspondent rail, liquidity pools, cost bars
     blog/GlossaryTerm.jsx  a word in the prose carrying its glossary definition
+    blog/Covers.jsx    drawn cover art, for posts whose subject is a system not a scene
     truecost/          ReceiptChecker.jsx, SavedChecks.jsx
     dashboard/         Inbox, People, Applications, Panels, PostEditor, ...
   lib/

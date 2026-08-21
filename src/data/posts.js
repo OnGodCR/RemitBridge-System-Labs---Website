@@ -115,7 +115,7 @@ export const posts = [
       "role": "RemitBridge Systems Lab",
       "consentOn": "2026-08-21"
     },
-    "abstract": "SWIFT is a messaging network, and that is mostly all it is. This one separates the instruction to pay from the actual movement of funds, which is a distinction that gets blurred constantly, including by people who should know better.",
+    "abstract": "Three systems do three different jobs on every cross-border payment: SWIFT carries the instruction, correspondent banks move the value, and RTGS makes it final. No money ever touches SWIFT itself. Knowing which layer you are looking at is what explains a bank saying \"sent\" three days before anyone can spend it.",
     "readTime": "8 min read",
     "tags": [
       "SWIFT Cooperative",

@@ -1,7 +1,7 @@
 import { posts as raw, seriesCategories } from './posts'
 import { bodies } from './postBodies'
 import cover2 from '@/assets/remittance-counter.jpg'
-import cover7 from '@/assets/network-racks.jpg'
+import { coverArt } from '@/components/blog/Covers'
 
 /**
  * Cover photographs, by post id. Only for posts that have earned one.
@@ -9,7 +9,7 @@ import cover7 from '@/assets/network-racks.jpg'
  * PostCover still generates art for the rest, and that stays the default: a
  * generic stock photo on a research post is worse than an honest number.
  */
-const covers = { 2: cover2, 7: cover7 }
+const covers = { 2: cover2 }
 
 /**
  * URL slug from the title. Stable as long as titles are, which is the tradeoff
@@ -27,6 +27,8 @@ export const posts = raw.map((post) => ({
   slug: slugify(post.title),
   body: bodies[post.id] ?? null,
   cover: covers[post.id] ?? null,
+  // Drawn cover art, for posts whose subject is a system rather than a scene.
+  coverArt: coverArt[post.id] ?? null,
 }))
 
 export const getPost = (slug) => posts.find((post) => post.slug === slug)

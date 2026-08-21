@@ -12,8 +12,17 @@ import { cn } from '@/lib/utils'
 export function PostCover({ post, className }) {
   const theme = themeFor(post.series)
 
-  // An uploaded cover wins. The generated art exists because thirty posts
-  // would need thirty stock photos, not because it is preferable.
+  // Drawn cover art wins, then a photograph. The generated art below exists
+  // because thirty posts would need thirty stock photos, not because it is
+  // preferable.
+  if (post.coverArt) {
+    return (
+      <div className={cn('aspect-video w-full overflow-hidden [container-type:size]', className)}>
+        <post.coverArt />
+      </div>
+    )
+  }
+
   if (post.cover) {
     return (
       <img

@@ -251,12 +251,18 @@ export default function BlogPost() {
         <Container width="prose">
           {/* Banner, only for posts written in the dashboard. Repo posts carry
               their generated cover on the index tile and no banner here. */}
-          {post.cover && (
-            <img
-              src={post.cover}
-              alt=""
-              className="mb-10 aspect-[21/9] w-full rounded-2xl border border-border object-cover [filter:saturate(0.8)]"
-            />
+          {post.coverArt ? (
+            <div className="mb-10 aspect-[21/9] w-full overflow-hidden rounded-2xl border border-border [container-type:size]">
+              <post.coverArt />
+            </div>
+          ) : (
+            post.cover && (
+              <img
+                src={post.cover}
+                alt=""
+                className="mb-10 aspect-[21/9] w-full rounded-2xl border border-border object-cover [filter:saturate(0.8)]"
+              />
+            )
           )}
           {/* Repo posts are block arrays; posts written in the dashboard are
               markdown. Both end up as the same elements on the page. */}
