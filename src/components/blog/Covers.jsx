@@ -1,5 +1,3 @@
-import { tps } from '@/data/figures'
-
 /**
  * Cover art that is drawn rather than photographed.
  *
@@ -54,38 +52,58 @@ export function SwiftCover() {
 }
 
 /**
- * Post 19. Throughput, drawn as the thing the post measures.
+ * Post 19. A dial with no trustworthy reading on it.
  *
- * The bars are the four rows of its own table, scaled to each other: the
- * answer swings fivefold on which average transaction size you assume, and
- * that swing is the post's argument, so it is the cover.
+ * The first version drew the four bars of the post's own table, which was
+ * accurate and said nothing: four bars of different heights could be any
+ * post on this site. The post's actual finding is that the number everyone
+ * quotes is the wrong number, and that the honest answer is a range an order
+ * of magnitude below it. A gauge whose needle sits in an unmarked band, next
+ * to a question mark, is that.
+ *
+ * Ticks and needle are geometry rather than data. Nothing here is a reading,
+ * which is the point, so there is no figure to keep in sync.
  */
 const SERIES4_FIELD = '#FAF0E2'
 const SERIES4_INK = '#8A4E0C'
 
+/* Nine ticks around a semicircle, outer radius 80, inner 66. */
+const TICKS = [180, 157.5, 135, 112.5, 90, 67.5, 45, 22.5, 0].map((deg) => {
+  const t = (deg * Math.PI) / 180
+  return {
+    x1: 100 + 80 * Math.cos(t),
+    y1: 100 - 80 * Math.sin(t),
+    x2: 100 + 66 * Math.cos(t),
+    y2: 100 - 66 * Math.sin(t),
+  }
+})
+
 export function TpsCover() {
-  const bars = tps.bySize.map((r) => r.tps)
-  const max = Math.max(...bars)
   return (
     <div
       aria-hidden
-      className="flex size-full items-center justify-center gap-[7%] px-[9%]"
+      className="flex size-full items-center justify-center gap-[6%] px-[8%]"
       style={{ backgroundColor: SERIES4_FIELD, color: SERIES4_INK }}
     >
-      <div className="flex h-[42%] items-end gap-[1.6cqw]">
-        {bars.map((v, i) => (
-          <span
-            key={i}
-            className="w-[3.2cqw] rounded-t-[2px]"
-            style={{ height: `${(v / max) * 100}%`, backgroundColor: 'currentColor' }}
-          />
+      <svg
+        viewBox="0 0 200 118"
+        fill="none"
+        stroke="currentColor"
+        className="h-[52%] w-auto shrink-0"
+      >
+        <path d="M20 100 A80 80 0 0 1 180 100" strokeWidth="7" strokeLinecap="round" />
+        {TICKS.map((t, i) => (
+          <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} strokeWidth="5" strokeLinecap="round" />
         ))}
-      </div>
+        {/* Parked low, where the post's honest range actually sits. */}
+        <line x1="100" y1="100" x2="60" y2="52" strokeWidth="7" strokeLinecap="round" />
+        <circle cx="100" cy="100" r="9" fill="currentColor" stroke="none" />
+      </svg>
       <span
         className="font-extrabold leading-none tracking-tight"
         style={{ fontSize: 'min(14cqw, 32cqh)' }}
       >
-        TPS
+        TPS?
       </span>
     </div>
   )
