@@ -17,7 +17,15 @@ export function PostCover({ post, className }) {
   // preferable.
   if (post.coverArt) {
     return (
-      <div className={cn('aspect-video w-full overflow-hidden [container-type:size]', className)}>
+      /* A rule under it, which a photograph does not need. Drawn art on a
+         white field is the same colour as the card, so without this the tile
+         reads as a card missing its image rather than one with a cover. */
+      <div
+        className={cn(
+          'aspect-video w-full overflow-hidden border-b border-border [container-type:size]',
+          className,
+        )}
+      >
         <post.coverArt />
       </div>
     )

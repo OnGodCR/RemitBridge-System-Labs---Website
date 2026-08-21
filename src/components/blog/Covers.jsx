@@ -11,15 +11,20 @@
  * This fills whatever box it is given and stays centred.
  */
 
-const MINT = '#A7F3E4'
-const INK = '#37454A'
+/* The mark on white, as supplied. The article frames it with a border, so
+   the plate reads as a plate rather than a hole in the page. */
+const FIELD = '#FFFFFF'
+const INK = '#2F3A3B'
 
 /** Post 7. A globe for a network, and the name of the network. */
 export function SwiftCover() {
   return (
+    /* Decorative, like the alt="" on a photographic cover. Without this the
+       tile's link announces "Swift" before the series and the title. */
     <div
+      aria-hidden
       className="flex size-full items-center justify-center gap-[6%] px-[8%]"
-      style={{ backgroundColor: MINT, color: INK }}
+      style={{ backgroundColor: FIELD, color: INK }}
     >
       <svg
         viewBox="0 0 200 200"
