@@ -31,10 +31,15 @@ Deferred by choice, not forgotten. Update this list as things land.
       Published as approved, verbatim. One sentence contradicts the post's own
       figures: it says both costs are "dominated more by the FX margin than by
       the visible fee", but the $6.00 fee is the larger share of both ($6.00 of
-      $8.24, and $6.00 of $9.95). There are also four typos left in on purpose
-      rather than edited without asking. The hero graphic, the corridor map and
-      the pros/cons icon set were not built; the three diagrams that carry the
-      argument were.
+      $8.24, and $6.00 of $9.95). Five smaller copy fixes are also waiting on
+      a yes: a missing space in "range.The", "be vary of" for "wary", "take a
+      look of" for "look at", "bank are slow" for "banks are", and
+      "sub-saharan" lowercase twice where the site writes Sub-Saharan. The
+      first body paragraph also restates the abstract almost word for word,
+      so the post opens by saying the same thing twice. None were edited
+      without asking. The hero graphic, the corridor map and the pros/cons
+      icon set were not built; the three diagrams that carry the argument
+      were.
 - [ ] **`data/measures.seed.md`.** Five of the six measures on What we measure
       ship `null` until the lab supplies real collected values with dates.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and
