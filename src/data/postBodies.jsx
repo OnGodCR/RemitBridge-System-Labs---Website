@@ -1,8 +1,8 @@
-import skylineImage from '@/assets/hero-skyline.jpg'
 import {
   CorrespondentChain,
   LiquidityPools,
   CostComparison,
+  TwoProducts,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -154,6 +154,7 @@ export const bodies = {
       type: 'p',
       text: 'If that math is done on a $200 transfer, **the flat fee alone eats 12.5% to 20% of the send amount before the FX markup is even applied.** This is exactly why nobody sends $200 through that product; the fee structure only makes sense at much larger amounts. The biggest lesson from this case study is that banks don\'t always have 1 rate; rates change from corridor to corridor and even within the same corridor over time.',
     },
+    { type: 'figure', render: TwoProducts },
     {
       type: 'p',
       text: 'For this specific $200, US-to-Mexico, this specific week: the bank kept about $8.24 and the MTO kept about $9.95, out of every $200 sent. Both numbers sit in a very similar range, the flat fee is the larger share of both, with the FX margin accounting for the entire difference between them, and neither one matches the "banks are slow and expensive while MTOs are automatically fast and cheap" assumption.',
@@ -161,13 +162,6 @@ export const bodies = {
     {
       type: 'p',
       text: '**The corridor a transfer runs through, and the specific product a provider has built for that corridor, matters more than which category of institution is sending it.**',
-    },
-    {
-      type: 'image',
-      src: skylineImage,
-      alt: 'A city skyline of high-rise office towers at dusk',
-      caption:
-        'A direct payout rail into one country is a commercial arrangement one bank chose to build. It is not a property of banks in general, which is why the case study above does not generalise.',
     },
     { type: 'h', text: 'So Which One Is Actually Better?' },
     {

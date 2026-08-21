@@ -222,6 +222,7 @@ export const citations = [
       { page: 'Blog', where: 'Post 2, the Wells Fargo figures list' },
       { page: 'Blog', where: 'Post 2, the side-by-side comparison table' },
       { page: 'Blog', where: 'Post 2, the total cost figure' },
+      { page: 'Blog', where: 'Post 2, the two-products figure, as the fee on the direct rail' },
     ],
   },
   {
@@ -242,6 +243,7 @@ export const citations = [
     source: sources.wfStandardWire,
     usedOn: [
       { page: 'Blog', where: 'Post 2, the paragraph separating the direct rail from the classic SWIFT wire' },
+      { page: 'Blog', where: 'Post 2, the two-products figure, as the fee range on the standard wire' },
     ],
   },
   {

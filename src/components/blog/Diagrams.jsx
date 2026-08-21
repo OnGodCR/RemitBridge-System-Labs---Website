@@ -1,5 +1,5 @@
 import { ArrowDown, ArrowRight } from 'lucide-react'
-import { figures, usMxQ3 } from '@/data/figures'
+import { figures, usMxQ3, wfStandardWire } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -172,6 +172,94 @@ export function CostComparison({ theme }) {
 
       <p className="mt-4 text-xs text-muted-foreground">
         Dashed line: the UN target of {figures.targetPct}% by 2030. Scale runs to {SCALE_MAX}%.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * The same bank, two products, priced on the same $200.
+ *
+ * The paragraph beside this makes a comparison the reader has to hold in
+ * their head: $6.00 on the Mexico rail against a flat $25 to $40 on the
+ * ordinary wire. Fee only, before any exchange rate markup, which is the
+ * comparison the paragraph is actually making.
+ *
+ * The standard wire is a range rather than a number, so it is drawn as one:
+ * solid to the low end, hollow to the high end. Drawing a range as a single
+ * bar would invent a precision the sources do not have.
+ *
+ * The benchmark line lands where it lands: 3% of $200 is $6.00, which is
+ * exactly the Mexico rail's fee. The direct product spends the whole UN
+ * target on its fee alone, and the ordinary one spends four to nearly seven
+ * times it.
+ */
+export function TwoProducts({ theme }) {
+  const railPct = (usMxQ3.wellsFargo.feeUsd / figures.benchmarkUsd) * 100
+  const lowPct = (wfStandardWire.flatFeeUsdLow / figures.benchmarkUsd) * 100
+  const highPct = (wfStandardWire.flatFeeUsdHigh / figures.benchmarkUsd) * 100
+  const scale = highPct
+
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Wells Fargo, two products, fee only on a ${figures.benchmarkUsd} send
+      </figcaption>
+
+      <div className="mt-5 space-y-5">
+        <div>
+          <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+            <span className="text-sm font-bold">Direct rail to Mexico</span>
+            <span className="text-sm tabular-nums text-muted-foreground">
+              {railPct}% &middot; ${usMxQ3.wellsFargo.feeUsd.toFixed(2)}
+            </span>
+          </div>
+          <div className="relative h-3 rounded-full bg-muted">
+            <div
+              className={cn('h-3 rounded-l-full rounded-r-[4px]', theme.bar)}
+              style={{ width: `${(railPct / scale) * 100}%` }}
+            />
+            <div
+              className="absolute inset-y-[-4px] w-px border-l border-dashed border-foreground/40"
+              style={{ left: `${(figures.targetPct / scale) * 100}%` }}
+              aria-hidden
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+            <span className="text-sm font-bold">Standard international wire</span>
+            <span className="text-sm tabular-nums text-muted-foreground">
+              {lowPct}% to {highPct}% &middot; ${wfStandardWire.flatFeeUsdLow} to $
+              {wfStandardWire.flatFeeUsdHigh}
+            </span>
+          </div>
+          <div className="relative h-3 rounded-full bg-muted">
+            {/* Hollow to the top of the range, solid to the bottom of it. */}
+            <div
+              className={cn('absolute inset-y-0 left-0 rounded-full border', theme.border)}
+              style={{ width: `${(highPct / scale) * 100}%` }}
+              aria-hidden
+            />
+            <div
+              className={cn('relative h-3 rounded-l-full rounded-r-[4px]', theme.bar)}
+              style={{ width: `${(lowPct / scale) * 100}%` }}
+            />
+            <div
+              className="absolute inset-y-[-4px] w-px border-l border-dashed border-foreground/40"
+              style={{ left: `${(figures.targetPct / scale) * 100}%` }}
+              aria-hidden
+            />
+          </div>
+        </div>
+      </div>
+
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Dashed line: the UN target of {figures.targetPct}% for the whole transfer, which is $
+        {((figures.targetPct / 100) * figures.benchmarkUsd).toFixed(2)} on $
+        {figures.benchmarkUsd}. The hollow bar is the top of the quoted fee range. Scale runs
+        to {scale}%.
       </p>
     </figure>
   )
