@@ -8,6 +8,12 @@ import {
   ThreeLayers,
   SettlementSystems,
   SymptomsByLayer,
+  BenchmarkVsActual,
+  TpsBySize,
+  DemandLevels,
+  MarketShare,
+  BeyondTps,
+  TpsRange,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -133,6 +139,7 @@ export const bodies = {
     {
       type: 'table',
       rowHeader: 'Measure',
+      rowHeaderHidden: true,
       columns: ['Wells Fargo', 'Delgado Travel'],
       rows: [
         ['Fee', '$6.00', '$6.00'],
@@ -342,6 +349,134 @@ export const bodies = {
         'Fedwire as a real-time gross settlement service operated by the Federal Reserve: federalreserve.gov/paymentsystems/fedfunds_about.htm and en.wikipedia.org/wiki/Fedwire',
         'CHIPS as the privately-owned US large-value payment system operating alongside Fedwire: en.wikipedia.org/wiki/Clearing_House_Interbank_Payments_System',
         'TARGET2 as the Eurozone\'s real-time gross settlement system, settlement in central bank money: ecb.europa.eu/paym/target/target2 and en.wikipedia.org/wiki/TARGET2',
+      ],
+    },
+  ],
+
+  19: [
+    {
+      type: 'p',
+      text: 'Every blockchain-remittance solution is judged on various factors, including latency, security, interoperability with other technologies and more. One of the most important metrics that I haven\'t yet mentioned is architectural stability in the form of throughput. Can a blockchain\'s architecture truly support the amount of transactions per second that are needed for a {{remittance|remittance}} network? This blog post aims to figure out how many transactions per second a blockchain based network would need to withstand remittance workload.',
+    },
+    {
+      type: 'p',
+      text: 'Before this number can be computed, we must ask two very important questions, however. First: is $200, the figure the World Bank\'s own price data keeps using, actually the average size of a real remittance? Can this differ from corridor to corridor and how much nuance is there in this claim? Second: even with a defensible dollar figure, is dividing global remittance volume by one number and calling it "the TPS requirement" actually a fair test, or does it hide more than it reveals?',
+    },
+    {
+      type: 'p',
+      text: '**The short answer to both of these questions is that $200 is not a measured average but rather a fixed benchmark and a single annual TPS number is nowhere close to enough to size a network against due to differing loads during peak times and other conditions.**',
+    },
+    { type: 'h', text: 'Is $200 an Average, or a Benchmark?' },
+    {
+      type: 'p',
+      text: 'Let\'s first get started with what the World Bank\'s Remittance Prices Worldwide (RPW) database actually says $200 is. According to RPW\'s own published methodology, the database surveys two amounts in every corridor: the local-currency equivalent of $200, and the local-currency equivalent of $500. Those two amounts were set in 2008. They were adjusted only one time in 2009 and never touched again. This allows for long-term trends with fees to be kept track of.',
+    },
+    {
+      type: 'p',
+      text: 'RPW says that the local-currency amounts may no longer match the current USD equivalent due to foreign exchange rates changing. They were still frozen on purpose, though. **$200 was not claimed to be an "average" transaction size but rather a fixed reference point chosen for comparability**, the same way a wet-lab might always test at exactly 200 milliliters regardless of what a "typical" sample size actually is in the field.',
+    },
+    {
+      type: 'p',
+      text: 'This then presents an interesting question, what does a real, observed average look like? It depends enormously on which corridor you\'re observing. The UN and IFAD describe the global pattern as migrant workers typically sending between $200 and $300 home every one or two months, a range that happens to sit close to the RPW benchmark, but it\'s a description of typical behavior. This by no means a precise measured mean, and exact averages depend on a corridor-by-corridor basis.',
+    },
+    {
+      type: 'p',
+      text: 'Let\'s take a look at one specific, heavily-documented corridor; research from the Inter-American Dialogue tracking the US-Mexico {{corridor|corridor}}, the same corridor covered in this blog\'s earlier case study [(Blog Post #2 - Click to access)](/blog/where-does-a-200-transfer-actually-go) on where a $200 transfer actually goes, puts the actual average principal per transaction at $488 as of 2023, with the average sender remitting around 16 times a year, up from 12 to 14 times a year in prior decades. **That\'s more than double the RPW benchmark, in the single largest remittance corridor in the world.**',
+    },
+    { type: 'figure', render: BenchmarkVsActual },
+    {
+      type: 'p',
+      text: 'The honest takeaway from this case study was that a $200 is a reasonable, defensible number to use for price comparison, because that\'s what the $200 number was created for in the first place. **It is not a safe number to treat as "the average remittance," however, when the goal is estimating real transaction volume or sizing a network\'s required throughput.** Real average transaction size varies by corridor, by sending frequency, and by time period.',
+    },
+    { type: 'h', text: 'The Baseline Math' },
+    {
+      type: 'p',
+      text: 'With these caveats and constraints being clearly identified, doing the calculations and math still provides us with valuable information.',
+    },
+    {
+      type: 'p',
+      text: 'Let\'s start with the numbers that are globally accepted. Global remittance flows reached $905 billion in 2024, according to the World Bank\'s Migration and Development Brief. This number is up 4.6% from $865 billion in 2023. This is the total volume in USD moved across the world. Turning this into a transaction count requires picking an average transaction size, and turning a transaction count into a TPS figure requires dividing by the number of seconds in a year which is 31,536,000.',
+    },
+    {
+      type: 'p',
+      text: 'It\'s important that we run this math across a range of plausible average sizes instead of committing to just one:',
+    },
+    {
+      type: 'table',
+      rowHeader: 'Assumed average transaction size',
+      columns: ['Transactions per year', 'Average TPS'],
+      rows: [
+        ['$100', '~9.05 billion', '~287'],
+        ['$200 (RPW benchmark)', '~4.53 billion', '~143'],
+        ['$300', '~3.02 billion', '~96'],
+        ['$500 (RPW\'s other benchmark)', '~1.81 billion', '~57'],
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Every one of these numbers provides us with an average number of TPS but **it\'s very important to understand that these transactions are an oversimplification of an extremely nuanced topic.** Remittance throughput can go above 300 TPS during peak times but can also drop below 57.',
+    },
+    { type: 'figure', render: TpsBySize },
+    { type: 'h', text: 'Why an Annual Average Isn\'t a Real Requirement' },
+    {
+      type: 'p',
+      text: 'A network that can sustain 143 TPS as a year-round average has not been shown to handle a single day where real-world demand runs 30% above that average. **Ultimately, remittance demand is not flat across days. It moves with paydays, holidays, and crises.** It\'s important that we categorize remittance demands into different levels.',
+    },
+    {
+      type: 'p',
+      text: '**Ordinary demand.** The baseline scenario above, an average day with no disasters or cultural celebrations nearby. This is a must have, if a blockchain can\'t support this number then it is not the right fit for remittance based transactions.',
+    },
+    {
+      type: 'p',
+      text: '**Peak, holiday-driven demand.** Remittance volume rises measurably around culturally significant periods. Industry sources describe remittance transaction volumes during Ramadan and the run-up to Eid al-Fitr rising by up to 20% to 30%. This is primarily driven by zakat, holiday spending, and pre-Eid salary disbursements concentrated in a short window. December also shows a comparable pattern for other diaspora communities. One US-based remittance provider reported a 39% increase in transaction volume during the eleven days leading up to Christmas 2023 compared to the same period the year before. Applying a 25% to 40% peak multiplier to the $200-benchmark baseline of ~143 TPS pushes the requirement into a range of roughly 179 to 200 TPS.',
+    },
+    {
+      type: 'p',
+      text: '**Emergency-driven demand.** Remittances reliably spike after disasters, but the shape of that spike looks different from a holiday surge. After the 2010 Haiti earthquake, the World Bank projected remittances to the country would rise about 20% over the following year. This would be an extra $360 million above the normal baseline we established earlier. However, this number would be sustained across months rather than concentrated into a single burst like peak times. This showcases a different load profile than a two-week Christmas spike as it is slower to build, but longer to persist. These transactions are also layered on top of whatever ordinary or seasonal demand is already happening in that window. Publicly available data on hour-by-hour or day-by-day disaster-driven spikes is thin, which makes this particular instance a little hard to measure. This is why we can\'t provide a direct assumption about the TPS requirement; more research is needed for emergency-driven demand\'s remittance volume and throughput.',
+    },
+    {
+      type: 'p',
+      text: '**Growth over time.** The last factor that needs to be considered in that remittances as a whole are growing in volume overtime. They grew from roughly $586 billion in 2015 to $905 billion in 2024, a compound annual growth rate of just under 5%. If we hold that growth rate steady and project forward ten years, global flows can be estimated to reach as high as $1.47 trillion. At the same $200 benchmark and the same smoothed-average approach, a baseline requirement of roughly 234 TPS is needed. This is before any peak multiplier is applied, and something closer to 290 to 330 TPS is an estimate for peak demand. **A network sized only against today\'s volume will simply not be strong enough to support remittances in the future**, so the biggest requirement for a remittance transacting system is the potential for growth in the future.',
+    },
+    { type: 'figure', render: DemandLevels },
+    { type: 'h', text: 'The Missing Variable: Market Share' },
+    {
+      type: 'p',
+      text: 'Every figure above assumes one thing that\'s almost certainly false, though. **A single blockchain-based architecture would certainly not carry 100% of global remittance volume.** That\'s not how payment infrastructure gets adopted with the current systems we have. New rails start with a fraction of the market and grow from there, if they grow at all.',
+    },
+    {
+      type: 'p',
+      text: 'A new architecture capturing 10% of global remittance volume, a reasonably ambitious but not implausible early-adoption target, would need to sustain roughly 14 to 20 TPS at the $200 benchmark. This is very far from the 143 to 200 TPS estimate presented earlier. Capturing 1% of the market drops that down ever more, to roughly 1.4 to 2 TPS. **This is the single most important adjustment that blockchain-remittance throughput claims need to make.** The headline that "global remittances need X TPS" number is only the right target for a system that expects to eventually replace the entire existing system outright, and that\'s a target for the architecture\'s ceiling, not its minimum viable requirement for adoption to be pushed.',
+    },
+    { type: 'figure', render: MarketShare },
+    { type: 'h', text: 'What This Number Still Doesn\'t Tell You' },
+    {
+      type: 'p',
+      text: 'Even a fully scenario-built, market-share-adjusted TPS target only answers the question of raw capacity: can the network process this many transactions per second, under load. It says nothing about whether those transactions actually finish, how long finality takes once a transaction is submitted, what happens to the transactions that fail partway through, or whether the network holds up when demand is concentrated in the worst possible hour rather than spread evenly across the scenario window. **A network that hits its TPS target on average while its slowest 5% of transactions take ten times as long to settle has not actually solved the problem.** That\'s a separate question, with its own separate data, and it\'s where the next post in this series picks up.',
+    },
+    { type: 'figure', render: BeyondTps },
+    { type: 'h', text: 'Putting a Number on It' },
+    {
+      type: 'p',
+      text: 'Based on all the math done in this blog post (based off the world bank\'s estimates), the honest range looks like this: an ordinary-demand floor of roughly 57 to 287 TPS depending entirely on which average transaction size is assumed, a peak-demand ceiling in the 180 to 330 TPS range once holiday effects and a decade of projected growth are layered on top. All these numbers are for a system that will outright replace {{swift|SWIFT}} based transacting, which isn\'t realistic.',
+    },
+    {
+      type: 'p',
+      text: '**The more realistic target is closer to 14 to 33 TPS once a defensible early market-share assumption is applied (10% of remittance load during peak times).** None of these numbers is "the" TPS requirement, as each scenario, corridor and time has a different requirement but they are a strong base to build a baseline off.',
+    },
+    { type: 'figure', render: TpsRange },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'World Bank, Remittance Prices Worldwide methodology, on the 200/500 benchmark amounts fixed in 2008: remittanceprices.worldbank.org/methodology',
+        'World Bank Migration and Development Brief, global remittance flows reaching $905 billion in 2024, up from $865 billion in 2023: migrationdataportal.org/themes/remittances-overview',
+        'UN / IFAD, on migrant workers typically sending $200-300 every one to two months: un.org, "Remittances matter: 8 facts you don\'t know about the money migrants send back home"; ifad.org, "15 reasons remittances matter"',
+        'Inter-American Dialogue, US-Mexico corridor average transaction size ($488) and annual sending frequency (~16 times/year): thedialogue.org, "Understanding the Recent Growth in Remittances to Mexico"',
+        'Qatar Tribune, Ramadan/Eid remittance volume increases of 20-30% compared to other months: qatar-tribune.com, "Ramadan drives surge in workers\' remittances from Qatar"',
+        'IDT Corp / BOSS Money, 39% Christmas-period transaction volume increase: idt.net, "BOSS Money Reports Strong Remittance Topline Increase over the Christmas Holiday Season"',
+        'World Bank, on the projected 20% post-earthquake remittance surge to Haiti in 2010: worldbank.org, "Haiti: Remittances Key to Earthquake Recovery"',
+        'World Bank Migration and Development Brief historical figures (2015 global remittance flow of $586 billion), used for the 2015-2024 growth-rate calculation: business-standard.com World Bank remittance coverage, 2015-2022 editions',
       ],
     },
   ],

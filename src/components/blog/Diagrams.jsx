@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { ArrowDown, ArrowRight } from 'lucide-react'
-import { figures, usMxQ3, wfStandardWire } from '@/data/figures'
+import { figures, usMxQ3, wfStandardWire, tps } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -570,5 +570,192 @@ export function SymptomsByLayer({ theme }) {
         ))}
       </ul>
     </figure>
+  )
+}
+
+/* ------------------------------------------------------------------------ *
+ * Post 19. Throughput.
+ * ------------------------------------------------------------------------ */
+
+/** One labelled bar on a shared scale. Hollow marks a range's upper end. */
+function BarRow({ theme, label, value, note, width, ghost }) {
+  return (
+    <div>
+      <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+        <span className="text-sm font-bold">{label}</span>
+        <span className="text-sm tabular-nums text-muted-foreground">{value}</span>
+      </div>
+      <div className="relative h-3 rounded-full bg-muted">
+        {ghost != null && (
+          <div
+            className={cn('absolute inset-y-0 left-0 rounded-full border', theme.border)}
+            style={{ width: `${ghost}%` }}
+            aria-hidden
+          />
+        )}
+        <div
+          className={cn('relative h-3 rounded-l-full rounded-r-[4px]', theme.bar)}
+          style={{ width: `${width}%` }}
+        />
+      </div>
+      {note && <p className="mt-1.5 text-xs text-muted-foreground">{note}</p>}
+    </div>
+  )
+}
+
+function Panel({ label, note, children }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </figcaption>
+      <div className="mt-5">{children}</div>
+      {note && <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{note}</p>}
+    </figure>
+  )
+}
+
+/** A fixed benchmark is not a measured average, drawn as the gap it is. */
+export function BenchmarkVsActual({ theme }) {
+  const max = tps.usMxAvgUsd
+  return (
+    <Panel
+      label="Benchmark against observed average"
+      note={`The benchmark was fixed in 2008 for price comparability, not measured. The US to Mexico figure is an observed average principal per transaction, ${tps.usMxSendsPerYear} sends a year, and it is ${(tps.usMxAvgUsd / figures.benchmarkUsd).toFixed(1)} times the benchmark in the largest corridor there is.`}
+    >
+      <div className="space-y-5">
+        <BarRow
+          theme={theme}
+          label="RPW benchmark, fixed since 2008"
+          value={`$${figures.benchmarkUsd}`}
+          width={(figures.benchmarkUsd / max) * 100}
+        />
+        <BarRow
+          theme={theme}
+          label="US to Mexico, observed 2023"
+          value={`$${tps.usMxAvgUsd}`}
+          width={100}
+        />
+      </div>
+    </Panel>
+  )
+}
+
+/** The table beside it, as lengths. The answer moves fivefold on an input. */
+export function TpsBySize({ theme }) {
+  const max = Math.max(...tps.bySize.map((r) => r.tps))
+  return (
+    <Panel
+      label="Average TPS by assumed transaction size"
+      note={`Global flows of $${figures.flowsUsdBn} billion divided by an assumed average size, then by ${tps.secondsPerYear.toLocaleString()} seconds in a year. The assumption, not the arithmetic, is what moves the answer.`}
+    >
+      <div className="space-y-5">
+        {tps.bySize.map((row) => (
+          <BarRow
+            key={row.sizeUsd}
+            theme={theme}
+            label={`$${row.sizeUsd} average${row.note ? ` (${row.note})` : ''}`}
+            value={`~${row.tps} TPS`}
+            width={(row.tps / max) * 100}
+            note={`~${row.txnsBn} billion transactions a year`}
+          />
+        ))}
+      </div>
+    </Panel>
+  )
+}
+
+/** Four demand levels, one of which the evidence will not size. */
+export function DemandLevels({ theme }) {
+  return (
+    <Panel
+      label="What the network has to survive, not average"
+      note="The emergency band carries no number on purpose. Post-disaster remittances are documented as rising and as persisting for months, but public data on the hour-by-hour shape is thin, and a made-up figure here would be the only unsourced number in the post."
+    >
+      <ol className="grid gap-3 sm:grid-cols-2">
+        {tps.demand.map((level) => (
+          <li
+            key={level.name}
+            className={cn(
+              'rounded-2xl border p-3',
+              level.uncertain ? 'border-dashed border-border' : cn(theme.border, theme.tint),
+            )}
+          >
+            <p className={cn('text-[11px] font-bold uppercase tracking-widest', theme.ink)}>
+              {level.name}
+            </p>
+            <p className="mt-1.5 text-lg font-bold tabular-nums leading-none">{level.load}</p>
+            <p className="mt-2 text-xs leading-snug text-muted-foreground">{level.why}</p>
+          </li>
+        ))}
+      </ol>
+    </Panel>
+  )
+}
+
+/** The adjustment that changes the answer more than any other. */
+export function MarketShare({ theme }) {
+  return (
+    <Panel
+      label="Required TPS by share of the market captured"
+      note="Every figure above this assumes one architecture carries all of it, which is not how payment rails get adopted. The whole-market number is a ceiling to design toward, not the bar to clear on day one."
+    >
+      <div className="space-y-5">
+        {tps.share.map((row) => (
+          <BarRow
+            key={row.pct}
+            theme={theme}
+            label={`${row.pct}% of global remittance volume`}
+            value={row.range}
+            width={row.pct}
+            note={row.note}
+          />
+        ))}
+      </div>
+    </Panel>
+  )
+}
+
+/** What a throughput number leaves unanswered, which is the next post. */
+export function BeyondTps({ theme }) {
+  return (
+    <Panel
+      label="What a TPS target does not answer"
+      note="Raw capacity is one question. These are four others, each with its own data, and a network can pass the first while failing all of them."
+    >
+      <ul className="grid gap-2 sm:grid-cols-2">
+        {tps.unanswered.map((q) => (
+          <li key={q} className="flex gap-2.5 rounded-2xl border border-border bg-card p-3">
+            <span className={cn('mt-1.5 size-1.5 shrink-0 rounded-full', theme.bar)} aria-hidden />
+            <span className="text-xs leading-snug">{q}</span>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  )
+}
+
+/** The whole post as one scale, realistic target against theoretical ceiling. */
+export function TpsRange({ theme }) {
+  const max = tps.summary[tps.summary.length - 1].high
+  return (
+    <Panel
+      label="The range this post arrives at"
+      note="Read the top band as an architectural ceiling and the bottom one as the bar an early system actually has to clear. They differ by roughly an order of magnitude, which is the point."
+    >
+      <div className="space-y-5">
+        {tps.summary.map((row) => (
+          <BarRow
+            key={row.name}
+            theme={theme}
+            label={row.name}
+            value={`${row.low} to ${row.high} TPS`}
+            width={(row.low / max) * 100}
+            ghost={(row.high / max) * 100}
+            note={row.note}
+          />
+        ))}
+      </div>
+    </Panel>
   )
 }

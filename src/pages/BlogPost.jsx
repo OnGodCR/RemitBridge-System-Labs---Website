@@ -137,8 +137,10 @@ function Block({ block, theme }) {
           <table className="w-full min-w-[26rem] border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th scope="col" className="py-2 pr-4">
-                  <span className="sr-only">{block.rowHeader}</span>
+                <th scope="col" className="py-2 pr-4 font-bold">
+                  <span className={cn(block.rowHeaderHidden && 'sr-only')}>
+                    {block.rowHeader}
+                  </span>
                 </th>
                 {block.columns.map((col) => (
                   <th key={col} scope="col" className="py-2 pr-4 font-bold last:pr-0">

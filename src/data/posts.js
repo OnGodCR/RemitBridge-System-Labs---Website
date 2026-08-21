@@ -259,8 +259,13 @@ export const posts = [
     "series": "series4",
     "seriesName": "Cost, speed, failure",
     "title": "How many transactions per second would this really need?",
-    "abstract": "Annual averages are close to useless for sizing a system, so we build demand scenarios instead: a normal week, peak hours, holidays, and a sudden economic shock.",
-    "readTime": "8 min read",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
+    "abstract": "The $200 everyone divides by is a fixed benchmark, not a measured average: the real US to Mexico average is $488. Working the throughput question properly, across four demand levels and an honest market share, lands nearer 14 to 33 transactions per second than the headline 143.",
+    "readTime": "9 min read",
     "tags": [
       "Capacity Planning",
       "TPS Scenarios"

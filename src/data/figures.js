@@ -86,6 +86,62 @@ export const sources = {
     date: 'Superseded by T2 in March 2023',
     href: 'https://www.ecb.europa.eu/paym/target/target2',
   },
+  rpwMethod: {
+    id: 'rpwMethod',
+    title: 'Remittance Prices Worldwide: methodology, on the $200 and $500 benchmark amounts',
+    publisher: 'World Bank',
+    date: 'Amounts fixed 2008, adjusted once in 2009',
+    href: 'https://remittanceprices.worldbank.org/methodology',
+  },
+  mdb: {
+    id: 'mdb',
+    title: 'Migration and Development Brief: global remittance flows',
+    publisher: 'World Bank / KNOMAD, via the Migration Data Portal',
+    date: '$905bn in 2024, up from $865bn in 2023',
+    href: 'https://www.migrationdataportal.org/themes/remittances-overview',
+  },
+  unIfad: {
+    id: 'unIfad',
+    title: 'Remittances matter: 8 facts you do not know about the money migrants send home',
+    publisher: 'United Nations and IFAD',
+    date: 'Typical send of $200 to $300 every one to two months',
+    href: 'https://www.un.org/en/observances/remittances-day',
+  },
+  dialogue: {
+    id: 'dialogue',
+    title: 'Understanding the Recent Growth in Remittances to Mexico',
+    publisher: 'Inter-American Dialogue',
+    date: '2023 data',
+    href: 'https://www.thedialogue.org',
+  },
+  qatarTribune: {
+    id: 'qatarTribune',
+    title: 'Ramadan drives surge in workers remittances from Qatar',
+    publisher: 'Qatar Tribune',
+    date: 'Ramadan and Eid volumes 20% to 30% above other months',
+    href: 'https://www.qatar-tribune.com',
+  },
+  bossMoney: {
+    id: 'bossMoney',
+    title: 'BOSS Money Reports Strong Remittance Topline Increase over the Christmas Holiday Season',
+    publisher: 'IDT Corporation',
+    date: 'Eleven days to Christmas 2023, year on year',
+    href: 'https://www.idt.net',
+  },
+  wbHaiti: {
+    id: 'wbHaiti',
+    title: 'Haiti: Remittances Key to Earthquake Recovery',
+    publisher: 'World Bank',
+    date: '2010, projecting the year after the earthquake',
+    href: 'https://www.worldbank.org',
+  },
+  wbHistoric: {
+    id: 'wbHistoric',
+    title: 'Migration and Development Brief historical figures, 2015 to 2022 editions',
+    publisher: 'World Bank, via Business Standard coverage',
+    date: '2015 global flows of $586bn',
+    href: 'https://www.business-standard.com',
+  },
   sdg: {
     id: 'sdg',
     title: 'Sustainable Development Goal 10.c: reduce remittance costs to less than 3 percent',
@@ -153,6 +209,78 @@ export const figures = {
   benchmarkUsd: 200,
 }
 
+/**
+ * Throughput arithmetic for blog post 19.
+ *
+ * Two things this file is careful about. The $200 benchmark is not an average
+ * and is never treated as one here: `usMxAvgUsd` is what an observed average
+ * actually looks like in the largest corridor, and the gap between them is
+ * the post's first finding.
+ *
+ * And TPS is computed rather than typed. Every row below is flows divided by
+ * an assumed size divided by seconds in a year, so a change to `flowsUsdBn`
+ * moves the whole post rather than leaving a stale number in a table.
+ */
+const SECONDS_PER_YEAR = 365 * 24 * 60 * 60
+
+const tpsFor = (sizeUsd) =>
+  Math.round((figures.flowsUsdBn * 1e9) / sizeUsd / SECONDS_PER_YEAR)
+const txnsBnFor = (sizeUsd) => +((figures.flowsUsdBn * 1e9) / sizeUsd / 1e9).toFixed(2)
+
+export const tps = {
+  secondsPerYear: SECONDS_PER_YEAR,
+  flows2023UsdBn: 865,
+  flows2015UsdBn: 586,
+  /** Inter-American Dialogue, US to Mexico, average principal per transaction. */
+  usMxAvgUsd: 488,
+  usMxSendsPerYear: 16,
+  bySize: [
+    { sizeUsd: 100, txnsBn: txnsBnFor(100), tps: tpsFor(100) },
+    { sizeUsd: 200, txnsBn: txnsBnFor(200), tps: tpsFor(200), note: 'RPW benchmark' },
+    { sizeUsd: 300, txnsBn: txnsBnFor(300), tps: tpsFor(300) },
+    { sizeUsd: 500, txnsBn: txnsBnFor(500), tps: tpsFor(500), note: 'RPW other benchmark' },
+  ],
+  demand: [
+    {
+      name: 'Ordinary',
+      load: `~${tpsFor(figures.benchmarkUsd)} TPS`,
+      why: 'An average day, nothing unusual happening. A network that cannot hold this is not a candidate at all.',
+    },
+    {
+      name: 'Peak, holiday driven',
+      load: '179 to 200 TPS',
+      why: 'A 25% to 40% multiplier on the baseline. Ramadan and Eid run 20% to 30% above other months, and one US provider reported 39% over the eleven days to Christmas.',
+    },
+    {
+      name: 'Emergency driven',
+      load: 'Sustained, size unknown',
+      why: 'Remittances to Haiti were projected 20% above baseline for the year after the 2010 earthquake. Slower to build than a holiday spike and far longer to persist.',
+      uncertain: true,
+    },
+    {
+      name: 'Growth, ten years out',
+      load: '~234 TPS baseline',
+      why: 'Just under 5% compound growth from 2015 to 2024, projected forward to roughly $1.47 trillion. Nearer 290 to 330 TPS once a peak multiplier is applied.',
+    },
+  ],
+  share: [
+    { pct: 100, range: '143 to 200 TPS', note: 'replacing the existing system outright' },
+    { pct: 10, range: '14 to 20 TPS', note: 'an ambitious but not implausible early target' },
+    { pct: 1, range: '1.4 to 2 TPS', note: 'early adoption' },
+  ],
+  unanswered: [
+    'Whether those transactions actually finish',
+    'How long finality takes once a transaction is submitted',
+    'What happens to the ones that fail partway through',
+    'Whether it holds up when demand lands in the worst hour rather than spread evenly',
+  ],
+  summary: [
+    { name: 'Realistic early target, 10% share', low: 14, high: 33, note: 'the bar an early system actually has to clear' },
+    { name: 'Ordinary demand, whole market', low: 57, high: 287, note: 'range depends entirely on assumed transaction size' },
+    { name: 'Peak ceiling, whole market', low: 180, high: 330, note: 'holidays plus a decade of projected growth' },
+  ],
+}
+
 /** (global rate − target) × annual flows. Our arithmetic, not a cited figure. */
 export const derived = {
   annualOverpayUsdBn: Math.round(
@@ -174,6 +302,7 @@ export const citations = [
       { page: 'Home', where: 'Section heading, "Migrants send $905 billion home a year"' },
       { page: 'Home', where: 'Figure: "Sent home each year"' },
       { page: 'Home', where: 'Input to our own $30bn gap calculation' },
+      { page: 'Blog', where: 'Post 19, the numerator of every throughput calculation in it' },
     ],
   },
   {
@@ -222,6 +351,7 @@ export const citations = [
     usedOn: [
       { page: 'TrueCost', where: 'Default amount in the calculator' },
       { page: 'Blog', where: 'Post 2 follows one $200 transfer, and prices both providers on it' },
+      { page: 'Blog', where: 'Post 19, as the divisor for every TPS figure, and as the benchmark it argues is not an average' },
     ],
   },
   {
@@ -275,6 +405,63 @@ export const citations = [
     usedOn: [{ page: 'Blog', where: 'Post 2, choosing the corridor for the case study' }],
   },
   {
+    value: `$${figures.benchmarkUsd} and $500`,
+    claim:
+      'The two amounts Remittance Prices Worldwide surveys in every corridor. Set in 2008, adjusted once in 2009, frozen since so fee trends stay comparable over time. They are a fixed reference point, not a measured average transaction size, which is the distinction blog post 19 turns on.',
+    source: sources.rpwMethod,
+    usedOn: [{ page: 'Blog', where: 'Post 19, the section asking whether $200 is an average or a benchmark' }],
+  },
+  {
+    value: `$${tps.usMxAvgUsd}`,
+    claim: `Observed average principal per transaction on the US to Mexico corridor in 2023, with the average sender remitting about ${tps.usMxSendsPerYear} times a year. Roughly ${(tps.usMxAvgUsd / figures.benchmarkUsd).toFixed(1)} times the RPW benchmark, in the largest corridor in the world.`,
+    source: sources.dialogue,
+    usedOn: [
+      { page: 'Blog', where: 'Post 19, on what a real observed average looks like' },
+      { page: 'Blog', where: 'Post 19, the benchmark against observed average figure' },
+    ],
+  },
+  {
+    value: '$200 to $300',
+    claim:
+      'What migrant workers typically send home every one to two months, described as a global pattern. A description of typical behaviour rather than a measured mean, which is why post 19 does not use it as one.',
+    source: sources.unIfad,
+    usedOn: [{ page: 'Blog', where: 'Post 19, on the global pattern' }],
+  },
+  {
+    value: `$${tps.flows2023UsdBn} billion`,
+    claim: `Global remittance flows in 2023, the year before the $${figures.flowsUsdBn} billion figure used elsewhere on this site.`,
+    source: sources.mdb,
+    usedOn: [{ page: 'Blog', where: 'Post 19, the year-on-year growth figure' }],
+  },
+  {
+    value: `$${tps.flows2015UsdBn} billion`,
+    claim:
+      'Global remittance flows in 2015. Post 19 uses this and the 2024 figure to derive the growth rate it projects forward.',
+    source: sources.wbHistoric,
+    usedOn: [{ page: 'Blog', where: 'Post 19, the growth over time scenario' }],
+  },
+  {
+    value: '20% to 30%',
+    claim:
+      'How far remittance transaction volumes rise during Ramadan and the run-up to Eid al-Fitr against other months, driven by zakat, holiday spending and pre-Eid salary disbursement.',
+    source: sources.qatarTribune,
+    usedOn: [{ page: 'Blog', where: 'Post 19, peak holiday-driven demand' }],
+  },
+  {
+    value: '39%',
+    claim:
+      'Transaction volume increase reported by one US remittance provider over the eleven days to Christmas 2023, against the same period a year earlier. A single provider rather than a market-wide figure.',
+    source: sources.bossMoney,
+    usedOn: [{ page: 'Blog', where: 'Post 19, peak holiday-driven demand' }],
+  },
+  {
+    value: '20%',
+    claim:
+      'Projected rise in remittances to Haiti over the year following the 2010 earthquake. Sustained across months rather than concentrated in a burst, which is what makes emergency demand a different load profile from a holiday one.',
+    source: sources.wbHaiti,
+    usedOn: [{ page: 'Blog', where: 'Post 19, emergency-driven demand' }],
+  },
+  {
     value: '1973',
     claim:
       'The year SWIFT was founded. It is a messaging cooperative: it carries payment instructions between banks and never holds or moves funds itself, which is the distinction blog post 7 is built around.',
@@ -308,5 +495,14 @@ export const citations = [
     claim: `What Wells Fargo's ordinary international wire would cost on $${figures.benchmarkUsd}, fee and markup together. Method: the flat $${wfStandardWire.flatFeeUsdLow} to $${wfStandardWire.flatFeeUsdHigh} expressed as a share of $${figures.benchmarkUsd}, plus the ${wfStandardWire.markupPctLow}% to ${wfStandardWire.markupPctHigh}% markup cited above. Both ends are estimates on estimates, which is why the figure draws the range hollow rather than picking a number in it.`,
     source: null,
     usedOn: [{ page: 'Blog', where: 'Post 2, the two-products figure' }],
+  },
+  {
+    value: `${tps.bySize[3].tps} to ${tps.bySize[0].tps} TPS`,
+    claim: `Average transactions per second a network carrying all global remittance volume would have to sustain, across assumed average transaction sizes from $${tps.bySize[3].sizeUsd} down to $${tps.bySize[0].sizeUsd}. Method: $${figures.flowsUsdBn} billion divided by the assumed size, divided by ${tps.secondsPerYear.toLocaleString()} seconds in a year. The flows figure is cited above; the division is ours, and the fivefold spread comes entirely from the assumption, not the arithmetic. The realistic target is roughly a tenth of this, because no single architecture carries the whole market.`,
+    source: null,
+    usedOn: [
+      { page: 'Blog', where: 'Post 19, the baseline table and the TPS by size figure' },
+      { page: 'Blog', where: 'Post 19, the market share and closing range figures' },
+    ],
   },
 ]

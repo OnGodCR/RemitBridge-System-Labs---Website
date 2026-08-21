@@ -1,3 +1,5 @@
+import { tps } from '@/data/figures'
+
 /**
  * Cover art that is drawn rather than photographed.
  *
@@ -51,4 +53,42 @@ export function SwiftCover() {
   )
 }
 
-export const coverArt = { 7: SwiftCover }
+/**
+ * Post 19. Throughput, drawn as the thing the post measures.
+ *
+ * The bars are the four rows of its own table, scaled to each other: the
+ * answer swings fivefold on which average transaction size you assume, and
+ * that swing is the post's argument, so it is the cover.
+ */
+const SERIES4_FIELD = '#FAF0E2'
+const SERIES4_INK = '#8A4E0C'
+
+export function TpsCover() {
+  const bars = tps.bySize.map((r) => r.tps)
+  const max = Math.max(...bars)
+  return (
+    <div
+      aria-hidden
+      className="flex size-full items-center justify-center gap-[7%] px-[9%]"
+      style={{ backgroundColor: SERIES4_FIELD, color: SERIES4_INK }}
+    >
+      <div className="flex h-[42%] items-end gap-[1.6cqw]">
+        {bars.map((v, i) => (
+          <span
+            key={i}
+            className="w-[3.2cqw] rounded-t-[2px]"
+            style={{ height: `${(v / max) * 100}%`, backgroundColor: 'currentColor' }}
+          />
+        ))}
+      </div>
+      <span
+        className="font-extrabold leading-none tracking-tight"
+        style={{ fontSize: 'min(14cqw, 32cqh)' }}
+      >
+        TPS
+      </span>
+    </div>
+  )
+}
+
+export const coverArt = { 7: SwiftCover, 19: TpsCover }
