@@ -1,7 +1,7 @@
 import { posts as raw, seriesCategories } from './posts'
 import { bodies } from './postBodies'
 import cover2 from '@/assets/remittance-counter.jpg'
-import cover7 from '@/assets/money-changing-hands.jpg'
+import cover7 from '@/assets/network-racks.jpg'
 
 /**
  * Cover photographs, by post id. Only for posts that have earned one.
