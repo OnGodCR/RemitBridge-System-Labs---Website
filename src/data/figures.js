@@ -259,7 +259,7 @@ export const citations = [
   },
   {
     value: `$${usMxQ3.wellsFargo.totalUsd.toFixed(2)} and $${usMxQ3.delgadoTravel.totalUsd.toFixed(2)}`,
-    claim: `What each provider keeps out of $${figures.benchmarkUsd} on the US to Mexico corridor. Method: the fee, plus the gap between the mid-market rate and the rate applied, converted back to dollars. Wells Fargo, $${usMxQ3.wellsFargo.feeUsd.toFixed(2)} + (${usMxQ3.wellsFargo.midRate} - ${usMxQ3.wellsFargo.appliedRate}) x ${figures.benchmarkUsd} / ${usMxQ3.wellsFargo.midRate}. Delgado Travel, the same sum on ${usMxQ3.delgadoTravel.midRate} and ${usMxQ3.delgadoTravel.appliedRate}. Both rates are cited above; the subtraction is ours.`,
+    claim: `What each provider keeps out of $${figures.benchmarkUsd} on the US to Mexico corridor. Method: the fee, plus the gap between the mid-market rate and the rate applied, converted back to dollars. Wells Fargo, $${usMxQ3.wellsFargo.feeUsd.toFixed(2)} + (${usMxQ3.wellsFargo.midRate} - ${usMxQ3.wellsFargo.appliedRate}) x ${figures.benchmarkUsd} / ${usMxQ3.wellsFargo.midRate}. Delgado Travel, the same sum on ${usMxQ3.delgadoTravel.midRate} and ${usMxQ3.delgadoTravel.appliedRate}. Both rates are cited above; the subtraction is ours. The split matters more than the total: the fee is the same $${usMxQ3.wellsFargo.feeUsd.toFixed(2)} on both, so it is the larger share of each, and the whole $${(usMxQ3.delgadoTravel.totalUsd - usMxQ3.wellsFargo.totalUsd).toFixed(2)} gap between the two providers is exchange rate margin.`,
     source: null,
     usedOn: [
       { page: 'Blog', where: 'Post 2, the worked arithmetic under each provider' },

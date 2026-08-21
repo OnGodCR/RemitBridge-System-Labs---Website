@@ -118,7 +118,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'For this specific $200, US-to-Mexico, this specific week: the bank kept about $8.24 and the MTO kept about $9.95, out of every $200 sent. Both numbers sit in a very similar range, both are dominated more by the FX margin than by the visible fee, and neither one matches the "bank are slow and expensive while MTOs are automatically fast and cheap" assumption. The corridor a transfer runs through, and the specific product a provider has built for that corridor, matters more than which category of institution is sending it.',
+      text: 'For this specific $200, US-to-Mexico, this specific week: the bank kept about $8.24 and the MTO kept about $9.95, out of every $200 sent. Both numbers sit in a very similar range, the flat fee is the larger share of both, with the FX margin accounting for the entire difference between them, and neither one matches the "bank are slow and expensive while MTOs are automatically fast and cheap" assumption. The corridor a transfer runs through, and the specific product a provider has built for that corridor, matters more than which category of institution is sending it.',
     },
     { type: 'h', text: 'So Which One Is Actually Better?' },
     {
