@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ArrowLeft, Check, X } from 'lucide-react'
 import { Container } from '@/components/Section'
+import Backdrop from '@/components/Backdrop'
 import PostCard, { PostCover } from '@/components/PostCard'
 import { relatedTo } from '@/data/blog'
 import { usePost } from '@/lib/usePosts'
@@ -262,8 +263,12 @@ export default function BlogPost() {
         </Container>
       </header>
 
-      <article className="py-14">
-        <Container width="prose">
+      {/* The whole post carries its series colour, not just the header band.
+          Painting over the fixed site backdrop hides its pattern, so the same
+          one is rendered inside, the way the green bands do it. */}
+      <article className={cn('relative overflow-hidden py-14', theme.tint)}>
+        <Backdrop fadeClass={null} />
+        <Container width="prose" className="relative">
           {/* Banner, only for posts written in the dashboard. Repo posts carry
               their generated cover on the index tile and no banner here. */}
           {/* Drawn cover art is a designed plate meant to be looked at, so it
