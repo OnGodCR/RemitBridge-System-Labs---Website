@@ -224,9 +224,19 @@ things read it:
 Both read the same table on purpose. Two sources here would mean a crawler
 that renders JavaScript sees one set of tags replace another.
 
-The build also writes `dist/sitemap.xml` (47 URLs) and `dist/robots.txt`.
-Neither is in `public/`: both need the absolute production domain, which is
-only known at build time.
+The build writes 51 files and lists 47. The extra five are the signed-in
+routes, which get a file purely so their `noindex` is in the HTML. They were
+`Disallow` lines in robots.txt first, which is the wrong tool: a disallowed
+URL is never fetched, so the noindex on it is never read, and Google will
+still list the bare URL if something links to it. **robots.txt now disallows
+nothing.** Neither mechanism protects anything; row-level security does.
+
+`dist/sitemap.xml` and `dist/robots.txt` are generated rather than kept in
+`public/`: both need the absolute production domain, known only at build time.
+
+Verified against the live deploy on 2026-08-21: all 47 sitemap URLs return
+200 with 47 distinct titles, every canonical matching its own URL, JSON-LD on
+all of them, and `noindex` served in the HTML of all five signed-in routes.
 
 **To add or change a page's search entry, edit `src/lib/seo.js`.** Nothing
 else. `staticPaths` is derived from `routes.js`, so a page added there is
