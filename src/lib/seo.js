@@ -175,6 +175,21 @@ export const postPaths = posts.map((post) => ({
  */
 export const staticPaths = ['/', ...routes.map((r) => r.path), '/remitbench', '/sources']
 
+/**
+ * What the build writes a file for, which is more than what it lists.
+ *
+ * The signed-in routes get a file precisely so their noindex is in the HTML
+ * rather than only appearing once React has run. Leaving them to the SPA
+ * fallback meant they served the home page's head, and the only thing keeping
+ * them out of the index was a Disallow line, which is a weaker promise than it
+ * looks: a disallowed URL is never fetched, so the noindex on it is never
+ * read, and Google will still list the bare URL if anything links to it.
+ *
+ * Which is why robots.txt no longer disallows them. Let the crawler in, let it
+ * read the refusal, and it drops the page properly.
+ */
+export const prerenderPaths = [...staticPaths, ...NOINDEX]
+
 /** Title, description and robots directive for a path. Never returns null. */
 export function metaFor(pathname) {
   const page = pages[pathname]

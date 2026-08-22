@@ -12,6 +12,7 @@ import {
   jsonLdFor,
   metaFor,
   postPaths,
+  prerenderPaths,
   staticPaths,
 } from './src/lib/seo.js'
 
@@ -131,9 +132,14 @@ function seoBlock(pathname, origin) {
   return `${START}\n    ${tags.join('\n    ')}\n    ${END}`
 }
 
-/** Every URL the build knows about. Database posts cannot be here: they are
+/** Every URL the build writes a file for, including the signed-in routes,
+ *  which get one so that their noindex ships in the HTML. */
+const filePaths = () => [...prerenderPaths, ...postPaths.map((p) => p.path)]
+
+/** Every URL the sitemap lists. Database posts cannot be here: they are
  *  written after the build and the sitemap is a static file. */
-const allPaths = () => [...staticPaths, ...postPaths.map((p) => p.path)]
+const listedPaths = () =>
+  [...staticPaths, ...postPaths.map((p) => p.path)].filter((p) => !metaFor(p).noindex)
 
 function seoPlugin() {
   const origin = siteUrl()
@@ -174,7 +180,7 @@ function seoPlugin() {
       }
 
       let written = 0
-      for (const pathname of allPaths()) {
+      for (const pathname of filePaths()) {
         if (pathname === '/') continue
         const html = template.replace(home, seoBlock(pathname, origin))
         const dir = path.join(dist, pathname.replace(/^\//, ''))
@@ -183,8 +189,7 @@ function seoPlugin() {
         written += 1
       }
 
-      const urls = allPaths()
-        .filter((p) => !metaFor(p).noindex)
+      const urls = listedPaths()
         .map((p) => `  <url><loc>${xml(`${origin}${p}`)}</loc></url>`)
         .join('\n')
 
@@ -197,27 +202,22 @@ function seoPlugin() {
       /*
        * robots.txt is generated rather than kept in public/ because the
        * sitemap line has to be an absolute URL and the domain is only known
-       * at build time. The disallowed paths are the signed-in ones: a crawler
-       * indexing them would put a sign-in box in a search result. They are not
-       * protected by this. They are protected by row-level security.
+       * at build time.
+       *
+       * It disallows nothing, on purpose. The signed-in routes were listed
+       * here first, which was the wrong tool: a disallowed URL is never
+       * fetched, so the noindex on it is never read, and Google will still
+       * list the bare URL if anything links to it. They each ship a real file
+       * carrying noindex instead. Let the crawler in, let it read the refusal.
+       *
+       * Neither mechanism protects anything. Row-level security does that.
        */
       fs.writeFileSync(
         path.join(dist, 'robots.txt'),
-        [
-          'User-agent: *',
-          'Allow: /',
-          'Disallow: /dashboard',
-          'Disallow: /account',
-          'Disallow: /sign-in',
-          'Disallow: /sign-up',
-          'Disallow: /write',
-          '',
-          `Sitemap: ${origin}/sitemap.xml`,
-          '',
-        ].join('\n'),
+        ['User-agent: *', 'Allow: /', '', `Sitemap: ${origin}/sitemap.xml`, ''].join('\n'),
       )
 
-      this.info?.(`seo: ${written} prerendered pages, ${allPaths().length} sitemap URLs`)
+      this.info?.(`seo: ${written} prerendered pages, ${listedPaths().length} sitemap URLs`)
     },
   }
 }
