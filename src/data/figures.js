@@ -191,6 +191,13 @@ export const sources = {
     date: 'On sharding, payment channels and cross-shard communication',
     href: 'https://blockchain-observatory.ec.europa.eu',
   },
+  tpsClaimsGraphic: {
+    id: 'tpsClaimsGraphic',
+    title: 'Transactions per second between blockchains, a compilation of advertised figures',
+    publisher: 'Solana Daily, on X',
+    date: 'Undated; it lists Terra, which stopped operating in 2022',
+    href: 'https://x.com/solanadaily',
+  },
   sdg: {
     id: 'sdg',
     title: 'Sustainable Development Goal 10.c: reduce remittance costs to less than 3 percent',
@@ -354,6 +361,37 @@ export const zilliqa = {
     'No sustained multi-day operation',
   ],
 }
+
+/**
+ * Published throughput claims for thirteen chains, as they circulate.
+ *
+ * These are advertised figures. Not one of them states the workload, the
+ * hardware, the validator count, or what it counted as a transaction, and
+ * several are theoretical maxima rather than observed mainnet throughput.
+ * Terra is on the list and stopped operating in 2022.
+ *
+ * They are on this site as the object of blog post 17's argument, not as
+ * evidence for anything, and the figure that draws them says so. That is the
+ * only footing on which numbers with no stated method belong here at all.
+ *
+ * Redrawn from the compilation rather than reproduced: the numbers are each
+ * project's own published claim, the arrangement was somebody else's image.
+ */
+export const tpsClaims = [
+  { name: 'Ethereum', tps: 15 },
+  { name: 'BSC', tps: 100 },
+  { name: 'Cardano', tps: 250 },
+  { name: 'Polkadot', tps: 400 },
+  { name: 'Algorand', tps: 1000 },
+  { name: 'Cosmos', tps: 1400 },
+  { name: 'Tron', tps: 2000 },
+  { name: 'Avalanche', tps: 4500 },
+  { name: 'Fantom', tps: 10000 },
+  { name: 'Terra', tps: 10000, defunct: true },
+  { name: 'Elrond', tps: 15000 },
+  { name: 'Polygon', tps: 65000 },
+  { name: 'Solana', tps: 65000 },
+]
 
 /** (global rate − target) × annual flows. Our arithmetic, not a cited figure. */
 export const derived = {
@@ -534,6 +572,13 @@ export const citations = [
       'Projected rise in remittances to Haiti over the year following the 2010 earthquake. Sustained across months rather than concentrated in a burst, which is what makes emergency demand a different load profile from a holiday one.',
     source: sources.wbHaiti,
     usedOn: [{ page: 'Blog', where: 'Post 19, emergency-driven demand' }],
+  },
+  {
+    value: '15 to 65,000 TPS',
+    claim:
+      'The spread of throughput figures advertised across thirteen blockchains, as they circulate in comparison graphics. Listed here as claims, not measurements: none states its workload, hardware, validator count or definition of a transaction, several are theoretical maxima rather than observed mainnet throughput, and the compilation includes Terra, which stopped operating in 2022. Blog post 17 uses them as the thing being examined rather than as evidence, and the site holds no position on whether any individual figure is accurate.',
+    source: sources.tpsClaimsGraphic,
+    usedOn: [{ page: 'Blog', where: 'Post 17, the figure showing the claims the post goes on to take apart' }],
   },
   {
     value: `${zilliqa.tps.toLocaleString()} TPS`,

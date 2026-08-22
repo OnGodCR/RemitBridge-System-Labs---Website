@@ -20,6 +20,7 @@ import {
   SecurityModels,
   FinalityMeanings,
   FairComparison,
+  ClaimedTps,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -496,6 +497,7 @@ export const bodies = {
       type: 'p',
       text: '**Almost none of the benchmarks mentioned earlier were measured the same way, against the same conditions, using the same definitions of what counts as a transaction, a cost, or a finished payment.** Comparing them directly is closer to comparing a car\'s top speed on a closed track to another car\'s average speed in city traffic, which leads to a very hazy view of what each technology\'s advantages and disadvantages are.',
     },
+    { type: 'figure', render: ClaimedTps },
     { type: 'h', text: 'The Industry Doesn\'t Even Agree on What "TPS" Means' },
     {
       type: 'p',

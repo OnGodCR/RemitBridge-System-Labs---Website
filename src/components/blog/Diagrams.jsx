@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { ArrowDown, ArrowRight } from 'lucide-react'
-import { figures, usMxQ3, wfStandardWire, tps, zilliqa } from '@/data/figures'
+import { figures, usMxQ3, wfStandardWire, tps, zilliqa, tpsClaims } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -948,6 +948,77 @@ export function FairComparison({ theme }) {
       <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
         Every one of these is held differently, or not at all, across the benchmarks currently
         circulating. That is the gap the lab's own paper is built to close.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * The claims themselves, drawn so the post has something to point at.
+ *
+ * Redrawn rather than reproduced. The numbers are each project's own
+ * published claim; the compilation they were taken from is somebody else's
+ * image, and reposting it is a licence question the site does not need.
+ *
+ * Three deliberate choices, all of them about not repeating in a picture the
+ * error the post is describing:
+ *
+ * A logarithmic length, because 15 against 65,000 is four orders of magnitude
+ * and a linear axis renders nine of the thirteen bars as invisible slivers.
+ * The caption says so; an unlabelled log axis is its own kind of lie.
+ *
+ * No curve through the tops. The compilation joins these with a smooth rising
+ * line, which asserts a trend between thirteen unrelated projects. They are
+ * categories, not a series, so they get bars and no connector.
+ *
+ * Every bar is labelled with its number. Normally that is noise, but here the
+ * figure is doing a table's job as much as a chart's: the claims are the
+ * subject, and a log bar cannot be read off without its value.
+ */
+const LOG_MIN = 10
+const LOG_MAX = 100000
+const logPct = (v) =>
+  ((Math.log10(v) - Math.log10(LOG_MIN)) / (Math.log10(LOG_MAX) - Math.log10(LOG_MIN))) * 100
+
+export function ClaimedTps({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Throughput as advertised, not as measured
+      </figcaption>
+
+      <div className="mt-5 space-y-1.5">
+        {tpsClaims.map((c) => (
+          <div
+            key={c.name}
+            className="grid grid-cols-[4.25rem_1fr_3.25rem] items-center gap-x-2 sm:grid-cols-[6rem_1fr_4rem]"
+          >
+            <span className="truncate text-xs font-bold">
+              {c.name}
+              {c.defunct && <span className="font-normal text-muted-foreground"> †</span>}
+            </span>
+            <span className="relative block h-2.5 rounded-full bg-muted">
+              <span
+                className={cn(
+                  'absolute inset-y-0 left-0 rounded-l-full rounded-r-[4px]',
+                  c.defunct ? 'bg-muted-foreground/50' : theme.bar,
+                )}
+                style={{ width: `${logPct(c.tps)}%` }}
+              />
+            </span>
+            <span className="text-right text-xs tabular-nums text-muted-foreground">
+              {c.tps.toLocaleString()}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        Bar length is logarithmic: every tenfold rise is the same distance, because 15 and 65,000
+        cannot share a linear axis. None of these figures states its workload, hardware, validator
+        count or definition of a transaction, and several are theoretical maxima rather than
+        observed throughput. † Terra stopped operating in 2022. This is the pile of numbers the
+        rest of the post is about, not a ranking the lab stands behind.
       </p>
     </figure>
   )
