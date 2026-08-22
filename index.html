@@ -4,12 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>RemitBridge Systems Lab</title>
-    <meta
-      name="description"
-      content="A student research lab measuring what cross-border transfers actually cost, and testing whether newer payment rails can do it cheaper."
-    />
-
     <!-- Tab icon. SVG first for modern browsers, PNGs for the rest. -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
@@ -18,43 +12,65 @@
     <meta name="theme-color" content="#14705A" />
 
     <!--
-      Link previews. og:url and og:image must be absolute URLs — crawlers do
-      not resolve relative paths. %SITE_URL% is filled in at build time by the
-      site-url plugin in vite.config.js, from the Vercel production domain.
+      Everything a crawler reads goes between these two markers, written by the
+      seo plugin in vite.config.js from the table in src/lib/seo.js.
+
+      It is generated rather than written out here because there is one index
+      file and forty-seven pages. The build copies this file per route with a
+      different block in each, so a link to any page carries that page's title
+      and description even though nothing has run JavaScript yet, which is the
+      situation every social crawler is in.
+
+      Do not hand-edit between the markers. Edit src/lib/seo.js.
     -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="RemitBridge Systems Lab" />
-    <meta property="og:title" content="RemitBridge Systems Lab" />
-    <meta
-      property="og:description"
-      content="A student research lab measuring what cross-border transfers actually cost, and testing whether newer payment rails can do it cheaper."
-    />
-    <meta property="og:url" content="%SITE_URL%/" />
-    <meta property="og:image" content="%SITE_URL%/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta
-      property="og:image:alt"
-      content="RemitBridge Systems Lab — measuring what it really costs to send money home."
-    />
+    <!-- SEO:START -->
+    <!-- SEO:END -->
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="RemitBridge Systems Lab" />
-    <meta
-      name="twitter:description"
-      content="A student research lab measuring what cross-border transfers actually cost, and testing whether newer payment rails can do it cheaper."
-    />
-    <meta name="twitter:image" content="%SITE_URL%/og-image.png" />
-
+    <!--
+      Fonts. preconnect is not enough on its own: the stylesheet is still a
+      blocking request on the critical path, and the browser cannot start it
+      until it has parsed this far. The stylesheet is fetched as a print sheet,
+      which does not block rendering, and switched to all once it arrives. The
+      noscript copy keeps it working with JavaScript off, where nothing can
+      switch the media attribute back.
+    -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div
+        style="max-width: 44rem; margin: 0 auto; padding: 6rem 1.5rem; font-family: system-ui, sans-serif"
+      >
+        <h1 style="font-size: 1.75rem; font-weight: 800; margin: 0 0 1rem">
+          RemitBridge Systems Lab
+        </h1>
+        <p style="line-height: 1.6; margin: 0 0 1.5rem">
+          A student research lab measuring what cross-border transfers actually cost, and
+          testing whether newer payment rails can do it cheaper. The calculators and the
+          thirty research posts need JavaScript to run. If you cannot enable it, write to
+          remitbridgesystemlabs@gmail.com and we will send the material another way.
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

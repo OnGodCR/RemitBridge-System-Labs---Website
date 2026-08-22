@@ -27,6 +27,13 @@ import {
   Atomicity,
   HotShard,
   CrossShardShare,
+  WhatItCovers,
+  SpeedStakes,
+  YearOfFees,
+  DelayIsAnOutcome,
+  CostGap,
+  FeeLandsDifferently,
+  FiveRoles,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -676,6 +683,103 @@ export const bodies = {
         'Zilliqa GitHub Wiki and Zilliqa Name Service documentation, on the Directory Service committee\'s role coordinating shard assignment and validating shard-produced blocks: github.com/Zilliqa/Zilliqa/wiki/Mining; github.com/PortalNetwork/zns',
         'arXiv, "BrokerChain: A Blockchain Sharding Protocol by Exploiting Broker Accounts," on the definition of hot shards and imbalanced transaction distribution under Monoxide-style sharding: arxiv.org/pdf/2412.07202',
         'Inter-American Dialogue and prior posts in this series, on remittance volume concentration in high-traffic corridors such as US-Mexico: thedialogue.org, "Understanding the Recent Growth in Remittances to Mexico"',
+      ],
+    },
+  ],
+
+  1: [
+    {
+      type: 'p',
+      text: 'An international {{remittance|remittance}} may look simple at first glance, a person working in one country sends money to someone in another. Maybe a few extra clicks, a wire transfer, and finally a receipt being printed out. **This framing, however, overlooks the most important thing about remittances, what the money is used for.**',
+    },
+    {
+      type: 'p',
+      text: 'Globally, migrant workers sent $905B home to family in other countries in 2024 alone. This is $905B that was used specifically for consumption and education. The most common examples of how the money was used include rent payments, grocery runs, school fees, and medicine. All of these transfers are often sent in small amounts with a high frequency to support the ones they love back home. **Understanding remittances means understanding what the money being transferred actually does once it lands in that wallet of the person who needs it.** With the number of people remittances impact, it is one of the biggest issues in the fintech industry that demands innovation. The goal of this blog post and the ones that come in the future is to explore this issue more and raise awareness about this topic, with the hope that migrants back home can receive more money that they can use to empower developing economies.',
+    },
+    { type: 'h', text: 'Remittances Are Household Income, Not Extra Spending Money' },
+    {
+      type: 'p',
+      text: 'For a lot of families, a remittance isn\'t a bonus on top of other income. **It is the household back home\'s sole income.** Some examples of scenarios like this include a migrant\'s retired parents back home struggling due to a bad pension system and a housewife who is too busy taking care of the kids and running the household to get an additional job. In these scenarios, remittances are the backbone that hold the entire household together. In some countries, remittances make up a meaningful share of household earnings, and in the poorest communities, families often rely on money sent from abroad more heavily than they rely on local wages. Research on remittance-dependent households has even described these transfers as functioning like insurance. In years when a local economy takes a hit remittances tend to hold steady or even increase. This practice cushions a blow that would otherwise land directly on the household and allows for them to keep their standard of living despite bad economic circumstances.',
+    },
+    {
+      type: 'p',
+      text: 'This changes how you should think about the money itself. A $200 transfer (the standard amount researchers and the World Bank use to benchmark remittance costs, since it reflects what a typical transfer actually looks like) isn\'t discretionary. It\'s often included in the budget. Remittances help pay for a portion for rent, a portion for food, a portion for children to attend school and whatever\'s left for everything else. **That\'s part of why transaction costs matter so much here.** When a provider charges 6% instead of 3%, an amount a comfortable family may consider menial, households are directly impacted. Over a year of monthly transfers, that gap adds up to real, meaningful money, not a marginal difference. Take a look at our [yearly cost calculator](/reckoner) to see how much this adds up to across the whole year.',
+    },
+    { type: 'figure', render: WhatItCovers },
+    { type: 'h', text: 'Remittances Are Emergency Support' },
+    {
+      type: 'p',
+      text: 'Remittances also function as something close to informal insurance. When a crisis hits, such as a medical emergency, a natural disaster, a lost job, families in developing countries often can\'t lean on unemployment benefits, health insurance, or social safety nets the way people in wealthier countries can. **What they lean on instead is a relative working abroad who can send extra help quickly.**',
+    },
+    {
+      type: 'p',
+      text: 'Imagine the scenario a family struggling with a natural disaster has to deal with; a family member falls ill and needs treatment today, not next week. A call goes out to a relative abroad. That relative sends what they can, right away, hoping it arrives in time to save the family member\'s life and get them the treatment they need. The money doesn\'t arrive due to {{swift|SWIFT}}\'s systems being slow to settle. This is a real scenario that could happen, and **it\'s exactly why speed matters as much as cost.** A transfer that takes two or three days to settle might be fine for routine support. It\'s a very different story during an emergency, when a family needs money now, not once a chain of correspondent banks finishes clearing the transaction on their own schedule. The slowness baked into a lot of traditional cross-border payment infrastructure is more than an inconvenience in moments like this one.',
+    },
+    { type: 'figure', render: SpeedStakes },
+    { type: 'h', text: 'Remittances Fund Education' },
+    {
+      type: 'p',
+      text: 'One of the most consistent findings across remittance research is that this money disproportionately goes toward education, tuition, school supplies, uniforms, transportation to and from school. **Families receiving remittances are often able to keep kids in school longer**, and to invest in schooling for children who might otherwise need to start working earlier to help support the household.',
+    },
+    {
+      type: 'p',
+      text: 'This is also where the cost of remittances becomes a different kind of problem than it looks like on the surface. A family losing a consistent percentage of every transfer to fees isn\'t just losing money, **they\'re often losing exactly the margin that would have covered a semester\'s tuition or a stack of textbooks.** Multiply a small monthly loss across a year, and it turns out, the real cost isn\'t small at all.',
+    },
+    { type: 'figure', render: YearOfFees },
+    { type: 'h', text: 'Remittances Fund Healthcare' },
+    {
+      type: 'p',
+      text: 'The same logic extends to healthcare. In places where medical care requires out-of-pocket payment and there\'s no reliable insurance system to fall back on, remittances often directly determine whether a family can afford a doctor\'s visit, ongoing medication, or emergency treatment.',
+    },
+    {
+      type: 'p',
+      text: 'This is another place where delay isn\'t neutral, like we explored earlier. **Medication that gets postponed because a transfer hasn\'t arrived yet is a health outcome.** In this scenario, remittances can genuinely be the difference between life and death.',
+    },
+    { type: 'figure', render: DelayIsAnOutcome },
+    { type: 'h', text: 'Remittances Drive Local Economic Development' },
+    {
+      type: 'p',
+      text: 'Let\'s now take the time to zoom out from any single household, and remittances start to look like a genuine engine of economic development. In some countries, they make up a substantial share of national GDP, money that flows directly into local economies through spending on goods, services, housing, and small business investment. **Unlike foreign aid or large-scale investment, this money doesn\'t route through governments or institutions first, it goes straight to households**, who then spend it in their own communities: at the local market, the local pharmacy, the local school.',
+    },
+    {
+      type: 'p',
+      text: 'Interestingly, lowering the cost of sending remittances doesn\'t just mean families keep more of what\'s already being sent, it tends to increase how much gets sent overall. Research has found that a meaningful drop in fees leads to a real, measurable increase in the total amount migrants choose to send. Cheaper transfers make it easier and more worthwhile to send money more often, which means more capital moving into local economies. **Closing the gap between today\'s global average cost (around 6%) and the United Nations\' 3% target could mean an additional $30 billion flowing into families and communities every single year.** That\'s money currently being absorbed by fees and {{exchange-rate-margin|exchange-rate markups}} instead of reaching the people it was sent for.',
+    },
+    { type: 'figure', render: CostGap },
+    { type: 'h', text: 'Personal Transfers vs. Commercial Cross-Border Payments' },
+    {
+      type: 'p',
+      text: 'It\'s worth being precise here, because remittances get lumped in with cross-border payments generally, and the two aren\'t the same thing, even though they often move through overlapping infrastructure.',
+    },
+    {
+      type: 'p',
+      text: 'A commercial cross-border payment is a business paying another business, or an individual paying for goods or services abroad. Think of a company paying an overseas supplier, or someone buying something from an international retailer. These payments are typically larger, less frequent, and often built around invoices, contracts, and trade terms. The infrastructure behind them, and the fee structures that come with it, is largely designed with that use case in mind: bigger transfers where a percentage-based fee is a small cost of doing business.',
+    },
+    {
+      type: 'p',
+      text: 'A remittance is fundamentally a personal transfer between individuals, usually family members, with no invoice, no contract, and no commercial transaction behind it. It\'s smaller in size, far more frequent, and it\'s moving to support someone\'s actual day-to-day life rather than to settle a business obligation. **Critically, remittances are also disproportionately sent by people who are themselves financially vulnerable**, migrant workers earning modest wages, sending a meaningful share of their income home on a recurring basis, not a business managing routine overhead.',
+    },
+    {
+      type: 'p',
+      text: 'That distinction matters because **a lot of the payment infrastructure remittances rely on wasn\'t actually built for them.** It was built for commercial payments and adapted, which is a big part of why remittances end up carrying fees and delays that make far more sense for a business wiring a supplier than for a parent sending grocery money. A flat fee that\'s negligible on a $50,000 commercial payment can eat up 5% or more of a $200 remittance, the exact same fee structure landing completely differently depending on who\'s actually on the other end of the transfer.',
+    },
+    { type: 'figure', render: FeeLandsDifferently },
+    { type: 'h', text: 'Why This Framing Matters' },
+    {
+      type: 'p',
+      text: 'Once you see remittances this way, as household income, emergency support, education funding, healthcare funding, and a real driver of economic development, the stakes behind "how do we make this system faster and cheaper" come into much sharper focus. This is a question of whether a family gets their money in time to matter, and whether the infrastructure moving that money was ever really built with them in mind in the first place. **Simply put, timely remittances can be the difference between life and death, education or no education, staying hungry or full and everything in between, and it\'s time we start treating them that way.**',
+    },
+    { type: 'figure', render: FiveRoles },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'World Bank Migration and Development Brief, global remittance flows reaching $905 billion in 2024: migrationdataportal.org/themes/remittances-overview',
+        'World Bank, Remittance Prices Worldwide, on the $200 benchmark amount used to monitor remittance costs since 2008: remittanceprices.worldbank.org/methodology',
+        'World Bank Data Blog, "The cost of sending remittances is higher than 3% in 28 countries," on the UN SDG 10.c target of reducing average remittance costs to below 3%, and countries where remittances exceed 25% of GDP: blogs.worldbank.org/en/opendata/the-cost-of-sending-remittances-is-higher-than-3--in-28-countrie',
+        'World Bank, Remittance Prices Worldwide, current global average remittance cost of 6.36% of the amount sent: remittanceprices.worldbank.org',
+        'UN Statistics Division, SDG Indicator 10.c.1 metadata, on the definition and history of the 3% remittance-cost target: unstats.un.org/sdgs/metadata/files/Metadata-10-0C-01.pdf',
+        'Chami, Fullenkamp, and Jahjah (2005), and World Bank Global Economic Prospects 2015, Chapter 4, on remittances behaving countercyclically and functioning as informal insurance for recipient households: worldbank.org/content/dam/Worldbank/GEP/GEP2015a/pdfs/GEP2015a_chapter4_report_remittances.pdf',
       ],
     },
   ],

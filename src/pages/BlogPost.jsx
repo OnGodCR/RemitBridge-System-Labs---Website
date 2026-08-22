@@ -9,7 +9,8 @@ import { usePost } from '@/lib/usePosts'
 import { renderMarkdown } from '@/lib/markdown'
 import { themeFor } from '@/lib/palette'
 import { postText } from '@/lib/postText'
-import { claimTitle } from '@/lib/pageTitle'
+import { claimHead } from '@/lib/head'
+import { clamp } from '@/lib/seo'
 import { cn } from '@/lib/utils'
 import NotFound from './NotFound'
 
@@ -199,10 +200,16 @@ export default function BlogPost() {
   const { post, loading } = usePost(slug)
 
   // The layout falls back to the site name for routes it does not know, so the
-  // post claims its own once it exists. No cleanup: navigating away moves the
-  // pathname on, and the layout takes the title back.
+  // post claims its own head once it exists. This covers posts written in the
+  // dashboard as well, which the build cannot prerender because they are not
+  // in the repo at build time. No cleanup: navigating away moves the pathname
+  // on, and the layout takes the head back.
   useEffect(() => {
-    if (post?.title) claimTitle(pathname, post.title)
+    if (!post?.title) return
+    claimHead(pathname, {
+      title: post.title,
+      description: clamp(post.abstract || ''),
+    })
   }, [post, pathname])
 
   if (loading) {

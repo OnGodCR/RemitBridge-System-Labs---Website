@@ -240,6 +240,27 @@ export const sources = {
     date: 'On hot shards and imbalanced transaction distribution',
     href: 'https://arxiv.org/pdf/2412.07202',
   },
+  wbCostBlog: {
+    id: 'wbCostBlog',
+    title: 'The cost of sending remittances is higher than 3% in 28 countries',
+    publisher: 'World Bank Data Blog',
+    date: 'Also on countries where remittances exceed 25% of GDP',
+    href: 'https://blogs.worldbank.org/en/opendata/the-cost-of-sending-remittances-is-higher-than-3--in-28-countrie',
+  },
+  unSdgMeta: {
+    id: 'unSdgMeta',
+    title: 'SDG Indicator 10.c.1 metadata: definition and history of the 3% remittance cost target',
+    publisher: 'UN Statistics Division',
+    date: 'Target year 2030',
+    href: 'https://unstats.un.org/sdgs/metadata/files/Metadata-10-0C-01.pdf',
+  },
+  gep2015: {
+    id: 'gep2015',
+    title: 'Global Economic Prospects 2015, chapter 4: remittances as informal insurance',
+    publisher: 'World Bank, with Chami, Fullenkamp and Jahjah (2005)',
+    date: 'On remittances behaving countercyclically',
+    href: 'https://www.worldbank.org/content/dam/Worldbank/GEP/GEP2015a/pdfs/GEP2015a_chapter4_report_remittances.pdf',
+  },
   sdg: {
     id: 'sdg',
     title: 'Sustainable Development Goal 10.c: reduce remittance costs to less than 3 percent',
@@ -476,6 +497,7 @@ export const citations = [
       { page: 'Home', where: 'Figure: "Sent home each year"' },
       { page: 'Home', where: 'Input to our own $30bn gap calculation' },
       { page: 'Blog', where: 'Post 19, the numerator of every throughput calculation in it' },
+      { page: 'Blog', where: 'Post 1, on what migrant workers send home in a year' },
     ],
   },
   {
@@ -505,6 +527,7 @@ export const citations = [
       { page: 'Yearly cost', where: 'The "at the UN target" row and the yearly saving line' },
       { page: 'Fair rate', where: 'The for-scale note under the result' },
       { page: 'Blog', where: 'Post 2, on the Wells Fargo result, and the dashed benchmark on its cost figure' },
+      { page: 'Blog', where: 'Post 1, the cost gap figure and the case for closing it' },
     ],
   },
   {
@@ -525,6 +548,7 @@ export const citations = [
       { page: 'TrueCost', where: 'Default amount in the calculator' },
       { page: 'Blog', where: 'Post 2 follows one $200 transfer, and prices both providers on it' },
       { page: 'Blog', where: 'Post 19, as the divisor for every TPS figure, and as the benchmark it argues is not an average' },
+      { page: 'Blog', where: 'Post 1, on why $200 is the amount researchers benchmark against' },
     ],
   },
   {
@@ -675,7 +699,10 @@ export const citations = [
     value: `~$${derived.annualOverpayUsdBn} billion`,
     claim: `Our own estimate of what closing the gap would return to families each year. Method: (${figures.globalCostPct}% − ${figures.targetPct}%) × $${figures.flowsUsdBn}bn. It is arithmetic on the two cited figures above, not a published number, and it assumes the average rate applies evenly across all flows.`,
     source: null,
-    usedOn: [{ page: 'Home', where: 'Figure: "The gap, every year"' }],
+    usedOn: [
+      { page: 'Home', where: 'Figure: "The gap, every year"' },
+      { page: 'Blog', where: 'Post 1, on what closing the cost gap would return to families each year' },
+    ],
   },
   {
     value: `$${usMxQ3.wellsFargo.totalUsd.toFixed(2)} and $${usMxQ3.delgadoTravel.totalUsd.toFixed(2)}`,

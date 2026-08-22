@@ -4,6 +4,10 @@ import cover2 from '@/assets/remittance-counter.jpg'
 import cover17 from '@/assets/measurement-scale.jpg'
 import cover19 from '@/assets/trading-floor.jpg'
 import { coverArt } from '@/components/blog/Covers'
+// Shared with the build-time sitemap, which cannot import this file.
+// Slugs stay stable as long as titles do, which is the tradeoff for not
+// hand-maintaining a second identifier on every post.
+import { slugify } from '@/lib/slug'
 
 /**
  * Cover photographs, by post id. Only for posts that have earned one.
@@ -12,17 +16,6 @@ import { coverArt } from '@/components/blog/Covers'
  * generic stock photo on a research post is worse than an honest number.
  */
 const covers = { 2: cover2, 17: cover17, 19: cover19 }
-
-/**
- * URL slug from the title. Stable as long as titles are, which is the tradeoff
- * for not hand-maintaining a second identifier on every post.
- */
-const slugify = (title) =>
-  title
-    .toLowerCase()
-    .replace(/[’']/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
 
 export const posts = raw.map((post) => ({
   ...post,

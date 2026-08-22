@@ -19,11 +19,13 @@ list is short on purpose; if it stops being short, that is worth saying.
 
 Deferred by choice, not forgotten. Update this list as things land.
 
-- [ ] **Social previews still show the site-wide title.** The tab title is
-      fixed, but `og:title` and `twitter:title` are static in `index.html`, so
-      a link pasted into Slack or iMessage reads "RemitBridge Systems Lab"
-      whatever page it points at. Per-page og: needs prerendering or a server
-      render, which is a different job from `document.title`.
+- [ ] **Blog posts carry no publication date**, so the BlogPosting markup
+      omits `datePublished`. Real dates in `posts.js` would complete it. Not
+      invented, for the same reason no other number here is.
+- [ ] **The prerender covers the head, not the body.** A crawler that does not
+      run JavaScript gets correct tags and an empty `#root`. Google renders JS
+      and indexes the text, so this is a real but second-order gap. Fixing it
+      properly means server rendering.
 - [ ] **RemitBench needs four decisions** before it can be rebuilt as the
       provider comparison tool. Asked several times, not yet answered, and
       nothing should be built until they are. See `HANDOFF.md`.
@@ -36,6 +38,12 @@ Deferred by choice, not forgotten. Update this list as things land.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and
       is deliberately empty. Populating it is the same World Bank access
       request the RemitBench decision turns on.
+- [x] Per-page search and social metadata. Every page ships its own title,
+      description, canonical, og:/twitter: and JSON-LD, from one table in
+      `src/lib/seo.js`, applied at runtime by `lib/head.js` and baked into 47
+      real HTML files at build time. `sitemap.xml` and `robots.txt` are
+      generated. This closes the old "social previews show the site-wide
+      title" item: a link to any page now previews as that page.
 - [x] Email notifications on contact messages. Resend key and database webhook
       are live and verified: function returns 200 and the email arrives.
 - [x] Blank page on navigation. Root cause found by resolving the minified
@@ -178,8 +186,11 @@ undefined component, which took a page down once.
   and the success.
 - `npm test` runs 27 receipt-maths tests, including invariants.
 
-Two environment quirks have produced false negatives here, both worth
-remembering before diagnosing a bug that is not there: the embedded browser
-throttles `requestAnimationFrame` when nothing paints, and in some contexts the
+Three environment quirks have produced false negatives here, all worth
+remembering before diagnosing a bug that is not there. The embedded browser
+throttles `requestAnimationFrame` when nothing paints. In some contexts the
 document scrolls while **zero** scroll events fire and IntersectionObserver
-stays silent. The second one is real and shipped a fix.
+stays silent; that one is real and shipped a fix. And `vite preview` serves the
+SPA fallback for `/truecost` rather than `dist/truecost/index.html`, so the
+prerendered pages look broken there and are not: ask for `/truecost/` with the
+trailing slash, or read the file.

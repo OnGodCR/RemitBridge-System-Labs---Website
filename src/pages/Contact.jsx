@@ -4,14 +4,19 @@ import Section from '@/components/Section'
 import { Input } from '@/components/ui/input'
 import { buttonVariants } from '@/components/ui/button'
 import { supabase, backendEnabled } from '@/lib/supabase'
+import { CONTACT_EMAIL } from '@/lib/seo'
 import { cn } from '@/lib/utils'
 
 /**
  * The lab's address, shown on the page as a fallback for anyone who would
  * rather use their own mail client than the form. A shared lab address, not a
  * personal one, which is why it is fine in a public repo.
+ *
+ * Declared in lib/seo.js rather than here because the Organization structured
+ * data needs it too, and the build cannot import a page component. Re-exported
+ * so this stays the file you would look in for it.
  */
-export const contactEmail = 'remitbridgesystemlabs@gmail.com'
+export const contactEmail = CONTACT_EMAIL
 
 /*
  * One list, used twice: as the options in the select and as the guidance
@@ -102,7 +107,9 @@ export default function Contact() {
       <Section className="pt-12">
         <div className="grid gap-12 lg:grid-cols-[1fr_20rem] lg:items-start">
           <form onSubmit={submit}>
-            <h2 className="text-2xl">Send a message</h2>
+            {/* h1, not h2. The page opens on the form rather than a header,
+                so this is the only thing on it that names what it is. */}
+            <h1 className="text-2xl">Send a message</h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
               Goes straight to the lab, where a student reads it. We have not measured how
               long replies take yet, so there is no response time promised here. Once it is

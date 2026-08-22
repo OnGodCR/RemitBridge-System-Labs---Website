@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import { routes } from '@/routes'
-import { defaultTitle } from '@/lib/pageTitle'
+import { defaultHead } from '@/lib/head'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import ErrorBoundary from './ErrorBoundary'
@@ -26,17 +26,19 @@ export default function Layout() {
   }, [pathname])
 
   /*
-   * The tab title, from the same routes list that drives the header and the
-   * footer. Every page showed the site name alone, so two open tabs were
-   * indistinguishable and history was a column of identical entries.
+   * The whole head: tab title, description, canonical, og: and twitter:, the
+   * robots directive and the JSON-LD. Every page used to ship the same static
+   * set from index.html, so two open tabs were indistinguishable, history was
+   * a column of identical entries, and a search result for any page described
+   * the home page.
    *
-   * Pages outside the list, the dashboard and a blog post, set their own.
-   * This defers to them rather than overwriting: see lib/pageTitle.js for why
+   * Pages outside the route table, the dashboard and a blog post, set their
+   * own. This defers to them rather than overwriting: see lib/head.js for why
    * that needs a claim instead of just running second.
    */
   useEffect(() => {
     const route = routes.find((r) => r.path === pathname)
-    defaultTitle(pathname, route?.label)
+    defaultHead(pathname, route?.label)
   }, [pathname])
 
   return (

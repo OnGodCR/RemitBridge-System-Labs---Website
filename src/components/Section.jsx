@@ -62,6 +62,12 @@ export function PageHeader({ eyebrow, title, accent, intro, children }) {
 /**
  * A band of content. `tone` sets the surface: plain page ground, raised card
  * white, or the inverted accent band used once or twice per page for emphasis.
+ *
+ * `heading` exists for the pages that open straight into a section rather than
+ * a PageHeader. Their first real heading was an h2, which left the page with
+ * no h1 at all: bad for a screen reader walking the outline, and bad for a
+ * search result, which uses the h1 to work out what the page is about. It
+ * changes the tag and nothing else, so the page looks identical.
  */
 export default function Section({
   title,
@@ -70,6 +76,7 @@ export default function Section({
   align = 'left',
   width,
   className,
+  heading: Heading = 'h2',
   children,
 }) {
   const inverted = tone === 'accent' || tone === 'ink'
@@ -92,7 +99,7 @@ export default function Section({
               align === 'center' ? 'mx-auto max-w-2xl text-center' : 'max-w-3xl',
             )}
           >
-            {title && <h2 className="text-3xl sm:text-4xl">{title}</h2>}
+            {title && <Heading className="text-3xl sm:text-4xl">{title}</Heading>}
             {description && (
               <p
                 className={cn(

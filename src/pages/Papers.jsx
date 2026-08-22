@@ -15,6 +15,16 @@ export default function Papers() {
   return (
     <>
       <Section className="pt-12">
+        {/*
+          Hidden, not absent. The page deliberately opens on the status panel
+          rather than a title, but the panel only renders while nothing is
+          published, so a visible h1 there would vanish the day a paper goes
+          up. This one names the page for a screen reader walking the outline
+          and for a search result, in both states, without putting the lid
+          back on. Make it visible if the design changes its mind.
+        */}
+        <h1 className="sr-only">Research papers</h1>
+
         {published.length === 0 && (
           <div className="mb-10 rounded-2xl border border-border bg-muted p-6">
             <p className="text-sm font-bold uppercase tracking-widest text-primary">

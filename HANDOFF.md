@@ -60,7 +60,7 @@ src/
   routes.js            single source of truth for nav — header, footer, home index
   App.jsx              routes; add here AND to routes.js
   components/
-    Layout.jsx         backdrop, navbar, skip link, per-page <title>, scroll reset
+    Layout.jsx         backdrop, navbar, skip link, per-page head, scroll reset
     Backdrop.jsx       tiled bridge SVG + pointer light; onDark for green bands
     Section.jsx        Section / Container / PageHeader / DisplayTitle / FeatureBand
     blog/Diagrams.jsx  post figures: correspondent rail, liquidity pools, cost bars
@@ -69,6 +69,10 @@ src/
     truecost/          ReceiptChecker.jsx, SavedChecks.jsx
     dashboard/         Inbox, People, Applications, Panels, PostEditor, ...
   lib/
+    seo.js             per-page titles/descriptions + JSON-LD. Read by the app
+                       AND by vite.config.js, so: no JSX, no assets, no @/ alias
+    head.js            applies that table to document.head on every navigation
+    slug.js            title -> slug, shared with the build (blog.js cannot be)
     fx.js              rate resolution: table -> edge function -> Frankfurter
     receipt.js         pure cost maths (+ receipt.test.js, 27 tests)
     savedChecks.js     localStorage archive for TrueCost
@@ -101,7 +105,7 @@ supabase/
 sending versus the benchmarks · `/rate-history` day-by-day corridor chart from
 our own records · `/scam-check` FTC/CFPB warning signs · `/coming-soon`
 
-**Reading** — `/blog` (30 planned, 5 written) · `/papers` (one, drafting)
+**Reading** — `/blog` (30 planned, 6 written) · `/papers` (one, drafting)
 
 **Community** — `/workshops` (none running yet, says so) · `/glossary` ·
 `/fellowships`
@@ -190,10 +194,64 @@ Deploy: `npx supabase functions deploy <name> --no-verify-jwt`
   The second one was real and shipped a fix.
 - **World Bank RPW terms** require the attribution string in `corridors.js`
   wherever the data appears, and forbid implying endorsement.
+- **`vite preview` does not serve `/truecost` from `dist/truecost/index.html`.**
+  It falls through to the SPA fallback unless you ask for `/truecost/` with the
+  slash. Vercel resolves the directory index and does not need the slash. Do
+  not conclude the prerender is broken from a preview run: read the file, or
+  add the trailing slash.
+- **A build with no `SITE_URL` used to emit a whole localhost sitemap silently.**
+  It now warns locally and hard-fails when `VERCEL` is set. If a deploy ever
+  fails with "refusing to emit canonical URLs", the production domain did not
+  reach the build.
 
 ---
 
-## 8. RemitBench: blocked on four decisions
+## 8. Search and link previews
+
+Every page ships its own title, description, canonical URL, og:/twitter: tags
+and JSON-LD. There is one table behind all of it, `src/lib/seo.js`, and two
+things read it:
+
+- **`src/lib/head.js`**, on every client-side navigation. Covers anything that
+  runs JavaScript, which includes Google, and covers posts written in the
+  dashboard, which the build has never seen.
+- **the `seo` plugin in `vite.config.js`**, at build time. It copies
+  `dist/index.html` once per route with that route's tags baked in, so
+  `dist/truecost/index.html` is what Vercel serves at `/truecost`. This is the
+  half that social crawlers need: they do not run JavaScript, which is why
+  every link to this site used to preview as the home page.
+
+Both read the same table on purpose. Two sources here would mean a crawler
+that renders JavaScript sees one set of tags replace another.
+
+The build also writes `dist/sitemap.xml` (47 URLs) and `dist/robots.txt`.
+Neither is in `public/`: both need the absolute production domain, which is
+only known at build time.
+
+**To add or change a page's search entry, edit `src/lib/seo.js`.** Nothing
+else. `staticPaths` is derived from `routes.js`, so a page added there is
+prerendered and listed in the sitemap without a second edit. Do not hand-edit
+between the `SEO:START` and `SEO:END` markers in `index.html`; the build
+overwrites them.
+
+What is deliberately absent, and why:
+
+- **No `datePublished` on the thirty repo posts.** `posts.js` carries no
+  publication dates. Inventing them to satisfy a validator is the same
+  unsourced number the rest of the site refuses to print. Add real dates to
+  `posts.js` and the BlogPosting markup will carry them.
+- **No `SearchAction`.** The blog search is component state with no URL, so
+  there is nowhere for a search engine to send anyone.
+- **No per-post `og:image`.** All pages share `/og-image.png`. Three posts have
+  photo covers, but their URLs are content-hashed by Vite and the plugin has no
+  clean way to resolve them.
+- **The body is still client-rendered.** The prerender fixes the head, not the
+  content. Google renders JavaScript and indexes the text; a crawler that does
+  not will see the `<noscript>` block. Full SSR is a much bigger job.
+
+---
+
+## 9. RemitBench: blocked on four decisions
 
 Angad's research question is a **consumer price-comparison and behaviour**
 study: can a verified comparison tool showing full cost, delivery time and
@@ -222,7 +280,7 @@ Recommended if a tie-break is ever needed: RPW, cheapest-first without the word
 
 ---
 
-## 9. Also outstanding
+## 10. Also outstanding
 
 - `data/measures.seed.md` — five of six measures on `/impact` ship `null` until
   the lab supplies real values with collection dates.
@@ -230,5 +288,5 @@ Recommended if a tie-break is ever needed: RPW, cheapest-first without the word
   only when it is populated.
 - Glossary translations — six languages listed, all "no reviewer yet". A column
   publishes only when a named speaker consents in writing.
-- Blog — 30 planned, 5 written. The page counts entries in `postBodies.jsx`
+- Blog — 30 planned, 6 written. The page counts entries in `postBodies.jsx`
   and says so. Post 2 is the first one through review.

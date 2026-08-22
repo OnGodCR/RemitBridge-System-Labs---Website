@@ -31,9 +31,14 @@ export const posts = [
     "id": 1,
     "series": "series1",
     "seriesName": "Why people send money",
-    "title": "What a remittance actually is, and why it acts like income",
-    "abstract": "For a lot of families this money covers groceries or school fees rather than being spare cash on top. We also separate personal transfers from business payments here, since the two get counted together in a lot of statistics and it makes the numbers hard to read.",
-    "readTime": "6 min read",
+    "title": "What is an international remittance, and why is it more than a money transfer?",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
+    "abstract": "Migrant workers sent $905 billion home in 2024, and almost none of it was spare cash: it is rent, food, school fees and medicine, often a household's only income. Seen that way, a fee and a three-day delay stop being administrative details.",
+    "readTime": "8 min read",
     "tags": [
       "Development Economics",
       "Household Income",

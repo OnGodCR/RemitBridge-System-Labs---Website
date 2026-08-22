@@ -16,8 +16,8 @@ import calculatorImage from '@/assets/truecost-calculator.jpg'
 export default function TrueCost() {
   return (
     <>
-
       <Section
+        heading="h1"
         title="Check my receipt"
         description="Enter what you were charged and find out what the transfer really cost, including the exchange-rate markup that was not itemised."
       >

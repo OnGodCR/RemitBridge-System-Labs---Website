@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { ArrowDown, ArrowRight } from 'lucide-react'
-import { figures, usMxQ3, wfStandardWire, tps, zilliqa, tpsClaims, crossShard } from '@/data/figures'
+import { figures, derived, usMxQ3, wfStandardWire, tps, zilliqa, tpsClaims, crossShard } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -1268,6 +1268,246 @@ export function CrossShardShare({ theme }) {
         shard with probability one over n squared. Uniform assignment is the generous case, because
         real traffic concentrates, which is the hot shard above.
       </p>
+    </figure>
+  )
+}
+
+/* ------------------------------------------------------------------------ *
+ * Post 1. What a remittance is for.
+ * ------------------------------------------------------------------------ */
+
+/**
+ * What the money covers, without inventing a split.
+ *
+ * The post names four things a transfer pays for and never says in what
+ * proportion, so neither does this. Equal boxes, no percentages: a pie chart
+ * here would be four made-up numbers.
+ */
+export function WhatItCovers({ theme }) {
+  const uses = ['Rent', 'Food', 'School fees', 'Medicine']
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        What a ${figures.benchmarkUsd} transfer is already committed to
+      </figcaption>
+      <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {uses.map((u) => (
+          <li key={u} className={cn('rounded-2xl border p-3 text-center', theme.border, theme.tint)}>
+            <p className={cn('text-sm font-bold', theme.ink)}>{u}</p>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        Deliberately unweighted. The post names what the money covers and never claims a split,
+        so putting proportions on these boxes would be four invented numbers.
+      </p>
+    </figure>
+  )
+}
+
+/** Routine and emergency are the same transfer with different stakes. */
+export function SpeedStakes({ theme }) {
+  const cases = [
+    { head: 'Routine support', body: 'Two or three days to settle is survivable. The money is expected and budgeted.', ok: true },
+    { head: 'An emergency', body: 'Treatment is needed today. A correspondent chain clearing on its own schedule is not a delay, it is the outcome.', ok: false },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        The same three days, two different meanings
+      </figcaption>
+      <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+        {cases.map((c) => (
+          <li
+            key={c.head}
+            className={cn(
+              'rounded-2xl border p-3',
+              c.ok ? cn(theme.border, theme.tint) : 'border-dashed border-border bg-card',
+            )}
+          >
+            <p className="text-sm font-bold leading-snug">{c.head}</p>
+            <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{c.body}</p>
+          </li>
+        ))}
+      </ul>
+    </figure>
+  )
+}
+
+/**
+ * What the fee gap costs a household over a year of monthly sending.
+ *
+ * Arithmetic on figures already cited: twelve transfers of the benchmark
+ * amount, charged at the global average against the UN target. Nothing here
+ * is a survey finding, and the caption says so.
+ */
+export function YearOfFees({ theme }) {
+  const perYear = (pct) => (pct / 100) * figures.benchmarkUsd * 12
+  const atAverage = perYear(figures.globalCostPct)
+  const atTarget = perYear(figures.targetPct)
+  const rows = [
+    { label: `At the global average, ${figures.globalCostPct}%`, usd: atAverage },
+    { label: `At the UN target, ${figures.targetPct}%`, usd: atTarget },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        A year of monthly ${figures.benchmarkUsd} transfers, lost to fees
+      </figcaption>
+      <div className="mt-5 space-y-5">
+        {rows.map((r) => (
+          <div key={r.label}>
+            <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+              <span className="text-sm font-bold">{r.label}</span>
+              <span className="text-sm font-bold tabular-nums">${r.usd.toFixed(2)}</span>
+            </div>
+            <div className="h-3 rounded-full bg-muted">
+              <div
+                className={cn('h-3 rounded-l-full rounded-r-[4px]', theme.bar)}
+                style={{ width: `${(r.usd / atAverage) * 100}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        A difference of ${(atAverage - atTarget).toFixed(2)} a year on the same money sent. Our
+        arithmetic on the two cited rates, not a survey finding.
+      </p>
+    </figure>
+  )
+}
+
+/** Delay as a health outcome, which is the section's whole claim. */
+export function DelayIsAnOutcome({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Where there is no insurance to fall back on
+      </figcaption>
+      <ol className="mt-4 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+        {['Out-of-pocket payment required', 'Transfer has not landed', 'Medication postponed'].map(
+          (step, i) => (
+            <Fragment key={step}>
+              {i > 0 && <Hop />}
+              <li className={cn('min-w-0 flex-1 rounded-2xl border p-3', theme.border, theme.tint)}>
+                <p className="text-sm font-bold leading-snug">{step}</p>
+              </li>
+            </Fragment>
+          ),
+        )}
+      </ol>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        The last box is not a payments problem that happens to be slow. It is a health outcome.
+      </p>
+    </figure>
+  )
+}
+
+/** The gap the whole site is about, on one scale. */
+export function CostGap({ theme }) {
+  const max = figures.globalCostPct
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        The gap, and what closing it is worth
+      </figcaption>
+      <div className="mt-5 space-y-5">
+        {[
+          { label: 'Global average cost today', pct: figures.globalCostPct },
+          { label: 'UN target for 2030', pct: figures.targetPct },
+        ].map((r) => (
+          <div key={r.label}>
+            <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+              <span className="text-sm font-bold">{r.label}</span>
+              <span className="text-sm font-bold tabular-nums">{r.pct}%</span>
+            </div>
+            <div className="h-3 rounded-full bg-muted">
+              <div
+                className={cn('h-3 rounded-l-full rounded-r-[4px]', theme.bar)}
+                style={{ width: `${(r.pct / max) * 100}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className={cn('mt-5 rounded-2xl border p-4', theme.border, theme.tint)}>
+        <span className={cn('block text-3xl font-extrabold tabular-nums', theme.ink)}>
+          ~${derived.annualOverpayUsdBn} billion
+        </span>
+        <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">
+          a year, if the gap closed. Our arithmetic: the difference between the two rates above,
+          applied to ${figures.flowsUsdBn} billion of annual flows. Not a published figure, and it
+          assumes the average rate applies evenly across all of them.
+        </span>
+      </p>
+    </figure>
+  )
+}
+
+/** The same flat fee, landing two completely different ways. */
+export function FeeLandsDifferently({ theme }) {
+  const flat = 25
+  const rows = [
+    { label: 'A $50,000 commercial payment', amount: 50000 },
+    { label: `A $${figures.benchmarkUsd} remittance`, amount: figures.benchmarkUsd },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        One flat fee, two different transfers
+      </figcaption>
+      <div className="mt-5 space-y-5">
+        {rows.map((r) => {
+          const share = (flat / r.amount) * 100
+          return (
+            <div key={r.label}>
+              <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+                <span className="text-sm font-bold">{r.label}</span>
+                <span className="text-sm font-bold tabular-nums">
+                  {share < 1 ? share.toFixed(2) : share.toFixed(1)}%
+                </span>
+              </div>
+              <div className="h-3 rounded-full bg-muted">
+                <div
+                  className={cn('h-3 rounded-l-full rounded-r-[4px]', theme.bar)}
+                  style={{ width: `${Math.max(share, 0.4)}%` }}
+                />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        A flat ${flat} fee, the same number on both. Negligible overhead on one, an eighth of the
+        other. Infrastructure built for the first and adapted for the second is most of why
+        remittances cost what they do.
+      </p>
+    </figure>
+  )
+}
+
+/** The five things the post has argued a remittance actually is. */
+export function FiveRoles({ theme }) {
+  const roles = [
+    'Household income',
+    'Emergency support',
+    'Education funding',
+    'Healthcare funding',
+    'Local economic development',
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        What the money is, once you look at what it does
+      </figcaption>
+      <ul className="mt-4 grid gap-2 sm:grid-cols-5">
+        {roles.map((r) => (
+          <li key={r} className={cn('rounded-2xl border p-3', theme.border, theme.tint)}>
+            <p className={cn('text-sm font-bold leading-snug', theme.ink)}>{r}</p>
+          </li>
+        ))}
+      </ul>
     </figure>
   )
 }
