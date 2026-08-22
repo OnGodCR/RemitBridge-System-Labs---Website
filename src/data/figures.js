@@ -142,6 +142,55 @@ export const sources = {
     date: '2015 global flows of $586bn',
     href: 'https://www.business-standard.com',
   },
+  bbsf: {
+    id: 'bbsf',
+    title: 'BBSF: Blockchain Benchmarking Standardized Framework',
+    publisher: 'ACM',
+    date: 'On the lack of standardised metrics and workloads',
+    href: 'https://dl.acm.org/doi/fullHtml/10.1145/3595647.3595649',
+  },
+  a16zPerf: {
+    id: 'a16zPerf',
+    title: 'Why blockchain performance is hard to measure',
+    publisher: 'a16z crypto',
+    date: 'On the problem of treating all transactions as equal',
+    href: 'https://a16zcrypto.com/posts/article/why-blockchain-performance-is-hard-to-measure',
+  },
+  celestiaBench: {
+    id: 'celestiaBench',
+    title: 'Why Blockchain Benchmarks Are Usually Deceiving',
+    publisher: 'Celestia',
+    date: 'On short-burst benchmarks against sustained production load',
+    href: 'https://blog.celestia.org/why-blockchain-benchmarks-are-usually-deceiving',
+  },
+  bnbBench: {
+    id: 'bnbBench',
+    title: 'Designing Benchmarks for Trading-Focused Blockchains',
+    publisher: 'BNB Chain',
+    date: 'On objective, verifiable and transparent benchmark design',
+    href: 'https://www.bnbchain.org/en/blog/designing-benchmarks-for-trading-focused-blockchains',
+  },
+  zilliqaTestnet: {
+    id: 'zilliqaTestnet',
+    title: 'Zilliqa Testnet v1.0 Release: Codename Red Prawn',
+    publisher: 'Zilliqa, via Easy Crypto project history',
+    date: '2017 testnet',
+    href: 'https://hub.easycrypto.com/zilliqa-coin',
+  },
+  icryptoScaling: {
+    id: 'icryptoScaling',
+    title: 'Scalability Solutions for Blockchain: Sharding and Layer-2 Technologies',
+    publisher: 'iCryptoAI',
+    date: 'On sidechains carrying independent, potentially weaker security models',
+    href: 'https://icryptoai.com/2025/11/26/scalability-solutions-for-blockchain-sharding-and-layer-2-technologies',
+  },
+  ecObservatory: {
+    id: 'ecObservatory',
+    title: 'An overview of blockchain scalability, interoperability and sustainability',
+    publisher: 'European Commission Blockchain Observatory',
+    date: 'On sharding, payment channels and cross-shard communication',
+    href: 'https://blockchain-observatory.ec.europa.eu',
+  },
   sdg: {
     id: 'sdg',
     title: 'Sustainable Development Goal 10.c: reduce remittance costs to less than 3 percent',
@@ -278,6 +327,31 @@ export const tps = {
     { name: 'Realistic early target, 10% share', low: 14, high: 33, note: 'the bar an early system actually has to clear' },
     { name: 'Ordinary demand, whole market', low: 57, high: 287, note: 'range depends entirely on assumed transaction size' },
     { name: 'Peak ceiling, whole market', low: 180, high: 330, note: 'holidays plus a decade of projected growth' },
+  ],
+}
+
+/**
+ * The one hard benchmark figure blog post 17 cites, kept with the conditions
+ * that produced it.
+ *
+ * The number is real and is not the point. Every field under `caveats` is a
+ * condition the test did not face, and the post's argument is that a headline
+ * TPS without them attached is not a comparable quantity. So they travel
+ * together here, the same way a value and its collection date do in
+ * measures.js.
+ */
+export const zilliqa = {
+  tps: 2488,
+  shards: 6,
+  nodes: 3600,
+  year: 2017,
+  where: 'a single AWS region, Singapore',
+  caveats: [
+    'Nodes sitting close together in one cloud region',
+    'No real-world latency between continents',
+    'No adversarial nodes',
+    'No competing background traffic',
+    'No sustained multi-day operation',
   ],
 }
 
@@ -460,6 +534,15 @@ export const citations = [
       'Projected rise in remittances to Haiti over the year following the 2010 earthquake. Sustained across months rather than concentrated in a burst, which is what makes emergency demand a different load profile from a holiday one.',
     source: sources.wbHaiti,
     usedOn: [{ page: 'Blog', where: 'Post 19, emergency-driven demand' }],
+  },
+  {
+    value: `${zilliqa.tps.toLocaleString()} TPS`,
+    claim: `Zilliqa's ${zilliqa.year} testnet result, using ${zilliqa.shards} shards and ${zilliqa.nodes.toLocaleString()} nodes run in ${zilliqa.where}. Blog post 17 cites it as a real number produced under laboratory conditions: no inter-continental latency, no adversarial nodes, no competing traffic and no sustained multi-day run. The figure describes what sharding did in that test, not what a distributed production network would sustain.`,
+    source: sources.zilliqaTestnet,
+    usedOn: [
+      { page: 'Blog', where: 'Post 17, on short bursts against sustained load' },
+      { page: 'Blog', where: 'Post 17, the figure listing the conditions the test did not face' },
+    ],
   },
   {
     value: '1973',

@@ -219,8 +219,19 @@ export default function BlogPost() {
 
   return (
     <>
-      <header className={cn('border-b border-border py-14', theme.tint)}>
-        <Container width="prose">
+      {/* The cover sits behind the header rather than under it. Same pattern
+          the green bands use: a painted surface, relative and clipped, with
+          the content in its own relative container above it. */}
+      <header className={cn('relative overflow-hidden border-b border-border py-14', theme.tint)}>
+        {post.cover && (
+          <img
+            src={post.cover}
+            alt=""
+            aria-hidden
+            className="pointer-events-none absolute inset-0 size-full scale-105 object-cover opacity-15 [filter:saturate(0.5)_blur(3px)]"
+          />
+        )}
+        <Container width="prose" className="relative">
           <Link
             to="/blog"
             className="inline-flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-foreground"
@@ -255,18 +266,13 @@ export default function BlogPost() {
         <Container width="prose">
           {/* Banner, only for posts written in the dashboard. Repo posts carry
               their generated cover on the index tile and no banner here. */}
-          {post.coverArt ? (
+          {/* Drawn cover art is a designed plate meant to be looked at, so it
+              stays a banner. A photograph has moved to the header behind the
+              title. */}
+          {post.coverArt && (
             <div className="mb-10 aspect-[21/9] w-full overflow-hidden rounded-2xl border border-border [container-type:size]">
               <post.coverArt />
             </div>
-          ) : (
-            post.cover && (
-              <img
-                src={post.cover}
-                alt=""
-                className="mb-10 aspect-[21/9] w-full rounded-2xl border border-border object-cover [filter:saturate(0.8)]"
-              />
-            )
           )}
           {/* Repo posts are block arrays; posts written in the dashboard are
               markdown. Both end up as the same elements on the page. */}

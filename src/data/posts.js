@@ -234,9 +234,14 @@ export const posts = [
     "id": 17,
     "series": "series3",
     "seriesName": "Blockchain scaling",
-    "title": "Are these three things even comparable?",
-    "abstract": "Sharding, sidechains, and channels sit at different layers, with different trust assumptions and different definitions of when a transfer counts as done. This sets out how to compare them without quietly cheating in favour of one.",
-    "readTime": "10 min read",
+    "title": "Sharding vs. sidechains vs. payment channels: are we comparing equivalent systems?",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
+    "abstract": "The impressive benchmark numbers for these three architectures were not measured the same way, under the same conditions, or against the same definition of a transaction. Setting them side by side compares a top speed on a closed track to an average speed in traffic, which is why published figures cannot settle which one suits a remittance workload.",
+    "readTime": "8 min read",
     "tags": [
       "RemitBench Methodology",
       "System Comparison"

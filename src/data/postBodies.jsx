@@ -14,6 +14,12 @@ import {
   MarketShare,
   BeyondTps,
   TpsRange,
+  TxnDefinitions,
+  BurstConditions,
+  HeldConstant,
+  SecurityModels,
+  FinalityMeanings,
+  FairComparison,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -477,6 +483,98 @@ export const bodies = {
         'IDT Corp / BOSS Money, 39% Christmas-period transaction volume increase: idt.net, "BOSS Money Reports Strong Remittance Topline Increase over the Christmas Holiday Season"',
         'World Bank, on the projected 20% post-earthquake remittance surge to Haiti in 2010: worldbank.org, "Haiti: Remittances Key to Earthquake Recovery"',
         'World Bank Migration and Development Brief historical figures (2015 global remittance flow of $586 billion), used for the 2015-2024 growth-rate calculation: business-standard.com World Bank remittance coverage, 2015-2022 editions',
+      ],
+    },
+  ],
+
+  17: [
+    {
+      type: 'p',
+      text: 'Sharding, sidechains, and off-chain payment channels are advancements within cryptocurrency that use alternative methods to achieve faster throughput, latency, and more. When one searches for benchmarks related to these technologies, the internet hands over a pile of extremely impressive figures. One architecture claims thousands of transactions per second. Another claims near-instant finality. A third claims fees measured in fractions of a cent. If we put those numbers side by side, it looks like a straightforward comparison. This is not exactly the case, however, and that’s what this blog post aims to dive into.',
+    },
+    {
+      type: 'p',
+      text: '**Almost none of the benchmarks mentioned earlier were measured the same way, against the same conditions, using the same definitions of what counts as a transaction, a cost, or a finished payment.** Comparing them directly is closer to comparing a car\'s top speed on a closed track to another car\'s average speed in city traffic, which leads to a very hazy view of what each technology\'s advantages and disadvantages are.',
+    },
+    { type: 'h', text: 'The Industry Doesn\'t Even Agree on What "TPS" Means' },
+    {
+      type: 'p',
+      text: 'Let’s start by looking at the metric everyone reaches for first: transactions per second. This is something that one would assume is standardized, but this is not exactly the case. Independent analysis of blockchain benchmarking has pointed out that most research studies that test these tools don’t do so under the same workload and the same environment. One chain advertised tens of thousands of TPS, while another advertised very little TPS. The work surrounding these technologies can reflect completely different definitions of "transaction," among other features that are not standardized. A simple payment on one network compared to a complex smart-contract call on another are not interchangeable, so this begs the question, how can we compare existing metrics of just one technology, without even branching out to compare multiple technologies against each other?',
+    },
+    {
+      type: 'p',
+      text: 'Independent research on blockchain performance measurement has made the same point from a different angle: **not all transactions are equal**, and without breaking performance down into multiple components instead of one headline number, comparisons end up obscuring what matters. A payment channel processing a simple balance update and a sharded network processing a cross-shard smart-contract call are not doing the same amount of work, even if both get reported as "one transaction."',
+    },
+    { type: 'figure', render: TxnDefinitions },
+    { type: 'h', text: 'Short Bursts Aren\'t the Same as Sustained Load' },
+    {
+      type: 'p',
+      text: 'Even when two systems are measuring the same kind of transaction, the conditions under which that number was produced matter enormously. Analysis from the team behind Celestia has argued that the primary reason blockchain benchmarks mislead is that they run short bursts of traffic rather than sustained load. There\'s very clearly a large difference between a system that can accept a huge volume of transactions for a few minutes and one that can sustain that volume indefinitely in production, with all the storage growth, indexing overhead, and syncing demands that come with continuous operation, 24/7. **A number pulled from a ten-minute test on optimized hardware does not speak for the technology as a whole.**',
+    },
+    {
+      type: 'p',
+      text: 'This isn\'t a hypothetical concern for sharded networks specifically. Zilliqa, one of the earliest public blockchains to implement sharding in production, published testnet results in 2017 showing 2,488 transactions per second using six shards and 3,600 nodes, a test run entirely on Amazon Web Service\'s Singapore data center, using up the region\'s available server capacity in the process. While that number is real, the methodology has a few holes in it that are worth digging into. Their tests have nodes sitting close together in one cloud region, with no real-world latency between continents, no adversarial nodes, no competing background traffic, and no sustained multi-day operation. **It describes what sharding can do under laboratory conditions, not necessarily what a geographically distributed, publicly reachable production network handling real {{remittance|remittance}} traffic would sustain.**',
+    },
+    { type: 'figure', render: BurstConditions },
+    { type: 'h', text: 'Hardware, Validator Count, and Geography Are Rarely Held Constant' },
+    {
+      type: 'p',
+      text: 'A sharded network\'s throughput scales with the number of shards and the number of validators available to fill them. A sidechain\'s throughput depends on how many validators it runs and how demanding its consensus mechanism is. A payment channel network\'s effective throughput depends on how much liquidity is actually available and how well-connected the channel topology is. **None of these numbers are architecture-neutral**, meaning that they all rely on different architectural capacities to increase their throughput. This makes it extremely hard to develop a fair comparison because having a low number of validators, for example, could negatively impact a sidechain while not having an impact on an off-chain technology.',
+    },
+    {
+      type: 'p',
+      text: 'It is also important to consider what changes between a benchmark run on a handful of validators in a single data center versus one run across globally distributed nodes with realistic network latency and packet loss between them. Real-world guidance on designing fair blockchain benchmarks emphasizes exactly this; results need to be objective and verifiable by anyone through open scripts, configurations, and disclosed machine specs. If this is not possible, a benchmark\'s headline number can\'t be trusted to represent anything beyond the specific hardware and network topology it was run on. **A sidechain benchmarked on ten validators in one region and another benchmarked on a hundred validators spread across five continents are not comparable numbers, even if both get reported simply as "TPS."**',
+    },
+    { type: 'figure', render: HeldConstant },
+    { type: 'h', text: 'Different Architectures Carry Different Security Guarantees, and That Changes What the Number Means' },
+    {
+      type: 'p',
+      text: 'These three architectures don\'t just process transactions differently, they protect them differently with a different security protocol. **A throughput number that ignores that difference is comparing systems that aren\'t actually offering the same thing.**',
+    },
+    {
+      type: 'p',
+      text: 'A sharded network\'s transactions are typically still secured by validators drawn from and accountable to the same overall network, even though any single shard only sees a fraction of the total transaction load. A sidechain, by contrast, usually runs its own independent validator set and its own consensus mechanism, meaning its security is not directly inherited from the main chain it bridges to. This is a distinction repeatedly flagged in technical overviews of Layer 2 scaling: sidechains carry independent security models that can be meaningfully weaker than the chain they connect to. This is a tradeoff that needs to be evaluated with additional literature in the field. A payment channel\'s security rests on a different foundation still, cryptographic commitments and the ability to dispute an invalid state on-chain if a counterparty misbehaves, which works well for funds actively sitting in an open channel. What this doesn’t address though, is that the liquidity of the money is locked up until delivery.',
+    },
+    {
+      type: 'p',
+      text: 'If we put a sidechain\'s throughput number next to a payment channel\'s throughput number next to a sharded network\'s throughput number, without accounting for the fact that one of them is trusting an independent validator set, one of them is trusting cryptographic dispute resolution between two specific parties, and one of them is trusting the same validator pool as the base layer, the comparison is simply not fair. **There are way too many other factors at play for TPS to be the end-all, be-all determining factor that we treat it as.**',
+    },
+    { type: 'figure', render: SecurityModels },
+    { type: 'h', text: '"Cost" and "Finality" Don\'t Mean the Same Thing Across Architectures' },
+    {
+      type: 'p',
+      text: 'The same problem shows up in the other two numbers usually placed next to throughput: cost and finality.',
+    },
+    {
+      type: 'p',
+      text: 'A sidechain\'s per-transaction cost is usually just its own gas fee, but that ignores the separate cost of bridging value onto and off of the sidechain in the first place. This is a cost that doesn\'t exist for a sharded network processing a transaction natively within one chain. A payment channel\'s advertised near-zero fee ignores the cost of the capital sitting locked inside the channel the whole time. This produces a major opportunity cost as this money isn’t being used to produce more money or for consumption. **It is completely illiquid.**',
+    },
+    {
+      type: 'p',
+      text: 'Finality is arguably worse. "Final" on a sharded network usually means the transaction has been committed within its shard and cross-shard confirmation has completed. "Final" on a sidechain can mean confirmed on the sidechain itself, which is a different and often weaker guarantee than confirmed and settled back on the main chain through its bridge. "Final" on a payment channel can mean the payment has been acknowledged instantly between the two parties in the channel, while the actual on-chain {{settlement|settlement}} of that channel\'s balance doesn\'t happen until the channel closes, potentially much later. This once again, showcases the lack of standardization. **A fair metric needs to be developed for finality as well for all 3 of these technologies to be compared against each other.**',
+    },
+    { type: 'figure', render: FinalityMeanings },
+    { type: 'h', text: 'What a Fair Comparison Actually Requires' },
+    {
+      type: 'p',
+      text: 'All the points I made earlier in the blog post can lead you to think one thing and one thing only, these three technologies simply can’t be compared. This is not true, however. Everything above illustrates that you can’t compare these three technologies with published benchmarks due to a lack of standardization. **What is possible, however, is publishing and testing your own benchmarks under a standardized methodology and procedure.** This is what our lab is currently working on with our research paper.',
+    },
+    {
+      type: 'p',
+      text: 'At minimum, a comparison worth trusting needs matched hardware specifications across every architecture being tested, a comparable number of validators or nodes rather than whatever each project happened to test with, geographically realistic network conditions instead of a single data center, sustained load over hours or days rather than a short burst, a shared and explicit definition of what counts as one transaction, separate accounting for bridge, liquidity and a stated definition of finality for each architecture. **Every one of these variables gets held differently, or not held at all, across most of the benchmark numbers currently circulating for these three approaches, which is exactly why the headline figures don\'t actually settle which architecture performs best for a remittance workload.**',
+    },
+    { type: 'figure', render: FairComparison },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'ACM, "BBSF: Blockchain Benchmarking Standardized Framework," on the lack of standardized metrics and workloads across blockchain performance evaluations: dl.acm.org/doi/fullHtml/10.1145/3595647.3595649',
+        'a16z crypto, "Why blockchain performance is hard to measure," on the absence of standardized metrics and the problem of treating all transactions as equal: a16zcrypto.com/posts/article/why-blockchain-performance-is-hard-to-measure',
+        'Celestia, "Why Blockchain Benchmarks Are Usually Deceiving," on short-burst benchmarks versus sustained production load: blog.celestia.org/why-blockchain-benchmarks-are-usually-deceiving',
+        'BNB Chain Blog, "Designing Benchmarks for Trading-Focused Blockchains," on objective, verifiable, and transparent benchmarking design principles: bnbchain.org/en/blog/designing-benchmarks-for-trading-focused-blockchains',
+        'Easy Crypto / Zilliqa project history, on Zilliqa\'s 2017 testnet results of 2,488 TPS using 3,600 nodes on AWS Singapore: hub.easycrypto.com/zilliqa-coin and blog.zilliqa.com, "Zilliqa Testnet v1.0 Release: Codename Red Prawn"',
+        'iCryptoAI, "Scalability Solutions for Blockchain: Sharding and Layer-2 Technologies," on sidechains carrying independent, potentially weaker security models than the main chain: icryptoai.com/2025/11/26/scalability-solutions-for-blockchain-sharding-and-layer-2-technologies',
+        'European Commission Blockchain Observatory, "An overview of blockchain scalability, interoperability and sustainability," on sharding, off-chain payment channels, and cross-shard communication challenges: blockchain-observatory.ec.europa.eu',
       ],
     },
   ],

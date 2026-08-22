@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { ArrowDown, ArrowRight } from 'lucide-react'
-import { figures, usMxQ3, wfStandardWire, tps } from '@/data/figures'
+import { figures, usMxQ3, wfStandardWire, tps, zilliqa } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -757,5 +757,198 @@ export function TpsRange({ theme }) {
         ))}
       </div>
     </Panel>
+  )
+}
+
+/* ------------------------------------------------------------------------ *
+ * Post 17. Three architectures that do not answer the same question.
+ * ------------------------------------------------------------------------ */
+
+const ARCHITECTURES = ['Sharding', 'Sidechain', 'Payment channel']
+
+/**
+ * The same three columns, asked a different question each time.
+ *
+ * Keeping the architectures in one fixed order across every figure in the
+ * post is the whole point: the argument is that these are not interchangeable
+ * columns, so the reader should be able to track one down the page.
+ */
+function ThreeWay({ theme, label, question, answers, note }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </figcaption>
+      {question && <p className="mt-2 text-sm font-bold">{question}</p>}
+
+      <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+        {ARCHITECTURES.map((arch, i) => (
+          <li key={arch} className={cn('rounded-2xl border p-3', theme.border, theme.tint)}>
+            <p className={cn('text-[11px] font-bold uppercase tracking-widest', theme.ink)}>
+              {arch}
+            </p>
+            <p className="mt-2 text-sm font-bold leading-snug">{answers[i].head}</p>
+            <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{answers[i].detail}</p>
+          </li>
+        ))}
+      </ul>
+
+      {note && (
+        <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+          {note}
+        </p>
+      )}
+    </figure>
+  )
+}
+
+export function TxnDefinitions({ theme }) {
+  return (
+    <ThreeWay
+      theme={theme}
+      label="One transaction, three different amounts of work"
+      question="What gets counted as a single transaction?"
+      answers={[
+        { head: 'A cross-shard contract call', detail: 'Coordination between shards before it can be committed.' },
+        { head: 'A smart-contract call on its own chain', detail: 'Its own consensus, its own gas, its own validator set.' },
+        { head: 'A balance update between two parties', detail: 'No consensus round at all while the channel stays open.' },
+      ]}
+      note="All three get reported as the number one. That is the first reason a TPS figure from one architecture cannot be set beside a TPS figure from another."
+    />
+  )
+}
+
+/** A real number, shown with the conditions it was not tested against. */
+export function BurstConditions({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        What a headline number leaves out
+      </figcaption>
+
+      <div className={cn('mt-4 rounded-2xl border p-4', theme.border, theme.tint)}>
+        <p className={cn('text-3xl font-extrabold tabular-nums', theme.ink)}>
+          {zilliqa.tps.toLocaleString()} TPS
+        </p>
+        <p className="mt-1.5 text-xs text-muted-foreground">
+          Zilliqa testnet, {zilliqa.year}. {zilliqa.shards} shards, {zilliqa.nodes.toLocaleString()}{' '}
+          nodes, {zilliqa.where}.
+        </p>
+      </div>
+
+      <p className="mt-4 text-xs font-bold">Conditions the test did not face</p>
+      <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+        {zilliqa.caveats.map((c) => (
+          <li key={c} className="flex gap-2.5 rounded-2xl border border-dashed border-border p-3">
+            <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-muted-foreground" aria-hidden />
+            <span className="text-xs leading-snug text-muted-foreground">{c}</span>
+          </li>
+        ))}
+      </ul>
+
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        The number is real. It describes what sharding did in that test, which is not the same
+        claim as what it would sustain in production.
+      </p>
+    </figure>
+  )
+}
+
+/** The variables that decide the answer, and are rarely pinned. */
+const VARIABLES = [
+  { name: 'Hardware', why: 'Machine specs are often undisclosed, so the number belongs to the machine.' },
+  { name: 'Validator or node count', why: 'Each project tests with whatever it happened to have.' },
+  { name: 'Geography', why: 'One data centre has no inter-continental latency and no packet loss.' },
+  { name: 'Test duration', why: 'A short burst carries none of the storage, indexing or syncing growth.' },
+  { name: 'Definition of a transaction', why: 'Nobody agrees, and it is rarely stated.' },
+  { name: 'Reproducibility', why: 'Without open scripts and configs, nobody else can run it.' },
+]
+
+export function HeldConstant({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Six variables, rarely held constant
+      </figcaption>
+      <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+        {VARIABLES.map((v) => (
+          <li key={v.name} className="rounded-2xl border border-border bg-card p-3">
+            <p className={cn('text-sm font-bold', theme.ink)}>{v.name}</p>
+            <p className="mt-1 text-xs leading-snug text-muted-foreground">{v.why}</p>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        Change any one of these and the headline figure moves. Most published benchmarks vary
+        several at once, which is why two numbers reported as TPS are not the same quantity.
+      </p>
+    </figure>
+  )
+}
+
+export function SecurityModels({ theme }) {
+  return (
+    <ThreeWay
+      theme={theme}
+      label="What each one is asking you to trust"
+      question="Where does the security actually come from?"
+      answers={[
+        { head: 'The base network validator pool', detail: 'Accountable to the whole network, though any one shard sees a fraction of the load.' },
+        { head: 'Its own independent validator set', detail: 'Not inherited from the chain it bridges to, and can be meaningfully weaker.' },
+        { head: 'Cryptographic dispute on-chain', detail: 'Between two specific parties, for funds sitting in an open channel.' },
+      ]}
+      note="Three different guarantees. A throughput number that ignores which one is in force is comparing systems that are not offering the same thing."
+    />
+  )
+}
+
+export function FinalityMeanings({ theme }) {
+  return (
+    <ThreeWay
+      theme={theme}
+      label="Final, in three incompatible senses"
+      question="What has actually happened when a payment is called final?"
+      answers={[
+        { head: 'Committed in-shard, cross-shard confirmed', detail: 'Cost is native to the chain, with no bridging step.' },
+        { head: 'Confirmed on the sidechain itself', detail: 'Weaker than settled back on the main chain. Bridging on and off is a separate cost.' },
+        { head: 'Acknowledged between the two parties', detail: 'On-chain settlement waits for the channel to close, and capital is locked until it does.' },
+      ]}
+      note="Cost has the same problem. A sidechain fee omits bridging, and a channel's near-zero fee omits the opportunity cost of capital sitting locked and illiquid."
+    />
+  )
+}
+
+/** The lab's own conditions, which is what the post ends on. */
+const REQUIREMENTS = [
+  'Matched hardware specifications across every architecture tested',
+  'A comparable number of validators or nodes, not whatever each project used',
+  'Geographically realistic network conditions, not a single data centre',
+  'Sustained load over hours or days, not a short burst',
+  'A shared, explicit definition of what counts as one transaction',
+  'Separate accounting for bridge and liquidity costs',
+  'A stated definition of finality for each architecture',
+]
+
+export function FairComparison({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        What a comparison worth trusting has to hold
+      </figcaption>
+      <ol className="mt-4 space-y-2">
+        {REQUIREMENTS.map((r, i) => (
+          <li key={r} className="flex gap-3 rounded-2xl border border-border bg-card p-3">
+            <span className={cn('shrink-0 text-xs font-bold tabular-nums', theme.ink)}>
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <span className="text-sm leading-snug">{r}</span>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        Every one of these is held differently, or not at all, across the benchmarks currently
+        circulating. That is the gap the lab's own paper is built to close.
+      </p>
+    </figure>
   )
 }
