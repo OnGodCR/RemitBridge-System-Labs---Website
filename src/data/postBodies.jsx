@@ -311,7 +311,7 @@ export const bodies = {
     { type: 'figure', render: SwiftChain },
     {
       type: 'p',
-      text: 'This is also the part of the process most senders never see. The SWIFT message that started the payment is visible, at least to the banks involved. The correspondent chain underneath it usually isn\'t. **A sender who wires $200 has no way of knowing whether that payment touched one correspondent bank or four**, and no itemized way of seeing what each one took. That opacity is a big part of why the total cost of a bank wire is so hard to predict from the outside.',
+      text: 'This is also the part of the process most senders never see. The SWIFT message that started the payment is visible, at least to the banks involved. The correspondent chain underneath it usually isn\'t. **A sender who wires $200 has no way of knowing whether that payment touched one correspondent bank or four**, and no itemized way of seeing what each one took. That opacity is a big part of why the {{total-cost|total cost}} of a bank wire is so hard to predict from the outside.',
     },
     { type: 'h', text: 'RTGS: Where the Money Actually, Finally Moves' },
     {
@@ -376,7 +376,7 @@ export const bodies = {
   19: [
     {
       type: 'p',
-      text: 'Every blockchain-remittance solution is judged on various factors, including latency, security, interoperability with other technologies and more. One of the most important metrics that I haven\'t yet mentioned is architectural stability in the form of throughput. Can a blockchain\'s architecture truly support the amount of transactions per second that are needed for a {{remittance|remittance}} network? This blog post aims to figure out how many transactions per second a blockchain based network would need to withstand remittance workload.',
+      text: 'Every blockchain-remittance solution is judged on various factors, including {{latency|latency}}, security, interoperability with other technologies and more. One of the most important metrics that I haven\'t yet mentioned is architectural stability in the form of {{throughput|throughput}}. Can a blockchain\'s architecture truly support the amount of transactions per second that are needed for a {{remittance|remittance}} network? This blog post aims to figure out how many transactions per second a blockchain based network would need to withstand remittance workload.',
     },
     {
       type: 'p',
@@ -472,7 +472,7 @@ export const bodies = {
     { type: 'h', text: 'What This Number Still Doesn\'t Tell You' },
     {
       type: 'p',
-      text: 'Even a fully scenario-built, market-share-adjusted TPS target only answers the question of raw capacity: can the network process this many transactions per second, under load. It says nothing about whether those transactions actually finish, how long finality takes once a transaction is submitted, what happens to the transactions that fail partway through, or whether the network holds up when demand is concentrated in the worst possible hour rather than spread evenly across the scenario window. **A network that hits its TPS target on average while its slowest 5% of transactions take ten times as long to settle has not actually solved the problem.** That\'s a separate question, with its own separate data, and it\'s where the next post in this series picks up.',
+      text: 'Even a fully scenario-built, market-share-adjusted TPS target only answers the question of raw capacity: can the network process this many transactions per second, under load. It says nothing about whether those transactions actually finish, how long {{finality|finality}} takes once a transaction is submitted, what happens to the transactions that fail partway through, or whether the network holds up when demand is concentrated in the worst possible hour rather than spread evenly across the scenario window. **A network that hits its TPS target on average while its slowest 5% of transactions take ten times as long to settle has not actually solved the problem.** That\'s a separate question, with its own separate data, and it\'s where the next post in this series picks up.',
     },
     { type: 'figure', render: BeyondTps },
     { type: 'h', text: 'Putting a Number on It' },
@@ -504,7 +504,7 @@ export const bodies = {
   17: [
     {
       type: 'p',
-      text: 'Sharding, sidechains, and off-chain payment channels are advancements within cryptocurrency that use alternative methods to achieve faster throughput, latency, and more. When one searches for benchmarks related to these technologies, the internet hands over a pile of extremely impressive figures. One architecture claims thousands of transactions per second. Another claims near-instant finality. A third claims fees measured in fractions of a cent. If we put those numbers side by side, it looks like a straightforward comparison. This is not exactly the case, however, and that’s what this blog post aims to dive into.',
+      text: '{{sharding|Sharding}}, {{sidechain|sidechains}}, and off-chain {{payment-channel|payment channels}} are advancements within cryptocurrency that use alternative methods to achieve faster {{throughput|throughput}}, latency, and more. When one searches for benchmarks related to these technologies, the internet hands over a pile of extremely impressive figures. One architecture claims thousands of transactions per second. Another claims near-instant {{finality|finality}}. A third claims fees measured in fractions of a cent. If we put those numbers side by side, it looks like a straightforward comparison. This is not exactly the case, however, and that’s what this blog post aims to dive into.',
     },
     {
       type: 'p',
@@ -534,7 +534,7 @@ export const bodies = {
     { type: 'h', text: 'Hardware, Validator Count, and Geography Are Rarely Held Constant' },
     {
       type: 'p',
-      text: 'A sharded network\'s throughput scales with the number of shards and the number of validators available to fill them. A sidechain\'s throughput depends on how many validators it runs and how demanding its consensus mechanism is. A payment channel network\'s effective throughput depends on how much liquidity is actually available and how well-connected the channel topology is. **None of these numbers are architecture-neutral**, meaning that they all rely on different architectural capacities to increase their throughput. This makes it extremely hard to develop a fair comparison because having a low number of validators, for example, could negatively impact a sidechain while not having an impact on an off-chain technology.',
+      text: 'A sharded network\'s throughput scales with the number of shards and the number of {{validator|validators}} available to fill them. A sidechain\'s throughput depends on how many validators it runs and how demanding its consensus mechanism is. A payment channel network\'s effective throughput depends on how much liquidity is actually available and how well-connected the channel topology is. **None of these numbers are architecture-neutral**, meaning that they all rely on different architectural capacities to increase their throughput. This makes it extremely hard to develop a fair comparison because having a low number of validators, for example, could negatively impact a sidechain while not having an impact on an off-chain technology.',
     },
     {
       type: 'p',
@@ -601,16 +601,16 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'Sharding, at surface level, sounds extremely appealing. It\'s an easy way to increase throughput with blockchain based technologies. You can split the network into pieces, let each piece process its own transactions in parallel, and TPS increases with however many pieces you\'re willing to run. If you double the shards, you can roughly double the capacity. On paper, that math makes a sharded blockchain look like an easy answer to the throughput numbers worked out in previous posts in this series.',
+      text: '{{sharding|Sharding}}, at surface level, sounds extremely appealing. It\'s an easy way to increase {{throughput|throughput}} with blockchain based technologies. You can split the network into pieces, let each piece process its own transactions in parallel, and TPS increases with however many pieces you\'re willing to run. If you double the shards, you can roughly double the capacity. On paper, that math makes a sharded blockchain look like an easy answer to the throughput numbers worked out in previous posts in this series.',
     },
     {
       type: 'p',
-      text: 'This is the clearest way to solve for remittance based blockchain technologies, right? After all, you can scale TPS to be as high as you want. Not quite. **This all rides on one assumption, which is that all processing happens in a single shard, which is almost never the case with how spread apart {{remittance|remittance}} senders and recipients are.** This means that a transaction has to pass through more shards before being fully settled, leading to the whole system\'s TPS going down. You can send $200 from the US to Mexico and there will be at least three parties involved, a sender, a currency-conversion or liquidity provider handling the USD-to-peso leg, and a recipient. There\'s no guarantee any two of them land on the same shard, let alone all three. This doesn\'t mean sharding is out of the question for remittances though, and that\'s what this blog post aims to do. We will explore how sharding works and how we can implement this technology into a remittance network.',
+      text: 'This is the clearest way to solve for remittance based blockchain technologies, right? After all, you can scale TPS to be as high as you want. Not quite. **This all rides on one assumption, which is that all processing happens in a single shard, which is almost never the case with how spread apart {{remittance|remittance}} senders and recipients are.** This means that a transaction has to pass through more shards before being fully {{settlement|settled}}, leading to the whole system\'s TPS going down. You can send $200 from the US to Mexico and there will be at least three parties involved, a sender, a currency-conversion or liquidity provider handling the USD-to-peso leg, and a recipient. There\'s no guarantee any two of them land on the same shard, let alone all three. This doesn\'t mean sharding is out of the question for remittances though, and that\'s what this blog post aims to do. We will explore how sharding works and how we can implement this technology into a remittance network.',
     },
     { type: 'h', text: 'What Sharding Actually Splits' },
     {
       type: 'p',
-      text: 'A sharded network divides its validator set and its state, meaning account balances and transaction history, across multiple shards, and assigns each account to one of them, typically based on something like the account\'s address. If there\'s a transaction where every party involved lives on the same shard, the process is very cheap and fast. That shard\'s validators can process, validate, and finalize the entire transaction entirely on its own, in parallel with every other shard doing the same thing for its own accounts. **This is where sharding\'s throughput multiplier actually comes from.**',
+      text: 'A sharded network divides its {{validator|validator}} set and its state, meaning account balances and transaction history, across multiple shards, and assigns each account to one of them, typically based on something like the account\'s address. If there\'s a transaction where every party involved lives on the same shard, the process is very cheap and fast. That shard\'s validators can process, validate, and finalize the entire transaction entirely on its own, in parallel with every other shard doing the same thing for its own accounts. **This is where sharding\'s throughput multiplier actually comes from.**',
     },
     {
       type: 'p',
@@ -638,13 +638,13 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'These are different mechanisms, sure, but they share the same underlying reality: **a transaction touching multiple shards requires real, extra communication between them**, whether that communication happens upfront through locking and confirmation or after the fact through receipts and rollbacks. None of it is free, and all of it adds latency a single-shard transaction doesn\'t have to deal with',
+      text: 'These are different mechanisms, sure, but they share the same underlying reality: **a transaction touching multiple shards requires real, extra communication between them**, whether that communication happens upfront through locking and confirmation or after the fact through receipts and rollbacks. None of it is free, and all of it adds {{latency|latency}} a single-shard transaction doesn\'t have to deal with',
     },
     { type: 'figure', render: CoordinationMechanisms },
     { type: 'h', text: 'Why Atomicity Isn\'t Optional Here' },
     {
       type: 'p',
-      text: 'Atomicity is the requirement that a multi-shard transaction either fully commits everywhere or fully rolls back everywhere, with no in-between state. For a $200 remittance, this is the entire point that makes sharding a strong contender. **A family on the receiving end can\'t be told the transfer "partially succeeded."** Either the $200 arrives, in full, or the sender\'s account needs to end up exactly as it started. Anything in between is a lost or duplicated payment, meaning it has failed and will rollback.',
+      text: '{{atomicity|Atomicity}} is the requirement that a multi-shard transaction either fully commits everywhere or fully rolls back everywhere, with no in-between state. For a $200 remittance, this is the entire point that makes sharding a strong contender. **A family on the receiving end can\'t be told the transfer "partially succeeded."** Either the $200 arrives, in full, or the sender\'s account needs to end up exactly as it started. Anything in between is a lost or duplicated payment, meaning it has failed and will rollback.',
     },
     {
       type: 'p',
@@ -707,7 +707,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'This changes how you should think about the money itself. A $200 transfer (the standard amount researchers and the World Bank use to benchmark remittance costs, since it reflects what a typical transfer actually looks like) isn\'t discretionary. It\'s often included in the budget. Remittances help pay for a portion for rent, a portion for food, a portion for children to attend school and whatever\'s left for everything else. **That\'s part of why transaction costs matter so much here.** When a provider charges 6% instead of 3%, an amount a comfortable family may consider menial, households are directly impacted. Over a year of monthly transfers, that gap adds up to real, meaningful money, not a marginal difference. Take a look at our [yearly cost calculator](/reckoner) to see how much this adds up to across the whole year.',
+      text: 'This changes how you should think about the money itself. A $200 transfer (the standard amount researchers and the World Bank use to benchmark remittance costs, since it reflects what a typical transfer actually looks like) isn\'t discretionary. It\'s often included in the budget. Remittances help pay for a portion for rent, a portion for food, a portion for children to attend school and whatever\'s left for everything else. **That\'s part of why {{total-cost|transaction costs}} matter so much here.** When a {{provider|provider}} charges 6% instead of 3%, an amount a comfortable family may consider menial, households are directly impacted. Over a year of monthly transfers, that gap adds up to real, meaningful money, not a marginal difference. Take a look at our [yearly cost calculator](/reckoner) to see how much this adds up to across the whole year.',
     },
     { type: 'figure', render: WhatItCovers },
     { type: 'h', text: 'Remittances Are Emergency Support' },
@@ -747,7 +747,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'Interestingly, lowering the cost of sending remittances doesn\'t just mean families keep more of what\'s already being sent, it tends to increase how much gets sent overall. Research has found that a meaningful drop in fees leads to a real, measurable increase in the total amount migrants choose to send. Cheaper transfers make it easier and more worthwhile to send money more often, which means more capital moving into local economies. **Closing the gap between today\'s global average cost (around 6%) and the United Nations\' 3% target could mean an additional $30 billion flowing into families and communities every single year.** That\'s money currently being absorbed by fees and {{exchange-rate-margin|exchange-rate markups}} instead of reaching the people it was sent for.',
+      text: 'Interestingly, lowering the cost of sending remittances doesn\'t just mean families keep more of what\'s already being sent, it tends to increase how much gets sent overall. Research has found that a meaningful drop in fees leads to a real, measurable increase in the total amount migrants choose to send. Cheaper transfers make it easier and more worthwhile to send money more often, which means more capital moving into local economies. **Closing the gap between today\'s global average cost (around 6%) and the United Nations\' 3% target could mean an additional $30 billion flowing into families and communities every single year.** That\'s money currently being absorbed by {{transfer-fee|fees}} and {{exchange-rate-margin|exchange-rate markups}} instead of reaching the people it was sent for.',
     },
     { type: 'figure', render: CostGap },
     { type: 'h', text: 'Personal Transfers vs. Commercial Cross-Border Payments' },

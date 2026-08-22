@@ -231,13 +231,17 @@ export default function BlogPost() {
           the green bands use: a painted surface, relative and clipped, with
           the content in its own relative container above it. */}
       <header className={cn('relative overflow-hidden border-b border-border py-14', theme.tint)}>
-        {post.cover && (
-          <img
-            src={post.cover}
-            alt=""
+        {(post.cover || post.coverArt) && (
+          <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 size-full scale-105 object-cover opacity-15 [filter:saturate(0.5)_blur(3px)]"
-          />
+            className="pointer-events-none absolute inset-0 scale-105 opacity-15 [container-type:size] [filter:saturate(0.5)_blur(3px)]"
+          >
+            {post.coverArt ? (
+              <post.coverArt />
+            ) : (
+              <img src={post.cover} alt="" className="size-full object-cover" />
+            )}
+          </div>
         )}
         <Container width="prose" className="relative">
           <Link
@@ -278,14 +282,6 @@ export default function BlogPost() {
         <Container width="prose" className="relative">
           {/* Banner, only for posts written in the dashboard. Repo posts carry
               their generated cover on the index tile and no banner here. */}
-          {/* Drawn cover art is a designed plate meant to be looked at, so it
-              stays a banner. A photograph has moved to the header behind the
-              title. */}
-          {post.coverArt && (
-            <div className="mb-10 aspect-[21/9] w-full overflow-hidden rounded-2xl border border-border [container-type:size]">
-              <post.coverArt />
-            </div>
-          )}
 
           {/* Repo posts are block arrays; posts written in the dashboard are
               markdown. Both end up as the same elements on the page. */}

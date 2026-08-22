@@ -173,6 +173,54 @@ export const terms = [
       'Money a provider keeps waiting in both countries in advance, so a transfer can be paid out on one side without anything arriving from the other. It is why some transfers land in minutes. Nothing crossed a border; the provider squares up with itself later, in bulk.',
   },
   {
+    id: 'throughput',
+    term: 'Throughput',
+    plain:
+      'How much a system can handle in a given time, usually counted in transactions per second. It says nothing about how long any one transfer takes, which is a separate measure.',
+  },
+  {
+    id: 'latency',
+    term: 'Latency',
+    plain:
+      'How long a single transfer takes from being sent to being finished. A system can have high throughput and bad latency at once: plenty of work getting done, and your payment still waiting.',
+  },
+  {
+    id: 'finality',
+    term: 'Finality',
+    plain:
+      'The point after which a payment can no longer be reversed or undone. Different systems mean different things by the word, which is why one system being final is not the same claim as another being final.',
+  },
+  {
+    id: 'atomicity',
+    term: 'Atomicity',
+    plain:
+      'The requirement that a transfer touching several places either completes in all of them or is undone in all of them, with nothing left half done. It is the guarantee that money cannot leave one account without arriving in another.',
+  },
+  {
+    id: 'validator',
+    term: 'Validator',
+    plain:
+      'A participant that checks transactions and agrees with the other participants on which ones count. How many there are, and how far apart they sit, changes both how quickly a network settles and how hard it is to attack.',
+  },
+  {
+    id: 'sharding',
+    term: 'Sharding',
+    plain:
+      'Splitting a network’s accounts, and the validators that check them, into separate groups so each group works at the same time as the others. Capacity grows with the number of groups, as long as a transfer only has to touch one of them.',
+  },
+  {
+    id: 'sidechain',
+    term: 'Sidechain',
+    plain:
+      'A separate chain with its own validators and its own rules, joined to a main chain by a bridge that value crosses in both directions. Its security is its own rather than the main chain’s, which is the part people forget.',
+  },
+  {
+    id: 'payment-channel',
+    term: 'Payment channel',
+    plain:
+      'A direct link between two parties who lock funds up front, settle any number of payments between themselves off the chain, and record only the opening and closing balances on it. Fast, but the locked money cannot be used for anything else meanwhile.',
+  },
+  {
     id: 'reference-rate',
     term: 'Reference rate',
     plain:

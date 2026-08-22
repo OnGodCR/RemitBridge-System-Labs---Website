@@ -85,7 +85,7 @@ src/
     measures.js        the six things the lab measures; mostly null by design
     corrections.js     public corrections log; empty
     corridors.js       Phase 2 provider prices; deliberately empty, shape settled
-    glossary.js        24 terms + six planned languages, consent-gated
+    glossary.js        32 terms + six planned languages, consent-gated
     posts.js/blog.js   blog content
 supabase/
   schema.sql           canonical and re-runnable. The source of truth.
