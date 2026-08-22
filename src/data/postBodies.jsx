@@ -57,6 +57,12 @@ import {
  * commit afdc44f, and `git show afdc44f:src/data/postBodies.jsx` brings them
  * back verbatim.
  *
+ * Post 1's opening once read "as demonstrated by a research study that took
+ * place in" and ran straight into the next sentence, missing whatever was
+ * meant to follow. The clause is deleted, not completed: Angad could not
+ * find the study, and naming one to fill the gap would put a fabricated
+ * citation on the page. Leave it deleted unless the source turns up.
+ *
  * Block types: p, h (level 3 for a subheading), label, quote, list, image,
  * callout, table, figure, sources.
  */
@@ -504,7 +510,7 @@ export const bodies = {
   17: [
     {
       type: 'p',
-      text: '{{sharding|Sharding}}, {{sidechain|sidechains}}, and off-chain {{payment-channel|payment channels}} are advancements within cryptocurrency that use alternative methods to achieve faster {{throughput|throughput}}, latency, and more. When one searches for benchmarks related to these technologies, the internet hands over a pile of extremely impressive figures. One architecture claims thousands of transactions per second. Another claims near-instant {{finality|finality}}. A third claims fees measured in fractions of a cent. If we put those numbers side by side, it looks like a straightforward comparison. This is not exactly the case, however, and that’s what this blog post aims to dive into.',
+      text: '{{sharding|Sharding}}, {{sidechain|sidechains}}, and off-chain {{payment-channel|payment channels}} are advancements within cryptocurrency that use alternative methods to achieve faster {{throughput|throughput}}, latency, and more. When one searches for benchmarks related to these technologies, the internet hands over a pile of extremely impressive figures. One architecture claims thousands of transactions per second. Another claims near-instant {{finality|finality}}. A third claims fees measured in fractions of a cent. If we put those numbers side by side, it looks like a straightforward comparison. This is not exactly the case, however, and that\'s what this blog post aims to dive into.',
     },
     {
       type: 'p',
@@ -514,7 +520,7 @@ export const bodies = {
     { type: 'h', text: 'The Industry Doesn\'t Even Agree on What "TPS" Means' },
     {
       type: 'p',
-      text: 'Let’s start by looking at the metric everyone reaches for first: transactions per second. This is something that one would assume is standardized, but this is not exactly the case. Independent analysis of blockchain benchmarking has pointed out that most research studies that test these tools don’t do so under the same workload and the same environment. One chain advertised tens of thousands of TPS, while another advertised very little TPS. The work surrounding these technologies can reflect completely different definitions of "transaction," among other features that are not standardized. A simple payment on one network compared to a complex smart-contract call on another are not interchangeable, so this begs the question, how can we compare existing metrics of just one technology, without even branching out to compare multiple technologies against each other?',
+      text: 'Let\'s start by looking at the metric everyone reaches for first: transactions per second. This is something that one would assume is standardized, but this is not exactly the case. Independent analysis of blockchain benchmarking has pointed out that most research studies that test these tools don\'t do so under the same workload and the same environment. One chain advertised tens of thousands of TPS, while another advertised very little TPS. The work surrounding these technologies can reflect completely different definitions of "transaction," among other features that are not standardized. A simple payment on one network compared to a complex smart-contract call on another are not interchangeable, so this begs the question, how can we compare existing metrics of just one technology, without even branching out to compare multiple technologies against each other?',
     },
     {
       type: 'p',
@@ -548,7 +554,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'A sharded network\'s transactions are typically still secured by validators drawn from and accountable to the same overall network, even though any single shard only sees a fraction of the total transaction load. A sidechain, by contrast, usually runs its own independent validator set and its own consensus mechanism, meaning its security is not directly inherited from the main chain it bridges to. This is a distinction repeatedly flagged in technical overviews of Layer 2 scaling: sidechains carry independent security models that can be meaningfully weaker than the chain they connect to. This is a tradeoff that needs to be evaluated with additional literature in the field. A payment channel\'s security rests on a different foundation still, cryptographic commitments and the ability to dispute an invalid state on-chain if a counterparty misbehaves, which works well for funds actively sitting in an open channel. What this doesn’t address though, is that the liquidity of the money is locked up until delivery.',
+      text: 'A sharded network\'s transactions are typically still secured by validators drawn from and accountable to the same overall network, even though any single shard only sees a fraction of the total transaction load. A sidechain, by contrast, usually runs its own independent validator set and its own consensus mechanism, meaning its security is not directly inherited from the main chain it bridges to. This is a distinction repeatedly flagged in technical overviews of Layer 2 scaling: sidechains carry independent security models that can be meaningfully weaker than the chain they connect to. This is a tradeoff that needs to be evaluated with additional literature in the field. A payment channel\'s security rests on a different foundation still, cryptographic commitments and the ability to dispute an invalid state on-chain if a counterparty misbehaves, which works well for funds actively sitting in an open channel. What this doesn\'t address though, is that the liquidity of the money is locked up until delivery.',
     },
     {
       type: 'p',
@@ -562,7 +568,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'A sidechain\'s per-transaction cost is usually just its own gas fee, but that ignores the separate cost of bridging value onto and off of the sidechain in the first place. This is a cost that doesn\'t exist for a sharded network processing a transaction natively within one chain. A payment channel\'s advertised near-zero fee ignores the cost of the capital sitting locked inside the channel the whole time. This produces a major opportunity cost as this money isn’t being used to produce more money or for consumption. **It is completely illiquid.**',
+      text: 'A sidechain\'s per-transaction cost is usually just its own gas fee, but that ignores the separate cost of bridging value onto and off of the sidechain in the first place. This is a cost that doesn\'t exist for a sharded network processing a transaction natively within one chain. A payment channel\'s advertised near-zero fee ignores the cost of the capital sitting locked inside the channel the whole time. This produces a major opportunity cost as this money isn\'t being used to produce more money or for consumption. **It is completely illiquid.**',
     },
     {
       type: 'p',
@@ -572,7 +578,7 @@ export const bodies = {
     { type: 'h', text: 'What a Fair Comparison Actually Requires' },
     {
       type: 'p',
-      text: 'All the points I made earlier in the blog post can lead you to think one thing and one thing only, these three technologies simply can’t be compared. This is not true, however. Everything above illustrates that you can’t compare these three technologies with published benchmarks due to a lack of standardization. **What is possible, however, is publishing and testing your own benchmarks under a standardized methodology and procedure.** This is what our lab is currently working on with our research paper.',
+      text: 'All the points I made earlier in the blog post can lead you to think one thing and one thing only, these three technologies simply can\'t be compared. This is not true, however. Everything above illustrates that you can\'t compare these three technologies with published benchmarks due to a lack of standardization. **What is possible, however, is publishing and testing your own benchmarks under a standardized methodology and procedure.** This is what our lab is currently working on with our research paper.',
     },
     {
       type: 'p',
