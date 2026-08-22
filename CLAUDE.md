@@ -19,9 +19,6 @@ list is short on purpose; if it stops being short, that is worth saying.
 
 Deferred by choice, not forgotten. Update this list as things land.
 
-- [ ] **Blog posts carry no publication date**, so the BlogPosting markup
-      omits `datePublished`. Real dates in `posts.js` would complete it. Not
-      invented, for the same reason no other number here is.
 - [ ] **The prerender covers the head, not the body.** A crawler that does not
       run JavaScript gets correct tags and an empty `#root`. Google renders JS
       and indexes the text, so this is a real but second-order gap. Fixing it
@@ -44,6 +41,10 @@ Deferred by choice, not forgotten. Update this list as things land.
       real HTML files at build time. `sitemap.xml` and `robots.txt` are
       generated. This closes the old "social previews show the site-wide
       title" item: a link to any page now previews as that page.
+- [x] Blog posts carry a publication date. The six that are live say the day
+      they went up on `main`, read out of git rather than chosen, and the
+      BlogPosting markup carries `datePublished`. The twenty-four unwritten
+      ones have no date, because they have not been published.
 - [x] Email notifications on contact messages. Resend key and database webhook
       are live and verified: function returns 200 and the email arrives.
 - [x] Blank page on navigation. Root cause found by resolving the minified

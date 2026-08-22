@@ -29,6 +29,7 @@ export const seriesCategories = [
 export const posts = [
   {
     "id": 1,
+    "publishedOn": "2026-08-21",
     "series": "series1",
     "seriesName": "Why people send money",
     "title": "What is an international remittance, and why is it more than a money transfer?",
@@ -47,6 +48,7 @@ export const posts = [
   },
   {
     "id": 2,
+    "publishedOn": "2026-08-21",
     "series": "series1",
     "seriesName": "Why people send money",
     "title": "Where does a $200 transfer actually go?",
@@ -112,6 +114,7 @@ export const posts = [
   },
   {
     "id": 7,
+    "publishedOn": "2026-08-21",
     "series": "series2",
     "seriesName": "How banks move it",
     "title": "SWIFT sends the message, so who moves the money?",
@@ -201,6 +204,7 @@ export const posts = [
   },
   {
     "id": 14,
+    "publishedOn": "2026-08-21",
     "series": "series3",
     "seriesName": "Blockchain scaling",
     "title": "Sharding explained through a remittance network",
@@ -242,6 +246,7 @@ export const posts = [
   },
   {
     "id": 17,
+    "publishedOn": "2026-08-21",
     "series": "series3",
     "seriesName": "Blockchain scaling",
     "title": "Sharding vs. sidechains vs. payment channels: are we comparing equivalent systems?",
@@ -271,6 +276,7 @@ export const posts = [
   },
   {
     "id": 19,
+    "publishedOn": "2026-08-21",
     "series": "series4",
     "seriesName": "Cost, speed, failure",
     "title": "How many transactions per second would a remittance network really need?",

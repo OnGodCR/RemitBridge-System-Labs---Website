@@ -161,6 +161,7 @@ export const postPaths = posts.map((post) => ({
   description: clamp(post.abstract),
   series: post.seriesName,
   author: post.author?.consentOn ? post.author.name : null,
+  publishedOn: post.publishedOn ?? null,
 }))
 
 /**
@@ -226,11 +227,14 @@ export const CONTACT_EMAIL = 'remitbridgesystemlabs@gmail.com'
  * JSON-LD is invisible, so a claim made in it is a claim nobody proofreads.
  * Nothing in here is asserted that the page does not already say out loud.
  *
- * Two things are deliberately absent. There is no SearchAction, because the
- * blog search is component state and has no URL a search engine could send
- * anyone to. There is no datePublished on a post, because the thirty posts in
- * the repo carry no publication date and inventing one to satisfy a validator
- * is exactly the kind of unchecked number this site exists to complain about.
+ * There is no SearchAction, because the blog search is component state and has
+ * no URL a search engine could send anyone to.
+ *
+ * datePublished appears only on posts that carry one. The date is the day the
+ * post went live on main, read out of git rather than chosen, and the
+ * unwritten posts have none because they have not been published. A validator
+ * preferring the field present everywhere is not a reason to date something
+ * that does not exist yet.
  */
 export function jsonLdFor(pathname, origin, extra = {}) {
   const abs = (p) => `${origin}${p === '/' ? '/' : p}`
@@ -286,6 +290,7 @@ export function jsonLdFor(pathname, origin, extra = {}) {
       inLanguage: 'en',
       // Same rule as the byline on the page itself: no consent date, no name.
       ...(post.author ? { author: { '@type': 'Person', name: post.author } } : {}),
+      ...(post.publishedOn ? { datePublished: post.publishedOn } : {}),
     })
   }
 

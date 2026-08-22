@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { themeFor } from '@/lib/palette'
+import { formatPostDate } from '@/lib/postDate'
 import { cn } from '@/lib/utils'
 
 /**
@@ -91,6 +92,12 @@ export default function PostCard({ post }) {
             {post.abstract}
           </p>
           <p className="mt-4 text-xs text-muted-foreground">
+            {post.publishedOn && (
+              <>
+                <time dateTime={post.publishedOn}>{formatPostDate(post.publishedOn)}</time>
+                {' · '}
+              </>
+            )}
             {post.readTime}
             {!post.body && ' · summary only'}
           </p>

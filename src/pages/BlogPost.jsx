@@ -9,6 +9,7 @@ import { usePost } from '@/lib/usePosts'
 import { renderMarkdown } from '@/lib/markdown'
 import { themeFor } from '@/lib/palette'
 import { postText } from '@/lib/postText'
+import { formatPostDate } from '@/lib/postDate'
 import { claimHead } from '@/lib/head'
 import { clamp } from '@/lib/seo'
 import { cn } from '@/lib/utils'
@@ -256,6 +257,12 @@ export default function BlogPost() {
             <span className={cn('size-2.5 rounded-full', theme.bar)} aria-hidden />
             <span className={cn('font-bold', theme.ink)}>{post.seriesName}</span>
             <span className="text-muted-foreground">&middot; {post.readTime}</span>
+            {post.publishedOn && (
+              <span className="text-muted-foreground">
+                &middot;{' '}
+                <time dateTime={post.publishedOn}>{formatPostDate(post.publishedOn)}</time>
+              </span>
+            )}
           </p>
 
           <h1 className="mt-3 text-3xl leading-tight sm:text-4xl">{post.title}</h1>
