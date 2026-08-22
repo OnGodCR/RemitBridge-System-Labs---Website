@@ -224,8 +224,14 @@ export const posts = [
     "id": 15,
     "series": "series3",
     "seriesName": "Blockchain scaling",
-    "title": "Could sidechains be built just for remittances?",
-    "abstract": "Custom rules, a dedicated validator set, how the two-way bridge works, checkpointing back to the main chain, and what exactly you have to trust for any of it to hold up.",
+    "title": "Could sidechains become specialized remittance rails?",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
+    "publishedOn": "2026-08-21",
+    "abstract": "A sidechain is fast because it runs on its own small validator set, and that is the same reason Ronin lost $625 million. Whether one could carry remittances comes down to whether its validators, its bridge and its settlement are chosen on purpose rather than inherited.",
     "readTime": "9 min read",
     "tags": [
       "Layer-2 Sidechains",

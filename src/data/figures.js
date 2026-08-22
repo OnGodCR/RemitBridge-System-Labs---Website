@@ -261,6 +261,62 @@ export const sources = {
     date: 'On remittances behaving countercyclically',
     href: 'https://www.worldbank.org/content/dam/Worldbank/GEP/GEP2015a/pdfs/GEP2015a_chapter4_report_remittances.pdf',
   },
+  polygonArch: {
+    id: 'polygonArch',
+    title: 'Polygon PoS architecture: Heimdall, Bor and checkpointing',
+    publisher: 'Polygon documentation, with CryptoForInnovation',
+    date: 'Accessed 2026',
+    href: 'https://docs.polygon.technology/pos/architecture/overview',
+  },
+  polygonBlog: {
+    id: 'polygonBlog',
+    title: 'Heimdall and Bor',
+    publisher: 'The Polygon Blog',
+    date: 'On trading decentralisation for throughput',
+    href: 'https://medium.com/the-polygon-blog/heimdall-and-bor-1f8f881cd6a4',
+  },
+  finematics: {
+    id: 'finematics',
+    title: 'Polygon PoS Chain: a commit chain and not a sidechain?',
+    publisher: 'Finematics',
+    date: 'On the checkpoint relationship and the finality debate',
+    href: 'https://finematics.com/polygon-commit-chain-explained',
+  },
+  polygonEdge: {
+    id: 'polygonEdge',
+    title: 'Polygon Supernets and Polygon Edge, frameworks for app-specific chains',
+    publisher: 'BusinessWire',
+    date: 'October 2022',
+    href: 'https://www.businesswire.com/news/home/20221026005144/en',
+  },
+  roninHack: {
+    id: 'roninHack',
+    title: 'Analyzing the Ronin bridge hack',
+    publisher: 'Metaversal, Bankless',
+    date: 'March 2022',
+    href: 'https://metaversal.banklesshq.com/p/analyzing-the-ronin-bridge-hack',
+  },
+  roninKeys: {
+    id: 'roninKeys',
+    title: 'Ronin Bridge Hack Explained, on the compromised keys and the revoked backdoor',
+    publisher: 'LeveX',
+    date: 'March 2022 incident',
+    href: 'https://levex.com/en/blog/ronin-bridge-hack-explained',
+  },
+  bridgeSecurity: {
+    id: 'bridgeSecurity',
+    title: 'How crypto bridges move billions, and why hackers keep breaking them',
+    publisher: 'Yellow.com',
+    date: 'On externally validated bridge security not being inherited',
+    href: 'https://yellow.com/learn/how-crypto-bridges-move-billions',
+  },
+  bridgeHacks: {
+    id: 'bridgeHacks',
+    title: 'Bridges Burned: inside the five loudest Web3 bridge hacks',
+    publisher: 'HackenProof',
+    date: 'On the Poly Network contract-authorisation exploit',
+    href: 'https://hackenproof.com/blog/web3-bridge-hacks',
+  },
   sdg: {
     id: 'sdg',
     title: 'Sustainable Development Goal 10.c: reduce remittance costs to less than 3 percent',
@@ -475,6 +531,35 @@ export const crossShard = {
   shareFor: (n) => 1 - 1 / n ** 2,
 }
 
+/**
+ * What two bridge failures actually cost, for blog post 15.
+ *
+ * Both are reported figures rather than anything measured here, and the two
+ * are different in kind: Ronin was a validator-key compromise, Poly Network a
+ * flaw in the bridge contract's own authorisation. The post uses them to make
+ * the same point twice from different directions, so they travel together.
+ */
+export const bridgeFailures = {
+  ronin: {
+    name: 'Ronin',
+    validators: 9,
+    threshold: 5,
+    compromised: 5,
+    howCompromised: 'four held by the operator, one through an improperly revoked backdoor',
+    lostUsdM: 625,
+    when: 'March 2022',
+    kind: 'Validator keys',
+  },
+  polyNetwork: {
+    name: 'Poly Network',
+    lostUsdM: 611,
+    when: '2021',
+    kind: 'Bridge contract authorisation',
+  },
+  /** Polygon publishes a checkpoint to Ethereum on roughly this interval. */
+  checkpointMinutes: 30,
+}
+
 /** (global rate − target) × annual flows. Our arithmetic, not a cited figure. */
 export const derived = {
   annualOverpayUsdBn: Math.round(
@@ -671,6 +756,29 @@ export const citations = [
       'The spread of throughput figures advertised across thirteen blockchains, as they circulate in comparison graphics. Listed here as claims, not measurements: none states its workload, hardware, validator count or definition of a transaction, several are theoretical maxima rather than observed mainnet throughput, and the compilation includes Terra, which stopped operating in 2022. Blog post 17 uses them as the thing being examined rather than as evidence, and the site holds no position on whether any individual figure is accurate.',
     source: sources.tpsClaimsGraphic,
     usedOn: [{ page: 'Blog', where: 'Post 17, the figure showing the claims the post goes on to take apart' }],
+  },
+  {
+    value: `$${bridgeFailures.ronin.lostUsdM} million`,
+    claim: `Drained from the Ronin bridge in ${bridgeFailures.ronin.when}. Its withdrawals needed ${bridgeFailures.ronin.threshold} of ${bridgeFailures.ronin.validators} validator signatures, and attackers obtained ${bridgeFailures.ronin.compromised}: ${bridgeFailures.ronin.howCompromised}. Blog post 15 uses it for the structural lesson rather than the amount: a small validator set is what makes a sidechain fast, and it is also what makes it worth attacking.`,
+    source: sources.roninHack,
+    usedOn: [
+      { page: 'Blog', where: 'Post 15, on validator design' },
+      { page: 'Blog', where: 'Post 15, the figure on the Ronin compromise' },
+    ],
+  },
+  {
+    value: `$${bridgeFailures.polyNetwork.lostUsdM} million`,
+    claim:
+      'Taken from Poly Network in 2021 through a flaw in how the bridge contract decided who could move its funds. A different failure from Ronin, and the reason blog post 15 treats the bridge as its own system with its own bugs rather than as plumbing between two secure chains.',
+    source: sources.bridgeHacks,
+    usedOn: [{ page: 'Blog', where: 'Post 15, on bridges as a second attack surface' }],
+  },
+  {
+    value: `~${bridgeFailures.checkpointMinutes} minutes`,
+    claim:
+      'How often Polygon publishes a checkpoint of its sidechain state to Ethereum. It is why a transfer has two moments that could each be called arrival: confirmed on the sidechain in seconds, and settled on the main chain only at the next checkpoint.',
+    source: sources.polygonArch,
+    usedOn: [{ page: 'Blog', where: 'Post 15, the two-arrivals figure' }],
   },
   {
     value: `${zilliqa.tps.toLocaleString()} TPS`,

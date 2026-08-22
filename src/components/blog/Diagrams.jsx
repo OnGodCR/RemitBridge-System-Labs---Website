@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { ArrowDown, ArrowRight } from 'lucide-react'
-import { figures, derived, usMxQ3, wfStandardWire, tps, zilliqa, tpsClaims, crossShard } from '@/data/figures'
+import { figures, derived, usMxQ3, wfStandardWire, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -1508,6 +1508,233 @@ export function FiveRoles({ theme }) {
           </li>
         ))}
       </ul>
+    </figure>
+  )
+}
+
+/* ------------------------------------------------------------------------ *
+ * Post 15. Sidechains.
+ * ------------------------------------------------------------------------ */
+
+/** Two layers, and the gap between them where finality lives. */
+export function BorHeimdall({ theme }) {
+  const layers = [
+    { name: 'Bor', does: 'Produces blocks and processes transactions at sidechain speed.', rate: 'seconds' },
+    { name: 'Heimdall', does: "Bundles Bor's blocks into a Merkle root and publishes it to Ethereum as a checkpoint.", rate: `every ~${bridgeFailures.checkpointMinutes} min` },
+    { name: 'Ethereum', does: 'Receives the checkpoint. It records what happened; it does not police it.', rate: 'on checkpoint' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Where the daily work happens, and where it is recorded
+      </figcaption>
+      <ol className="mt-4 flex flex-col items-stretch gap-2 sm:flex-row sm:items-stretch">
+        {layers.map((l, i) => (
+          <Fragment key={l.name}>
+            {i > 0 && <Hop />}
+            <li className={cn('min-w-0 flex-1 rounded-2xl border p-3', theme.border, theme.tint)}>
+              <p className="text-sm font-bold leading-snug">{l.name}</p>
+              <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{l.does}</p>
+              <p className={cn('mt-2 border-t pt-2 text-xs font-bold', theme.border, theme.ink)}>
+                {l.rate}
+              </p>
+            </li>
+          </Fragment>
+        ))}
+      </ol>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        The connection back to the main chain is intermittent, not constant. Everything the post
+        goes on to weigh follows from that gap.
+      </p>
+    </figure>
+  )
+}
+
+/** The three things a purpose-built chain could actually choose. */
+export function ThreeCustomisations({ theme }) {
+  const rows = [
+    { head: 'Who may run it', body: 'Licensed, regulated money businesses rather than anonymous participants. A firm that misbehaves can lose its licence, which is collateral a pseudonymous key does not have.' },
+    { head: 'Sized for real traffic', body: 'Remittance volume is steady and tied to paydays and holidays, not the sudden bursts of a token sale. A chain can be built for that shape.' },
+    { head: 'Priced for small transfers', body: 'Fees set for a $200 transfer rather than a speculative trade, so unrelated activity on the same chain cannot make sending money home more expensive.' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        What specialised would actually mean
+      </figcaption>
+      <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+        {rows.map((r) => (
+          <li key={r.head} className={cn('rounded-2xl border p-3', theme.border, theme.tint)}>
+            <p className={cn('text-sm font-bold leading-snug', theme.ink)}>{r.head}</p>
+            <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{r.body}</p>
+          </li>
+        ))}
+      </ul>
+    </figure>
+  )
+}
+
+/** The Ronin compromise, drawn as the threshold it defeated. */
+export function RoninCompromise({ theme }) {
+  const r = bridgeFailures.ronin
+  return (
+    <figure
+      className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5"
+      role="group"
+      aria-label={`Ronin's bridge required ${r.threshold} of ${r.validators} validator signatures to approve a withdrawal. Attackers obtained ${r.compromised} keys, ${r.howCompromised}, and drained about $${r.lostUsdM} million in ${r.when}.`}
+    >
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        {r.threshold} of {r.validators} was the whole lock
+      </figcaption>
+
+      <ul className="mt-5 flex flex-wrap gap-2" aria-hidden>
+        {Array.from({ length: r.validators }, (_, i) => {
+          const taken = i < r.compromised
+          return (
+            <li
+              key={i}
+              className={cn(
+                'flex size-9 items-center justify-center rounded-xl border text-xs font-bold',
+                taken
+                  ? cn(theme.bar, theme.border, 'text-white')
+                  : cn(theme.border, 'bg-card text-muted-foreground'),
+              )}
+            >
+              {i + 1}
+            </li>
+          )
+        })}
+      </ul>
+
+      <div className="mt-4 grid gap-2 text-xs sm:grid-cols-2">
+        <p className="leading-snug">
+          <span className={cn('font-bold', theme.ink)}>{r.compromised} keys taken</span>
+          <span className="text-muted-foreground"> &middot; {r.howCompromised}</span>
+        </p>
+        <p className="leading-snug sm:text-right">
+          <span className={cn('font-bold', theme.ink)}>${r.lostUsdM} million</span>
+          <span className="text-muted-foreground"> drained, {r.when}</span>
+        </p>
+      </div>
+
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        The small validator set is what made the chain fast and what made the theft possible. Those
+        are not two facts about Ronin, they are one.
+      </p>
+    </figure>
+  )
+}
+
+/** Two moments that could each be called arrival. */
+export function TwoArrivals({ theme }) {
+  const stops = [
+    { when: 'Seconds', what: 'Confirmed on the sidechain', detail: 'To everyone involved it looks done.' },
+    { when: `~${bridgeFailures.checkpointMinutes} minutes`, what: 'Checkpoint reaches Ethereum', detail: 'Only now is it locked in on the main chain.' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Two moments called the money arrived
+      </figcaption>
+      <ol className="mt-4 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+        {stops.map((st, i) => (
+          <Fragment key={st.what}>
+            {i > 0 && <Hop />}
+            <li className={cn('min-w-0 flex-1 rounded-2xl border p-3', theme.border, theme.tint)}>
+              <p className={cn('text-[11px] font-bold uppercase tracking-widest', theme.ink)}>
+                {st.when}
+              </p>
+              <p className="mt-1.5 text-sm font-bold leading-snug">{st.what}</p>
+              <p className="mt-1 text-xs leading-snug text-muted-foreground">{st.detail}</p>
+            </li>
+          </Fragment>
+        ))}
+      </ol>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        A separate failure, {bridgeFailures.polyNetwork.name}, cost $
+        {bridgeFailures.polyNetwork.lostUsdM} million in {bridgeFailures.polyNetwork.when} through
+        the bridge contract's own authorisation logic rather than any validator. The bridge is its
+        own system, with its own bugs.
+      </p>
+    </figure>
+  )
+}
+
+/** The distinction the whole post turns on. */
+export function ShardVsSidechain({ theme }) {
+  const rows = [
+    { head: 'A shard', body: 'Validated by participants drawn from, and accountable to, the same overall network.' },
+    { head: 'A sidechain', body: 'Validated by a separate group entirely, connected only by periodic checkpoints and a bridge contract. Both are failure points independent of either chain.' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Who is actually standing behind the transaction
+      </figcaption>
+      <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+        {rows.map((r, i) => (
+          <li
+            key={r.head}
+            className={cn(
+              'rounded-2xl border p-3',
+              i === 0 ? cn(theme.border, theme.tint) : 'border-dashed border-border bg-card',
+            )}
+          >
+            <p className="text-sm font-bold leading-snug">{r.head}</p>
+            <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{r.body}</p>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        A checkpoint tells the main chain what happened. It does not give it the power to stop it
+        happening.
+      </p>
+    </figure>
+  )
+}
+
+/** What is being traded, and the condition on the trade paying off. */
+export function SidechainTradeoff({ theme }) {
+  const sides = [
+    { head: 'What you get', items: ['Speed', 'Lower fees', 'Rules built for one job'] },
+    { head: 'What you give up', items: ['A larger validator set', 'Security inherited from the main chain', 'A single moment of finality'] },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        The trade, and what makes it worth taking
+      </figcaption>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {sides.map((s, i) => (
+          <div
+            key={s.head}
+            className={cn(
+              'rounded-2xl border p-3',
+              i === 0 ? cn(theme.border, theme.tint) : 'border-dashed border-border bg-card',
+            )}
+          >
+            <p className="text-sm font-bold">{s.head}</p>
+            <ul className="mt-2 space-y-1.5">
+              {s.items.map((x) => (
+                <li key={x} className="flex gap-2 text-xs leading-snug">
+                  <span
+                    className={cn(
+                      'mt-1.5 size-1.5 shrink-0 rounded-full',
+                      i === 0 ? theme.bar : 'bg-muted-foreground',
+                    )}
+                    aria-hidden
+                  />
+                  <span>{x}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        The trade only pays off if the validator set, the bridge and the settlement design are
+        chosen for remittances, rather than inherited from whatever the tooling shipped with.
+      </p>
     </figure>
   )
 }

@@ -34,6 +34,12 @@ import {
   CostGap,
   FeeLandsDifferently,
   FiveRoles,
+  BorHeimdall,
+  ThreeCustomisations,
+  RoninCompromise,
+  TwoArrivals,
+  ShardVsSidechain,
+  SidechainTradeoff,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -790,6 +796,95 @@ export const bodies = {
         'World Bank, Remittance Prices Worldwide, current global average remittance cost of 6.36% of the amount sent: remittanceprices.worldbank.org',
         'UN Statistics Division, SDG Indicator 10.c.1 metadata, on the definition and history of the 3% remittance-cost target: unstats.un.org/sdgs/metadata/files/Metadata-10-0C-01.pdf',
         'Chami, Fullenkamp, and Jahjah (2005), and World Bank Global Economic Prospects 2015, Chapter 4, on remittances behaving countercyclically and functioning as informal insurance for recipient households: worldbank.org/content/dam/Worldbank/GEP/GEP2015a/pdfs/GEP2015a_chapter4_report_remittances.pdf',
+      ],
+    },
+  ],
+
+  15: [
+    {
+      type: 'p',
+      text: 'At first glance, {{sidechain|sidechains}} sound very similar to remittances. They offer faster transactions, lower fees, and more {{throughput|throughput}} than the base layer could offer on its own. This mechanism is completely different, though. The tradeoff between these technologies is also completely different. **Where {{sharding|sharding}} splits one network into pieces that still answer to the same overall {{validator|validator}} pool, a sidechain is its own separate chain entirely, running its own consensus.** This side-chain is connected back to a main chain through a bridge. This independence is exactly where the speed comes from. Customization, validator design, bridge dependency, settlement, and how much of the main chain\'s security a sidechain actually gets to borrow are the five things that decide whether a sidechain could truly work as a purpose-built rail for remittances, and this blog post aims to explore each one of them to determine if sidechains can become specialized rails for {{remittance|remittance}} transfers.',
+    },
+    { type: 'h', text: 'What Makes a Sidechain a Sidechain' },
+    {
+      type: 'p',
+      text: 'A sidechain runs its own blocks, its own consensus mechanism, and often its own native token, independently of the chain it connects to. Assets move onto it and off of it through a bridge, typically by locking value on one side and minting an equivalent representation on the other. Polygon\'s PoS chain is a well-documented example of this pattern in production: it runs two coordinated layers, Bor, which produces blocks and processes transactions, and Heimdall, a proof-of-stake validator layer that periodically bundles Bor\'s blocks into a Merkle root and publishes that root to Ethereum as a checkpoint. Day-to-day activity on the sidechain runs at sidechain speed. This activity is checked and confirmed by the sidechain\'s own validators rather than the mainnet. **The connection back to the main chain is intermittent, not constant.**',
+    },
+    {
+      type: 'p',
+      text: 'This structure is the whole appeal but it also servers as the whole risk, and every specific tradeoff below traces back to this one design choice: **a sidechain\'s daily operation is secured by a separate, usually smaller, group of validators than the main chain\'s**, and the bridge connecting the two is a distinct piece of infrastructure which can also be attacked by malicious groups of people.',
+    },
+    { type: 'figure', render: BorHeimdall },
+    { type: 'h', text: 'Customization: The Actual Case for "Specialized"' },
+    {
+      type: 'p',
+      text: 'The reason a sidechain is worth discussing as a remittance rail, rather than just a cheaper place to run generic transactions, comes down to customization. Frameworks like Polygon Edge exist specifically to let developers spin up their own application-specific chains, with their own gas token, their own consensus parameters, and their own validator set, rather than sharing infrastructure with every other application on a general-purpose chain. Polygon has marketed exactly this model as building "high-performance app-specific chains that can be optimized for a dApp or a category of dApps."',
+    },
+    {
+      type: 'p',
+      text: 'For a remittance-specific sidechain, this customization could mean a few concrete things a general-purpose chain doesn\'t offer by default. **The first thing this offers is choosing who\'s allowed to run the network.** Instead of leaving these permissions open to anyone, it could be limited to licensed, regulated companies that already move money for a living, banks and remittance providers, instead of anonymous strangers on the internet. This distinction is extremely important because it\'s the direct fix for what went wrong in the Ronin hack described earlier, where a small handful of people ran the network and nothing beyond their reputation was at stake if they misbehaved. If we swap these people for licensed companies, there\'s a lot to lose. A company can lose its license to operate if it acts maliciously, which basically means the entire business\'s trust and credibility is on the line at all times. This pushes businesses to behave and monitor the network for all users, leading to a net positive for the entire system.',
+    },
+    {
+      type: 'p',
+      text: '**The second thing customization could offer is settings built around how remittances actually move.** Remittance traffic is steady and predictable, tied to paydays and holidays, unlike the sudden bursts you see from things like NFT sales or crypto trading. A network built specifically for remittances can be sized around that steady pattern instead of being built to handle spikes it will never actually see.',
+    },
+    {
+      type: 'p',
+      text: 'Lastly, prices on these transactions could be set with small transfers in mind instead of big speculative trades. This fixes the same problem traditional banking has, where a fee structure built for large business payments ends up landing badly on someone sending a small amount, **a $200 transfer shouldn\'t get more expensive just because unrelated, much larger trading is happening on the same network at the same time.** This is the biggest upside case for sidechains in a remittance context.',
+    },
+    { type: 'figure', render: ThreeCustomisations },
+    { type: 'h', text: 'Validator Design: Fewer Validators, Faster Chain, Different Guarantees' },
+    {
+      type: 'p',
+      text: 'Speed and cost improvements on a sidechain come substantially from running fewer validators than a large public base layer does. Polygon\'s own engineering blog describes this tradeoff plainly: the sidechain layer "has few validators and faster block time with high throughput," while explicitly choosing "scalability over high degrees of decentralization." Fewer validators means less coordination overhead per block, which means faster {{finality|finality}} on the sidechain itself. It also means a smaller, more concentrated set of parties who control the chain. This drives away from the decentralization aspect that blockchains often push for, but it\'s important to consider that {{swift|SWIFT}}\'s entire base is controlled by 1 party, which is the company behind SWIFT. Breaking it up to a few different companies is still a net-positive and allows for more eyes on a system that dictates so much about the flow of money internationally.',
+    },
+    {
+      type: 'p',
+      text: 'The Ronin Network hack is the clearest real-world illustration of what that concentration can cost. Ronin, an Ethereum sidechain built for the game Axie Infinity, ran security on its bridge through nine validator nodes, with five-of-nine signatures required to approve a withdrawal. In March 2022, attackers compromised five of those nine validator keys, four controlled directly by Ronin\'s own operator and one obtained through an improperly revoked backdoor, and used them to drain roughly $625 million from the bridge in two transactions. Independent analysis of the incident afterward put the underlying problem plainly: **a bridge secured by an externally validated committee has security that isn\'t inherited from the chains it connects**, which is extremely important to note. Security considerations will need to be made before this can be adopted to something like remittances where there\'s potential to lose much more than $625M. Ronin wasn\'t a remittance network, but the structural lesson applies directly to one: a small validator set is exactly what makes a sidechain fast, but that speed and latency can make it a target for hackers.',
+    },
+    { type: 'figure', render: RoninCompromise },
+    { type: 'h', text: 'Bridges and Checkpoints: A Second System, A Second Attack Surface' },
+    {
+      type: 'p',
+      text: 'The bridge connecting a sidechain to the main blockchain isn\'t just a simple network moving money back and forth. It has its own security protocol and its own history of being hacked. It\'s a completely different software from the main or sidechain. Poly Network, a bridge connecting several different blockchains, lost about $611 million in 2021 because someone found a flaw in how the bridge\'s code decided who was allowed to control its funds, and tricked it into handing the funds over to them. In short, the bridge being hacked can lead to the entire system being hacked. This is a completely different kind of mistake than what happened to Ronin, but it makes the same point in a different way: **the bridge is its own separate system, with its own bugs, sitting on top of whatever the two blockchains it connects are each doing correctly on their own.**',
+    },
+    {
+      type: 'p',
+      text: 'There\'s also something we must consider when looking at the finality of a transaction. Polygon\'s system publishes a snapshot of everything that happened on its sidechain back to Ethereum roughly every 30 minutes. To the people involved, a transaction can feel done within seconds. But it isn\'t actually locked in on Ethereum, the main blockchain, until the next snapshot goes through. **For a remittance, that means there are two different moments that could each be called "the money arrived,"** one on the sidechain itself, and a separate, later one once it\'s confirmed on the main blockchain. Some experts have even debated whether Polygon\'s setup should really be called a sidechain at all, given how much, or how little, that periodic snapshot actually protects.',
+    },
+    { type: 'figure', render: TwoArrivals },
+    { type: 'h', text: 'Security Assumptions: How Much of the Main Chain Does a Sidechain Actually Get?' },
+    {
+      type: 'p',
+      text: 'This is the question the other four sections all feed into. A sidechain\'s checkpoint tells the main chain what happened. **It does not give the main chain the power to stop something bad from happening in the first place.** If a sidechain\'s own validator set gets compromised, as Ronin\'s was, the main chain\'s role as an occasional record-keeper doesn\'t prevent the theft, it just eventually reflects it.',
+    },
+    {
+      type: 'p',
+      text: 'This is also where a sidechain differs most sharply from the sharding architecture. A shard\'s transactions are still validated by participants drawn from and accountable to the same overall network. A sidechain\'s transactions are validated by a separate group entirely, connected to the main chain only through periodic checkpoints and a bridge contract, both of which are themselves points of failure independent of either chain\'s core security. Speed and cost improvements on a sidechain are significant, however, regardless of it\'s security vulnerabilities.',
+    },
+    { type: 'figure', render: ShardVsSidechain },
+    { type: 'h', text: 'So, Could a Sidechain Become a Specialized Remittance Rail?' },
+    {
+      type: 'p',
+      text: 'If we put all the pieces together, the answer is a little deeper than a yes or no. Conditions must be considered before implementation and adoption. Customization is certainly a key advantage of side chains; a purpose-built sidechain could plausibly be tuned for remittance-sized transactions, remittance-appropriate fee structures. A validator set can be drawn from licensed, accountable institutions rather than anonymous public participants, and a meaningfully different security posture than Ronin\'s, where the compromised validators were effectively a handful of privately held keys with no external accountability. **But that improvement has to be a deliberate design choice.** A remittance sidechain that simply copies the small-validator-set, checkpoint-based model without addressing who those validators actually are and what happens if some of them are compromised is exposed to exactly the kind of risk Ronin and Poly Network already demonstrated. For a network carrying family remittances instead of game assets, this can mean utter devastation, so security vulnerabilities being fixed through more validators is the biggest thing that needs to be done before side-chains become a remittance rail.',
+    },
+    {
+      type: 'p',
+      text: 'The speed and savings sidechains offer don\'t come out of nowhere. **They come from giving up some of the anonymity and decentralization that has been a defining characteristic and protection of blockchain systems.** Whether that trade-off is worth making for a remittance network really comes down to one thing: whether the people running it, the bridge connecting it, and the way transactions get finalized are all deliberately built around what a remittance system actually needs, instead of just being whatever a general-purpose sidechain tool happened to come with by default.',
+    },
+    { type: 'figure', render: SidechainTradeoff },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'Polygon documentation and CryptoForInnovation, on the Heimdall/Bor architecture and checkpointing mechanism: docs.polygon.technology/pos/architecture/overview; cryptoforinnovation.org/what-is-polygon',
+        'Polygon Blog (Medium), "Heimdall and Bor," on the sidechain\'s tradeoff of few validators and high throughput versus decentralization: medium.com/the-polygon-blog/heimdall-and-bor-1f8f881cd6a4',
+        'Finematics, "Polygon PoS Chain – A Commit Chain And Not A Sidechain?" on the checkpoint relationship and finality debate: finematics.com/polygon-commit-chain-explained',
+        'BusinessWire, on Polygon Supernets and Polygon Edge as frameworks for application-specific, customizable chains: businesswire.com/news/home/20221026005144/en',
+        'Metaversal (Bankless), "Analyzing the Ronin bridge hack," on the nine-validator, five-of-nine signature threshold and the March 2022 compromise: metaversal.banklesshq.com/p/analyzing-the-ronin-bridge-hack',
+        'LeveX, "Ronin Bridge Hack Explained," on the compromised validator keys and the backdoor access that enabled the fifth signature: levex.com/en/blog/ronin-bridge-hack-explained',
+        'Yellow.com, "How Crypto Bridges Move Billions And Why Hackers Keep Breaking Them," on externally-validated bridge security not being inherited from connected chains: yellow.com/sacramento.html/learn/how-crypto-bridges-move-billions',
+        'HackenProof, "Bridges Burned: Inside the 5 Loudest Web3 Bridge Hacks," on the Poly Network contract-authorization exploit: hackenproof.com/blog/web3-bridge-hacks',
       ],
     },
   ],
