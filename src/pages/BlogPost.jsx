@@ -279,6 +279,7 @@ export default function BlogPost() {
               <post.coverArt />
             </div>
           )}
+
           {/* Repo posts are block arrays; posts written in the dashboard are
               markdown. Both end up as the same elements on the page. */}
           {post.markdown ? (
