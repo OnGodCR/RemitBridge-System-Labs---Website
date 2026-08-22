@@ -2,7 +2,7 @@ import { posts as raw, seriesCategories } from './posts'
 import { bodies } from './postBodies'
 import cover2 from '@/assets/remittance-counter.jpg'
 import cover17 from '@/assets/measurement-scale.jpg'
-import cover19 from '@/assets/throughput-racks.jpg'
+import cover19 from '@/assets/trading-floor.jpg'
 import { coverArt } from '@/components/blog/Covers'
 
 /**

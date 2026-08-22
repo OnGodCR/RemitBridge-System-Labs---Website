@@ -1,6 +1,8 @@
 # Image credits
 
-All photographs are CC0 (public domain dedication), sourced via [Openverse](https://openverse.org).
+Photographs are CC0 or public domain, sourced via [Openverse](https://openverse.org) and
+Wikimedia Commons. Neither imposes an attribution requirement; this file records
+provenance so the sourcing stays auditable and every licence is stated per image.
 CC0 imposes no attribution requirement; this file records provenance so the sourcing
 stays auditable and the images can be re-verified or replaced.
 
@@ -13,6 +15,6 @@ stays auditable and the images can be re-verified or replaced.
 | `fellowships-library.jpg` | Library Books | CC0 | [source](https://stocksnap.io/photo/library-books-4TDHSPIMJ6) |
 | `team-people.jpg` | Business People | CC0 | [source](https://stocksnap.io/photo/business-people-IS1XRUWYW4) |
 | `remittance-counter.jpg` | 2013 10 23 Economy Barclays Remittance Money Transfer 007 | CC0 | [source](https://commons.wikimedia.org/wiki/File:2013_10_23_Economy_Barclays_Remittance_Money_Transfer_007_(10471055483).jpg) |
-| `throughput-racks.jpg` | Rear of rack at NERSC data center (cropped to 21:9) | CC0 | [source](https://commons.wikimedia.org/wiki/File:Rear_of_rack_at_NERSC_data_center_-_closeup.jpg) |
+| `trading-floor.jpg` | NY stock exchange traders floor, Thomas J. O'Halloran (cropped to 21:9) | Public domain, US Library of Congress | [source](https://commons.wikimedia.org/wiki/File:NY_stock_exchange_traders_floor_LC-U9-10548-6.jpg) |
 | `measurement-scale.jpg` | Measuring instrument, vernier caliper (cropped to 21:9) | CC0 | [source](https://openverse.org/image/6b3176dc-acac-45dd-ad29-a0cc7b784dbf) |
 | `founder.jpg` | Photo of the founder, provided by the founder (their own photo, shared in chat) | own photo | — |
