@@ -17,4 +17,6 @@ stays auditable and the images can be re-verified or replaced.
 | `remittance-counter.jpg` | 2013 10 23 Economy Barclays Remittance Money Transfer 007 | CC0 | [source](https://commons.wikimedia.org/wiki/File:2013_10_23_Economy_Barclays_Remittance_Money_Transfer_007_(10471055483).jpg) |
 | `trading-floor.jpg` | NY stock exchange traders floor, Thomas J. O'Halloran (cropped to 21:9) | Public domain, US Library of Congress | [source](https://commons.wikimedia.org/wiki/File:NY_stock_exchange_traders_floor_LC-U9-10548-6.jpg) |
 | `measurement-scale.jpg` | Measuring instrument, vernier caliper (cropped to 21:9) | CC0 | [source](https://openverse.org/image/6b3176dc-acac-45dd-ad29-a0cc7b784dbf) |
+| `local-shop.jpg` | 2013 10 23 Economy Barclays Remittance Money Transfer 001 (cropped to 21:9) | CC0 | [source](https://commons.wikimedia.org/wiki/File:2013_10_23_Economy_Barclays_Remittance_Money_Transfer_001_(10471081853).jpg) |
+| `sorted-by-address.jpg` | Holdrege, Nebraska post office mailboxes, Ammodramus (cropped to 21:9) | Public domain | [source](https://commons.wikimedia.org/wiki/File:Holdrege,_Nebraska_post_office_mailboxes.JPG) |
 | `founder.jpg` | Photo of the founder, provided by the founder (their own photo, shared in chat) | own photo | — |
