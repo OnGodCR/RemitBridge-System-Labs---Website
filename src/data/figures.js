@@ -198,6 +198,48 @@ export const sources = {
     date: 'Undated; it lists Terra, which stopped operating in 2022',
     href: 'https://x.com/solanadaily',
   },
+  crossShardOverhead: {
+    id: 'crossShardOverhead',
+    title: 'Toward reducing cross-shard transaction overhead in sharded blockchains',
+    publisher: 'ACM, with related OmniLedger and Chainspace work on arXiv',
+    date: 'Two-phase commit adapted to sharded chains',
+    href: 'https://dl.acm.org/doi/10.1145/3524860.3539641',
+  },
+  blockchainsVsDb: {
+    id: 'blockchainsVsDb',
+    title: 'Blockchains vs. Distributed Databases: Dichotomy and Fusion',
+    publisher: 'arXiv',
+    date: 'On two-phase commit and cross-shard atomicity',
+    href: 'https://arxiv.org/pdf/1910.01310',
+  },
+  nightshade: {
+    id: 'nightshade',
+    title: 'Sharding Design: Nightshade',
+    publisher: 'NEAR Protocol',
+    date: 'Receipt-based asynchronous cross-shard transactions',
+    href: 'https://pages.near.org/papers/nightshade',
+  },
+  sigmaPrimeNear: {
+    id: 'sigmaPrimeNear',
+    title: 'NEAR Smart Contract Auditing: Sharding and Cross Contract Calls',
+    publisher: 'Sigma Prime',
+    date: "On Nightshade's single-chain asynchronous model",
+    href: 'https://blog.sigmaprime.io/near-sharding-cross-contract-calls.html',
+  },
+  zilliqaDs: {
+    id: 'zilliqaDs',
+    title: 'Zilliqa wiki: mining and the Directory Service committee',
+    publisher: 'Zilliqa',
+    date: 'On shard assignment and block validation',
+    href: 'https://github.com/Zilliqa/Zilliqa/wiki/Mining',
+  },
+  brokerChain: {
+    id: 'brokerChain',
+    title: 'BrokerChain: A Blockchain Sharding Protocol by Exploiting Broker Accounts',
+    publisher: 'arXiv',
+    date: 'On hot shards and imbalanced transaction distribution',
+    href: 'https://arxiv.org/pdf/2412.07202',
+  },
   sdg: {
     id: 'sdg',
     title: 'Sustainable Development Goal 10.c: reduce remittance costs to less than 3 percent',
@@ -393,6 +435,25 @@ export const tpsClaims = [
   { name: 'Solana', tps: 65000 },
 ]
 
+/**
+ * How much of a three-party remittance ends up crossing shards.
+ *
+ * Arithmetic, not a measurement, and the figure that draws it says so. If a
+ * sender, a conversion provider and a recipient are assigned to shards
+ * independently and uniformly, all three share a shard with probability
+ * 1/n^2, so the cross-shard share is 1 - 1/n^2.
+ *
+ * Uniform assignment is a simplifying assumption and a generous one: real
+ * networks concentrate load on the accounts that matter, which is the hot
+ * shard problem the same post describes. The curve is here to show the shape
+ * of the effect the cited research reports, not to predict any network.
+ */
+export const crossShard = {
+  parties: 3,
+  shardCounts: [2, 4, 8, 16, 32, 64],
+  shareFor: (n) => 1 - 1 / n ** 2,
+}
+
 /** (global rate − target) × annual flows. Our arithmetic, not a cited figure. */
 export const derived = {
   annualOverpayUsdBn: Math.round(
@@ -572,6 +633,13 @@ export const citations = [
       'Projected rise in remittances to Haiti over the year following the 2010 earthquake. Sustained across months rather than concentrated in a burst, which is what makes emergency demand a different load profile from a holiday one.',
     source: sources.wbHaiti,
     usedOn: [{ page: 'Blog', where: 'Post 19, emergency-driven demand' }],
+  },
+  {
+    value: '75% to 99.98%',
+    claim:
+      'The share of three-party remittance transactions that would touch more than one shard, as the shard count rises from 2 to 64. Method: with a sender, a conversion provider and a recipient assigned independently and uniformly across n shards, all three land together with probability 1/n squared, so the cross-shard share is 1 minus that. Ours, not measured, and uniform assignment is a generous assumption: real networks concentrate load, which makes it worse rather than better. It is drawn to show the shape of the effect the cited sharding research reports.',
+    source: null,
+    usedOn: [{ page: 'Blog', where: 'Post 14, the figure on what more shards actually buys' }],
   },
   {
     value: '15 to 65,000 TPS',

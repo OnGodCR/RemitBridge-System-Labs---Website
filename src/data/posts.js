@@ -198,9 +198,14 @@ export const posts = [
     "id": 14,
     "series": "series3",
     "seriesName": "Blockchain scaling",
-    "title": "Sharding, explained with a remittance network",
-    "abstract": "How the work gets split across shards, what happens when a transfer has to cross from one shard to another, and what you give up in security to get the extra speed.",
-    "readTime": "10 min read",
+    "title": "Sharding explained through a remittance network",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
+    "abstract": "Doubling the shards roughly doubles the capacity, but only for transfers that stay inside one shard. A remittance has three parties by default, so it is cross-shard from the start, and adding shards makes that more likely rather than less.",
+    "readTime": "9 min read",
     "tags": [
       "Sharding Architecture",
       "Parallel Processing"

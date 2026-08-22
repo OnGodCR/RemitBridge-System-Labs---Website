@@ -101,7 +101,7 @@ supabase/
 sending versus the benchmarks · `/rate-history` day-by-day corridor chart from
 our own records · `/scam-check` FTC/CFPB warning signs · `/coming-soon`
 
-**Reading** — `/blog` (30 planned, 4 written) · `/papers` (one, drafting)
+**Reading** — `/blog` (30 planned, 5 written) · `/papers` (one, drafting)
 
 **Community** — `/workshops` (none running yet, says so) · `/glossary` ·
 `/fellowships`
@@ -230,5 +230,5 @@ Recommended if a tie-break is ever needed: RPW, cheapest-first without the word
   only when it is populated.
 - Glossary translations — six languages listed, all "no reviewer yet". A column
   publishes only when a named speaker consents in writing.
-- Blog — 30 planned, 4 written. The page counts entries in `postBodies.jsx`
+- Blog — 30 planned, 5 written. The page counts entries in `postBodies.jsx`
   and says so. Post 2 is the first one through review.

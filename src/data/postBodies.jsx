@@ -21,6 +21,12 @@ import {
   FinalityMeanings,
   FairComparison,
   ClaimedTps,
+  ShardSplit,
+  ThreeShards,
+  CoordinationMechanisms,
+  Atomicity,
+  HotShard,
+  CrossShardShare,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -577,6 +583,99 @@ export const bodies = {
         'Easy Crypto / Zilliqa project history, on Zilliqa\'s 2017 testnet results of 2,488 TPS using 3,600 nodes on AWS Singapore: hub.easycrypto.com/zilliqa-coin and blog.zilliqa.com, "Zilliqa Testnet v1.0 Release: Codename Red Prawn"',
         'iCryptoAI, "Scalability Solutions for Blockchain: Sharding and Layer-2 Technologies," on sidechains carrying independent, potentially weaker security models than the main chain: icryptoai.com/2025/11/26/scalability-solutions-for-blockchain-sharding-and-layer-2-technologies',
         'European Commission Blockchain Observatory, "An overview of blockchain scalability, interoperability and sustainability," on sharding, off-chain payment channels, and cross-shard communication challenges: blockchain-observatory.ec.europa.eu',
+      ],
+    },
+  ],
+
+  14: [
+    {
+      type: 'p',
+      text: 'Sharding, at surface level, sounds extremely appealing. It\'s an easy way to increase throughput with blockchain based technologies. You can split the network into pieces, let each piece process its own transactions in parallel, and TPS increases with however many pieces you\'re willing to run. If you double the shards, you can roughly double the capacity. On paper, that math makes a sharded blockchain look like an easy answer to the throughput numbers worked out in previous posts in this series.',
+    },
+    {
+      type: 'p',
+      text: 'This is the clearest way to solve for remittance based blockchain technologies, right? After all, you can scale TPS to be as high as you want. Not quite. **This all rides on one assumption, which is that all processing happens in a single shard, which is almost never the case with how spread apart {{remittance|remittance}} senders and recipients are.** This means that a transaction has to pass through more shards before being fully settled, leading to the whole system\'s TPS going down. You can send $200 from the US to Mexico and there will be at least three parties involved, a sender, a currency-conversion or liquidity provider handling the USD-to-peso leg, and a recipient. There\'s no guarantee any two of them land on the same shard, let alone all three. This doesn\'t mean sharding is out of the question for remittances though, and that\'s what this blog post aims to do. We will explore how sharding works and how we can implement this technology into a remittance network.',
+    },
+    { type: 'h', text: 'What Sharding Actually Splits' },
+    {
+      type: 'p',
+      text: 'A sharded network divides its validator set and its state, meaning account balances and transaction history, across multiple shards, and assigns each account to one of them, typically based on something like the account\'s address. If there\'s a transaction where every party involved lives on the same shard, the process is very cheap and fast. That shard\'s validators can process, validate, and finalize the entire transaction entirely on its own, in parallel with every other shard doing the same thing for its own accounts. **This is where sharding\'s throughput multiplier actually comes from.**',
+    },
+    {
+      type: 'p',
+      text: 'The problem is the moment a transaction needs to touch accounts on more than one shard. **Now the shards involved have to talk to each other, agree on what happened, and make sure the result is consistent across all of them.** That coordination step makes sharding similar to {{swift|SWIFT}} as money passes through intermediaries. In this particular case, though, the intermediaries are very clear and can be tracked easily. They also don\'t take additional fees, but rather just the "gas" cost for transacting multiple times.',
+    },
+    { type: 'figure', render: ShardSplit },
+    { type: 'h', text: 'Three Parties, Three Shards' },
+    {
+      type: 'p',
+      text: 'Let\'s take a look at a concrete case to understand this better. A sender\'s wallet is assigned to Shard A. The currency-conversion or liquidity provider handling the USD-to-peso conversion operates out of Shard B. The recipient\'s wallet, opened through a partner exchange in Mexico, lands on Shard C. In this chain, a single $200 remittance now needs to debit an account on Shard A, execute a conversion that involves a provider on Shard B, and credit an account on Shard C. **All three steps of chain either succeed together, or fail together.** There\'s no version of this transaction where the sender\'s shard debits the money but the recipient\'s shard never credits it. That would mean the $200 simply vanished. This is an important failsafe as this means the money will either land or the transaction will fail, meaning money can never disappear.',
+    },
+    {
+      type: 'p',
+      text: 'A remittance routed through an on-chain conversion step is closer to a three-shard transaction by default, and every additional shard a single transaction has to touch adds another party, which adds more risk, lowers latency and increases the amount of time it takes for a transaction to land.',
+    },
+    { type: 'figure', render: ThreeShards },
+    { type: 'h', text: 'How Cross-Shard Coordination Actually Works' },
+    {
+      type: 'p',
+      text: 'Getting multiple shards to agree on one transaction isn\'t a new problem. Distributed databases solved a version of it decades ago with a two-phase commit (2PC) process. Simply put, a coordinator asks every participant to lock its side of the transaction and confirm it\'s ready, and only once everyone confirms does the coordinator tell everyone to actually commit. Early sharded blockchain designs, including OmniLedger and Chainspace, adapted this directly: each shard involved in a cross-shard transaction runs its own internal consensus twice, once to lock the relevant funds and prove they\'re available, and once to actually spend them once every shard has confirmed readiness.',
+    },
+    {
+      type: 'p',
+      text: 'Some architectures, however, try to cut costs and avoid that overhead cost. NEAR\'s Nightshade design takes a different approach: instead of locking and waiting for every shard to confirm before committing anything, a shard executes its part of the transaction immediately and produces a receipt, which gets routed to and applied by the next shard in the chain, with the whole thing rolled back later if something upstream turns out to have been invalid. This makes the common case faster, since a shard doesn\'t have to wait on a full round of cross-shard confirmation before acting. **It trades that speed for a rollback mechanism instead of an upfront guarantee, though.** Additionally, a receipt has to physically travel from one shard to the next before that leg of the transaction can even begin, adding an additional communication step per shard the transaction touches. Zilliqa, for its part, coordinates sharding itself through a Directory Service committee, a dedicated group of nodes responsible for assigning nodes to shards and validating the blocks each shard produces before they\'re merged into the main chain, meaning cross-shard consistency in Zilliqa\'s design still runs through this coordinating layer rather than shards settling things purely among themselves.',
+    },
+    {
+      type: 'p',
+      text: 'These are different mechanisms, sure, but they share the same underlying reality: **a transaction touching multiple shards requires real, extra communication between them**, whether that communication happens upfront through locking and confirmation or after the fact through receipts and rollbacks. None of it is free, and all of it adds latency a single-shard transaction doesn\'t have to deal with',
+    },
+    { type: 'figure', render: CoordinationMechanisms },
+    { type: 'h', text: 'Why Atomicity Isn\'t Optional Here' },
+    {
+      type: 'p',
+      text: 'Atomicity is the requirement that a multi-shard transaction either fully commits everywhere or fully rolls back everywhere, with no in-between state. For a $200 remittance, this is the entire point that makes sharding a strong contender. **A family on the receiving end can\'t be told the transfer "partially succeeded."** Either the $200 arrives, in full, or the sender\'s account needs to end up exactly as it started. Anything in between is a lost or duplicated payment, meaning it has failed and will rollback.',
+    },
+    {
+      type: 'p',
+      text: 'This is precisely why the coordination overhead described above exists in the first place. The two-phase commit approach\'s entire design is built around never letting any shard finalize its half of a transaction until every other shard involved has confirmed it can finalize its half too. Guaranteeing atomicity is what makes cross-shard transactions expensive relative to single-shard ones. **There\'s no version of a sharded remittance network that gets atomicity for free just because it\'s on a blockchain instead of a bank.**',
+    },
+    { type: 'figure', render: Atomicity },
+    { type: 'h', text: 'Hot Shards: When Parallelism Runs Into an Uneven World' },
+    {
+      type: 'p',
+      text: 'Sharding\'s throughput math assumes transaction load spreads roughly evenly across shards. **Real transaction patterns almost never cooperate completely, however.** Research on blockchain sharding has documented this directly. Designs like Monoxide, which assign accounts to shards based on something like address hashing, can produce badly imbalanced transaction distributions, where a small number of shards absorb a disproportionate share of activity. Researchers call the shard on the receiving end of that imbalance a hot shard, a shard so overloaded relative to its capacity that transactions touching it face growing delays. Sometimes, this can happen without a clear upper bound, both for transactions confined to that shard and for cross-shard transactions that need it to respond.',
+    },
+    {
+      type: 'p',
+      text: 'A remittance network is an almost textbook setup for producing hot shards. Remittance volume isn\'t evenly distributed across corridors. A small number of high-volume {{corridor|corridors}} like US-Mexico carry a disproportionate share of global flows, and the currency-conversion or liquidity providers handling those corridors would be natural candidates to become exactly the kind of high-traffic accounts that concentrate load onto whichever shard happens to host them. If the shard holding the primary USD-to-peso liquidity provider becomes the destination for a large share of all cross-shard remittance transactions, **that shard doesn\'t get the benefit of parallelism at all.** The shard would become a bottleneck that every other shard has to route through and wait on, no matter how many total shards the network is running. This is a huge problem, but it can be solved by adding additional shards to high traffic areas. This solution does, however, pose the downside of increasing the number of cross-shard transactions taking place, which reduces latency once again.',
+    },
+    { type: 'figure', render: HotShard },
+    { type: 'h', text: 'The Net Effect on Throughput' },
+    {
+      type: 'p',
+      text: 'Once we put the coordination overhead and the hot-shard risk together, sharding gets a lot messier. Research studying cross-shard transaction ratios has found that as the number of shards in a network increases, the proportion of transactions that end up needing cross-shard coordination tends to rise as well, since spreading accounts across more shards makes it statistically less likely that any two parties to a transaction land on the same one. **This means adding shards doesn\'t just add parallel processing capacity, it can simultaneously add more of the expensive, coordination-heavy transaction type that doesn\'t benefit from parallelism in the first place.**',
+    },
+    {
+      type: 'p',
+      text: 'For a remittance network specifically, where a meaningful share of transactions are already structurally cross-shard by default, sender on one shard, conversion provider on another, recipient on a third, this effect isn\'t a rare edge case to be optimized away later. **It\'s close to the typical transaction.** The throughput scenarios worked out in the previous post in this series assumed a network could actually sustain a given number of transactions per second. Whether a sharded architecture can sustain that number depends heavily on how much of its real-world remittance traffic ends up cross-shard, how well-balanced that traffic is across shards, and how expensive the specific cross-shard coordination mechanism it uses acts under load.',
+    },
+    { type: 'figure', render: CrossShardShare },
+    {
+      type: 'p',
+      text: 'I would like to emphasize, though, that none of this means sharding can\'t work for a remittance workload. This post aims to explain how sharding works and primarily focuses on the downsides. Sharding still provides two huge upsides, though. High levels of TPS, and a guarantee that money can\'t get lost along the blockchain, which are both very essential parts to a remittance network. **This makes sharding a strong contender for taking on remittance loads, despite it\'s disadvantages.**',
+    },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'arXiv, "Toward reducing cross-shard transaction overhead in sharded blockchains" and related work on two-phase commit in OmniLedger and Chainspace: dl.acm.org/doi/10.1145/3524860.3539641; arxiv.org/pdf/1804.00399',
+        'arXiv, "Blockchains vs. Distributed Databases: Dichotomy and Fusion," on two-phase commit and cross-shard atomicity: arxiv.org/pdf/1910.01310',
+        'NEAR Protocol, "Sharding Design: Nightshade," on receipt-based asynchronous cross-shard transactions and rollback handling: pages.near.org/papers/nightshade',
+        'NEAR Protocol, Nightshade sharding design paper, on chunk producers, receipts, and shard reassignment by epoch: pages.near.org/downloads/Nightshade.pdf',
+        'Sigma Prime, "NEAR Smart Contract Auditing: Sharding & Cross Contract Calls," on Nightshade\'s single-chain, asynchronous cross-shard model: blog.sigmaprime.io/near-sharding-cross-contract-calls.html',
+        'Zilliqa GitHub Wiki and Zilliqa Name Service documentation, on the Directory Service committee\'s role coordinating shard assignment and validating shard-produced blocks: github.com/Zilliqa/Zilliqa/wiki/Mining; github.com/PortalNetwork/zns',
+        'arXiv, "BrokerChain: A Blockchain Sharding Protocol by Exploiting Broker Accounts," on the definition of hot shards and imbalanced transaction distribution under Monoxide-style sharding: arxiv.org/pdf/2412.07202',
+        'Inter-American Dialogue and prior posts in this series, on remittance volume concentration in high-traffic corridors such as US-Mexico: thedialogue.org, "Understanding the Recent Growth in Remittances to Mexico"',
       ],
     },
   ],

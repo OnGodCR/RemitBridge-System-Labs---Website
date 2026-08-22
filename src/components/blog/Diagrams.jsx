@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { ArrowDown, ArrowRight } from 'lucide-react'
-import { figures, usMxQ3, wfStandardWire, tps, zilliqa, tpsClaims } from '@/data/figures'
+import { figures, usMxQ3, wfStandardWire, tps, zilliqa, tpsClaims, crossShard } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -1019,6 +1019,254 @@ export function ClaimedTps({ theme }) {
         count or definition of a transaction, and several are theoretical maxima rather than
         observed throughput. † Terra stopped operating in 2022. This is the pile of numbers the
         rest of the post is about, not a ranking the lab stands behind.
+      </p>
+    </figure>
+  )
+}
+
+/* ------------------------------------------------------------------------ *
+ * Post 14. Sharding.
+ * ------------------------------------------------------------------------ */
+
+/** The two cases a sharded network has, and why only one of them is cheap. */
+export function ShardSplit({ theme }) {
+  const cases = [
+    {
+      title: 'Everyone on one shard',
+      detail: 'That shard validates and finalises alone, in parallel with every other shard doing the same.',
+      cost: 'No coordination',
+      good: true,
+    },
+    {
+      title: 'Parties on different shards',
+      detail: 'The shards involved have to talk, agree what happened, and keep the result consistent across all of them.',
+      cost: 'Coordination, and the latency it costs',
+      good: false,
+    },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Where the throughput multiplier comes from, and where it stops
+      </figcaption>
+      <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+        {cases.map((c) => (
+          <li
+            key={c.title}
+            className={cn(
+              'rounded-2xl border p-3',
+              c.good ? cn(theme.border, theme.tint) : 'border-dashed border-border bg-card',
+            )}
+          >
+            <p className="text-sm font-bold leading-snug">{c.title}</p>
+            <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{c.detail}</p>
+            <p
+              className={cn(
+                'mt-2 border-t pt-2 text-xs font-bold',
+                c.good ? cn(theme.border, theme.ink) : 'border-border text-muted-foreground',
+              )}
+            >
+              {c.cost}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </figure>
+  )
+}
+
+/** The three-shard case the post walks through, drawn as the chain it is. */
+export function ThreeShards({ theme }) {
+  return (
+    <Chain
+      theme={theme}
+      aria="A $200 remittance debits the sender's wallet on shard A, executes a conversion through a liquidity provider on shard B, and credits the recipient's wallet on shard C. All three either commit together or roll back together."
+      stops={[
+        { title: 'Shard A', sub: "sender's wallet", note: 'debit $200' },
+        { title: 'Shard B', sub: 'conversion provider', note: 'USD to peso' },
+        { title: 'Shard C', sub: "recipient's wallet", note: 'credit' },
+      ]}
+      footer={[
+        { lead: 'All three or none', rest: 'there is no state where A debits and C never credits' },
+        { lead: 'Three parties by default', rest: 'a conversion step makes this the ordinary case, not the edge one' },
+      ]}
+    />
+  )
+}
+
+/** Three ways of making shards agree, and what each one trades. */
+export function CoordinationMechanisms({ theme }) {
+  const rows = [
+    {
+      name: 'Two-phase commit',
+      who: 'OmniLedger, Chainspace',
+      how: 'Every shard runs consensus twice: once to lock the funds and prove them available, once to spend them after all shards confirm.',
+      trade: 'Guarantee up front, paid for in rounds',
+    },
+    {
+      name: 'Receipts',
+      who: "NEAR's Nightshade",
+      how: 'A shard executes its part immediately and emits a receipt for the next shard, rolling back later if something upstream proves invalid.',
+      trade: 'Faster common case, rollback instead of a guarantee',
+    },
+    {
+      name: 'Coordinating committee',
+      who: 'Zilliqa Directory Service',
+      how: 'A dedicated group of nodes assigns nodes to shards and validates each shard\'s blocks before they merge into the main chain.',
+      trade: 'Consistency through a layer, not between shards',
+    },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Three ways to make shards agree
+      </figcaption>
+      <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+        {rows.map((r) => (
+          <li key={r.name} className={cn('rounded-2xl border p-3', theme.border, theme.tint)}>
+            <p className={cn('text-[11px] font-bold uppercase tracking-widest', theme.ink)}>
+              {r.who}
+            </p>
+            <p className="mt-1.5 text-sm font-bold leading-snug">{r.name}</p>
+            <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{r.how}</p>
+            <p className={cn('mt-2 border-t pt-2 text-xs font-bold', theme.border)}>{r.trade}</p>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        Different mechanisms, same underlying bill: a transaction touching several shards needs
+        real extra communication, whether it is paid up front or cleaned up afterwards.
+      </p>
+    </figure>
+  )
+}
+
+/** Two permitted outcomes and the one the post says cannot exist. */
+export function Atomicity({ theme }) {
+  const outcomes = [
+    { head: 'Commits everywhere', body: 'The $200 arrives in full.', allowed: true },
+    { head: 'Rolls back everywhere', body: "The sender's account ends exactly as it started.", allowed: true },
+    { head: 'Partly succeeds', body: 'Debited on one shard, never credited on another. A lost or duplicated payment.', allowed: false },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        The three outcomes, one of which must be impossible
+      </figcaption>
+      <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+        {outcomes.map((o) => (
+          <li
+            key={o.head}
+            className={cn(
+              'rounded-2xl border p-3',
+              o.allowed ? cn(theme.border, theme.tint) : 'border-dashed border-destructive/40 bg-card',
+            )}
+          >
+            <p className="flex items-center gap-2 text-sm font-bold leading-snug">
+              <span
+                aria-hidden
+                className={cn(
+                  'size-2 shrink-0 rounded-full',
+                  o.allowed ? theme.bar : 'border-2 border-current bg-card',
+                )}
+              />
+              {o.head}
+            </p>
+            <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{o.body}</p>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        The coordination cost exists to make the third box unreachable. Nothing about being on a
+        blockchain rather than in a bank grants that for free.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * A hot shard, drawn structurally rather than numerically.
+ *
+ * No load figures: the post cites research that imbalance happens, not a
+ * measured distribution, and putting invented percentages on shard boxes
+ * would be exactly the unsourced-number problem post 17 is about.
+ */
+export function HotShard({ theme }) {
+  return (
+    <figure
+      className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5"
+      role="group"
+      aria-label="Several ordinary shards all route cross-shard transactions into one shard, the one hosting the high-volume corridor's liquidity provider, which becomes a bottleneck no amount of extra shards relieves."
+    >
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Why parallelism stops helping
+      </figcaption>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+        <ul className="grid grid-cols-2 gap-2">
+          {[1, 2, 3, 4].map((n) => (
+            <li key={n} className="rounded-xl border border-border bg-card p-2 text-center">
+              <p className="text-xs font-bold">Shard {n}</p>
+              <p className="text-[11px] text-muted-foreground">ordinary load</p>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex items-center justify-center" aria-hidden>
+          <ArrowDown className="size-4 text-muted-foreground sm:hidden" />
+          <ArrowRight className="hidden size-4 text-muted-foreground sm:block" />
+        </div>
+
+        <div className={cn('rounded-2xl border-2 p-4 text-center', theme.border, theme.tint)}>
+          <p className={cn('text-sm font-bold', theme.ink)}>Hot shard</p>
+          <p className="mt-1.5 text-xs leading-snug text-muted-foreground">
+            hosts the high-volume corridor's liquidity provider, so most cross-shard transactions
+            have to route through it and wait
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        Adding shards does not relieve this one. Splitting the busy account across more shards
+        does, at the cost of yet more cross-shard transactions.
+      </p>
+    </figure>
+  )
+}
+
+/** What more shards actually buys, worked out rather than asserted. */
+export function CrossShardShare({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        More shards, more cross-shard transactions
+      </figcaption>
+
+      <div className="mt-5 space-y-3">
+        {crossShard.shardCounts.map((n) => {
+          const share = crossShard.shareFor(n) * 100
+          return (
+            <div key={n} className="grid grid-cols-[3.5rem_1fr_3.5rem] items-center gap-x-2">
+              <span className="text-xs font-bold tabular-nums">{n} shards</span>
+              <span className="relative block h-2.5 rounded-full bg-muted">
+                <span
+                  className={cn('absolute inset-y-0 left-0 rounded-l-full rounded-r-[4px]', theme.bar)}
+                  style={{ width: `${share}%` }}
+                />
+              </span>
+              <span className="text-right text-xs tabular-nums text-muted-foreground">
+                {share.toFixed(share < 99 ? 0 : 2)}%
+              </span>
+            </div>
+          )
+        })}
+      </div>
+
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        Share of {crossShard.parties}-party transfers touching more than one shard, if accounts are
+        assigned independently and uniformly. Our arithmetic, not a measurement: all three share a
+        shard with probability one over n squared. Uniform assignment is the generous case, because
+        real traffic concentrates, which is the hot shard above.
       </p>
     </figure>
   )
