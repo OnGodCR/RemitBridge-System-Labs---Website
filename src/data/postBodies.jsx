@@ -596,6 +596,10 @@ export const bodies = {
 
   14: [
     {
+      type: 'callout',
+      text: "The cover of this post is NEAR Protocol's logo, used because NEAR runs Nightshade, one of the largest sharded networks in production, and its cross-shard design is one of the three examined below. NEAR is not connected to this lab and has not reviewed anything here.",
+    },
+    {
       type: 'p',
       text: 'Sharding, at surface level, sounds extremely appealing. It\'s an easy way to increase throughput with blockchain based technologies. You can split the network into pieces, let each piece process its own transactions in parallel, and TPS increases with however many pieces you\'re willing to run. If you double the shards, you can roughly double the capacity. On paper, that math makes a sharded blockchain look like an easy answer to the throughput numbers worked out in previous posts in this series.',
     },

@@ -3,6 +3,8 @@
 Photographs are CC0 or public domain, sourced via [Openverse](https://openverse.org) and
 Wikimedia Commons. Neither imposes an attribution requirement; this file records
 provenance so the sourcing stays auditable and every licence is stated per image.
+One file is a company's own logo, used to identify that company in a post about it.
+It is not a mark of endorsement and the post says so.
 CC0 imposes no attribution requirement; this file records provenance so the sourcing
 stays auditable and the images can be re-verified or replaced.
 
@@ -18,5 +20,5 @@ stays auditable and the images can be re-verified or replaced.
 | `trading-floor.jpg` | NY stock exchange traders floor, Thomas J. O'Halloran (cropped to 21:9) | Public domain, US Library of Congress | [source](https://commons.wikimedia.org/wiki/File:NY_stock_exchange_traders_floor_LC-U9-10548-6.jpg) |
 | `measurement-scale.jpg` | Measuring instrument, vernier caliper (cropped to 21:9) | CC0 | [source](https://openverse.org/image/6b3176dc-acac-45dd-ad29-a0cc7b784dbf) |
 | `local-shop.jpg` | 2013 10 23 Economy Barclays Remittance Money Transfer 001 (cropped to 21:9) | CC0 | [source](https://commons.wikimedia.org/wiki/File:2013_10_23_Economy_Barclays_Remittance_Money_Transfer_001_(10471081853).jpg) |
-| `sorted-by-address.jpg` | Holdrege, Nebraska post office mailboxes, Ammodramus (cropped to 21:9) | Public domain | [source](https://commons.wikimedia.org/wiki/File:Holdrege,_Nebraska_post_office_mailboxes.JPG) |
+| `near-logo.png` | NEAR Protocol logo, used to identify NEAR in blog post 14 | CC0 | [source](https://commons.wikimedia.org/wiki/File:Near_Protocol_Logo.png) |
 | `founder.jpg` | Photo of the founder, provided by the founder (their own photo, shared in chat) | own photo | — |

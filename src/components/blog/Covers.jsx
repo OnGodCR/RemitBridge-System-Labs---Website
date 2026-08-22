@@ -1,3 +1,5 @@
+import nearLogo from '@/assets/near-logo.png'
+
 /**
  * Cover art that is drawn rather than photographed.
  *
@@ -51,4 +53,39 @@ export function SwiftCover() {
   )
 }
 
-export const coverArt = { 7: SwiftCover }
+/**
+ * Post 14. NEAR's mark, which Angad chose.
+ *
+ * The glyph is NEAR Protocol's own, CC0 from Wikimedia Commons rather than
+ * lifted from their site. The wordmark beside it is set in this site's
+ * typeface, not theirs: pairing their real glyph with an approximation of
+ * their lettering would look like a forged wordmark, and this reads plainly
+ * as our rendering of their name.
+ *
+ * The post names them in a callout above the first paragraph. A logo on a
+ * cover with nothing explaining it invites the reader to assume a
+ * relationship that does not exist, and NEAR appears here because the post
+ * examines Nightshade, not because they have anything to do with the lab.
+ */
+const NEAR_FIELD = '#F4F1F8'
+const NEAR_INK = '#141414'
+
+export function NearCover() {
+  return (
+    <div
+      aria-hidden
+      className="flex size-full items-center justify-center gap-[4%] px-[8%]"
+      style={{ backgroundColor: NEAR_FIELD, color: NEAR_INK }}
+    >
+      <img src={nearLogo} alt="" className="h-[52%] w-auto shrink-0" />
+      <span
+        className="font-semibold uppercase leading-none tracking-[0.08em]"
+        style={{ fontSize: 'min(11cqw, 26cqh)' }}
+      >
+        Near
+      </span>
+    </div>
+  )
+}
+
+export const coverArt = { 7: SwiftCover, 14: NearCover }
