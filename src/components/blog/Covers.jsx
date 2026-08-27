@@ -14,8 +14,19 @@ import polygonLogo from '@/assets/polygon-logo.png'
  * This fills whatever box it is given and stays centred.
  */
 
-/* The mark on white, as supplied. The article frames it with a border, so
-   the plate reads as a plate rather than a hole in the page. */
+/*
+ * A logo always sits on white. Standing rule, set 2026-08-26.
+ *
+ * Polygon's plate was lilac for a while, taken from their own brand. Against
+ * post 15's purple series tint it read as a slightly wrong purple rather than
+ * as a deliberate one, and NEAR's had the same problem on post 14. White is
+ * the only field that stays neutral under all five series colours, so the
+ * plate reads as a plate rather than as a fourth shade competing with the
+ * two the page already has.
+ *
+ * One constant, not one per logo: the next mark someone adds inherits the
+ * rule instead of picking a brand colour again.
+ */
 const FIELD = '#FFFFFF'
 const INK = '#2F3A3B'
 
@@ -68,7 +79,6 @@ export function SwiftCover() {
  * relationship that does not exist, and NEAR appears here because the post
  * examines Nightshade, not because they have anything to do with the lab.
  */
-const NEAR_FIELD = '#FFFFFF'
 const NEAR_INK = '#141414'
 
 export function NearCover() {
@@ -76,7 +86,7 @@ export function NearCover() {
     <div
       aria-hidden
       className="flex size-full items-center justify-center gap-[4%] px-[8%]"
-      style={{ backgroundColor: NEAR_FIELD, color: NEAR_INK }}
+      style={{ backgroundColor: FIELD, color: NEAR_INK }}
     >
       <img src={nearLogo} alt="" className="h-[52%] w-auto shrink-0" />
       <span
@@ -102,14 +112,12 @@ export function NearCover() {
  * checkpoint interval, and a logo on a cover with nothing explaining it
  * invites a reader to assume a relationship that does not exist.
  */
-const POLYGON_FIELD = '#F4F1F8'
-
 export function PolygonCover() {
   return (
     <div
       aria-hidden
       className="flex size-full items-center justify-center px-[10%]"
-      style={{ backgroundColor: POLYGON_FIELD }}
+      style={{ backgroundColor: FIELD }}
     >
       <img src={polygonLogo} alt="" className="max-h-[46%] w-auto max-w-full object-contain" />
     </div>

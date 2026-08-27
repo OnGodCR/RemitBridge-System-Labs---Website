@@ -166,6 +166,10 @@ claim this site argues against.
   there appears in the header, the footer and the home index at once.
 - Colour alternates strictly between white and mint green, section by section.
   No third accent colour.
+- **A logo always sits on white.** Every cover plate in `blog/Covers.jsx` shares
+  one `FIELD` constant. Brand colours were tried and each one fought the series
+  tint behind it, reading as a wrong shade of that tint rather than a chosen
+  one. A new mark inherits the constant; it does not get its own.
 - **No pill labels.** Status is small caps plus a filled or hollow dot; tags are
   a plain line of text. Buttons keep their shape, because a button should look
   pressable. The `Pill` helper was deleted on purpose.
