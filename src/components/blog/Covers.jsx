@@ -1,4 +1,5 @@
 import nearLogo from '@/assets/near-logo.png'
+import polygonLogo from '@/assets/polygon-logo.png'
 
 /**
  * Cover art that is drawn rather than photographed.
@@ -88,4 +89,31 @@ export function NearCover() {
   )
 }
 
-export const coverArt = { 7: SwiftCover, 14: NearCover }
+
+/**
+ * Post 15. Polygon's mark, the same arrangement as post 14's NEAR plate.
+ *
+ * Commons carries the full official lockup, glyph and wordmark together, so
+ * unlike NEAR there is no wordmark to set in our own typeface. The whole
+ * thing is theirs, CC0, and used unaltered.
+ *
+ * Named in a callout above the first paragraph for the same reason: Polygon
+ * is the sidechain this post examines, from Bor and Heimdall through to the
+ * checkpoint interval, and a logo on a cover with nothing explaining it
+ * invites a reader to assume a relationship that does not exist.
+ */
+const POLYGON_FIELD = '#F4F1F8'
+
+export function PolygonCover() {
+  return (
+    <div
+      aria-hidden
+      className="flex size-full items-center justify-center px-[10%]"
+      style={{ backgroundColor: POLYGON_FIELD }}
+    >
+      <img src={polygonLogo} alt="" className="max-h-[46%] w-auto max-w-full object-contain" />
+    </div>
+  )
+}
+
+export const coverArt = { 7: SwiftCover, 14: NearCover, 15: PolygonCover }

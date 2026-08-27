@@ -685,7 +685,7 @@ export const bodies = {
     { type: 'figure', render: CrossShardShare },
     {
       type: 'p',
-      text: 'I would like to emphasize, though, that none of this means sharding can\'t work for a remittance workload. This post aims to explain how sharding works and primarily focuses on the downsides. Sharding still provides two huge upsides, though. High levels of TPS, and a guarantee that money can\'t get lost along the blockchain, which are both very essential parts to a remittance network. **This makes sharding a strong contender for taking on remittance loads, despite it\'s disadvantages.**',
+      text: 'I would like to emphasize, though, that none of this means sharding can\'t work for a remittance workload. This post aims to explain how sharding works and primarily focuses on the downsides. Sharding still provides two huge upsides, though. High levels of TPS, and a guarantee that money can\'t get lost along the blockchain, which are both very essential parts to a remittance network. **This makes sharding a strong contender for taking on remittance loads, despite its disadvantages.**',
     },
     { type: 'h', text: 'Sources' },
     {
@@ -802,6 +802,10 @@ export const bodies = {
 
   15: [
     {
+      type: 'callout',
+      text: "The cover of this post is Polygon's logo, used because Polygon's PoS chain is the sidechain examined most closely below, from its Bor and Heimdall layers to its checkpoint interval. Polygon is not connected to this lab and has not reviewed anything here.",
+    },
+    {
       type: 'p',
       text: 'At first glance, {{sidechain|sidechains}} sound very similar to remittances. They offer faster transactions, lower fees, and more {{throughput|throughput}} than the base layer could offer on its own. This mechanism is completely different, though. The tradeoff between these technologies is also completely different. **Where {{sharding|sharding}} splits one network into pieces that still answer to the same overall {{validator|validator}} pool, a sidechain is its own separate chain entirely, running its own consensus.** This side-chain is connected back to a main chain through a bridge. This independence is exactly where the speed comes from. Customization, validator design, bridge dependency, settlement, and how much of the main chain\'s security a sidechain actually gets to borrow are the five things that decide whether a sidechain could truly work as a purpose-built rail for remittances, and this blog post aims to explore each one of them to determine if sidechains can become specialized rails for {{remittance|remittance}} transfers.',
     },
@@ -812,7 +816,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'This structure is the whole appeal but it also servers as the whole risk, and every specific tradeoff below traces back to this one design choice: **a sidechain\'s daily operation is secured by a separate, usually smaller, group of validators than the main chain\'s**, and the bridge connecting the two is a distinct piece of infrastructure which can also be attacked by malicious groups of people.',
+      text: 'This structure is the whole appeal but it also serves as the whole risk, and every specific tradeoff below traces back to this one design choice: **a sidechain\'s daily operation is secured by a separate, usually smaller, group of validators than the main chain\'s**, and the bridge connecting the two is a distinct piece of infrastructure which can also be attacked by malicious groups of people.',
     },
     { type: 'figure', render: BorHeimdall },
     { type: 'h', text: 'Customization: The Actual Case for "Specialized"' },
@@ -822,7 +826,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'For a remittance-specific sidechain, this customization could mean a few concrete things a general-purpose chain doesn\'t offer by default. **The first thing this offers is choosing who\'s allowed to run the network.** Instead of leaving these permissions open to anyone, it could be limited to licensed, regulated companies that already move money for a living, banks and remittance providers, instead of anonymous strangers on the internet. This distinction is extremely important because it\'s the direct fix for what went wrong in the Ronin hack described earlier, where a small handful of people ran the network and nothing beyond their reputation was at stake if they misbehaved. If we swap these people for licensed companies, there\'s a lot to lose. A company can lose its license to operate if it acts maliciously, which basically means the entire business\'s trust and credibility is on the line at all times. This pushes businesses to behave and monitor the network for all users, leading to a net positive for the entire system.',
+      text: 'For a remittance-specific sidechain, this customization could mean a few concrete things a general-purpose chain doesn\'t offer by default. **The first thing this offers is choosing who\'s allowed to run the network.** Instead of leaving these permissions open to anyone, it could be limited to licensed, regulated companies that already move money for a living, banks and remittance providers, instead of anonymous strangers on the internet. This distinction is extremely important because it\'s the direct fix for what went wrong in the Ronin hack described below, where a small handful of people ran the network and nothing beyond their reputation was at stake if they misbehaved. If we swap these people for licensed companies, there\'s a lot to lose. A company can lose its license to operate if it acts maliciously, which basically means the entire business\'s trust and credibility is on the line at all times. This pushes businesses to behave and monitor the network for all users, leading to a net positive for the entire system.',
     },
     {
       type: 'p',
@@ -860,7 +864,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'This is also where a sidechain differs most sharply from the sharding architecture. A shard\'s transactions are still validated by participants drawn from and accountable to the same overall network. A sidechain\'s transactions are validated by a separate group entirely, connected to the main chain only through periodic checkpoints and a bridge contract, both of which are themselves points of failure independent of either chain\'s core security. Speed and cost improvements on a sidechain are significant, however, regardless of it\'s security vulnerabilities.',
+      text: 'This is also where a sidechain differs most sharply from the sharding architecture. A shard\'s transactions are still validated by participants drawn from and accountable to the same overall network. A sidechain\'s transactions are validated by a separate group entirely, connected to the main chain only through periodic checkpoints and a bridge contract, both of which are themselves points of failure independent of either chain\'s core security. Speed and cost improvements on a sidechain are significant, however, regardless of its security vulnerabilities.',
     },
     { type: 'figure', render: ShardVsSidechain },
     { type: 'h', text: 'So, Could a Sidechain Become a Specialized Remittance Rail?' },

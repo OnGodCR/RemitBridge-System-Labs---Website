@@ -21,4 +21,5 @@ stays auditable and the images can be re-verified or replaced.
 | `measurement-scale.jpg` | Measuring instrument, vernier caliper (cropped to 21:9) | CC0 | [source](https://openverse.org/image/6b3176dc-acac-45dd-ad29-a0cc7b784dbf) |
 | `local-shop.jpg` | 2013 10 23 Economy Barclays Remittance Money Transfer 001 (cropped to 21:9) | CC0 | [source](https://commons.wikimedia.org/wiki/File:2013_10_23_Economy_Barclays_Remittance_Money_Transfer_001_(10471081853).jpg) |
 | `near-logo.png` | NEAR Protocol logo, used to identify NEAR in blog post 14 | CC0 | [source](https://commons.wikimedia.org/wiki/File:Near_Protocol_Logo.png) |
+| `polygon-logo.png` | Polygon logo, used to identify Polygon in blog post 15 | CC0 | [source](https://commons.wikimedia.org/wiki/File:Polygon_logo_blockchain.png) |
 | `founder.jpg` | Photo of the founder, provided by the founder (their own photo, shared in chat) | own photo | — |
