@@ -199,6 +199,9 @@ Deploy: `npx supabase functions deploy <name> --no-verify-jwt`
   slash. Vercel resolves the directory index and does not need the slash. Do
   not conclude the prerender is broken from a preview run: read the file, or
   add the trailing slash.
+- **Deleting the `google-site-verification` TXT record on `remitbridgelabs.org`
+  silently revokes Search Console.** It is the only verification method on the
+  property. See section 8.
 - **A build with no `SITE_URL` used to emit a whole localhost sitemap silently.**
   It now warns locally and hard-fails when `VERCEL` is set. If a deploy ever
   fails with "refusing to emit canonical URLs", the production domain did not
@@ -237,6 +240,40 @@ nothing.** Neither mechanism protects anything; row-level security does.
 Verified against the live deploy on 2026-08-21: all 47 sitemap URLs return
 200 with 47 distinct titles, every canonical matching its own URL, JSON-LD on
 all of them, and `noindex` served in the HTML of all five signed-in routes.
+
+### Google Search Console
+
+Verified on 2026-08-26 as a **Domain property** for `remitbridgelabs.org`,
+which covers the apex, `www`, http and https in one property. That matters
+here: the apex 308-redirects to `www`, and a URL-prefix property would only
+have covered whichever spelling was typed in.
+
+Verification is by **DNS TXT record**, at GoDaddy, where the nameservers are:
+
+```
+Type TXT   Name @   Value google-site-verification=AWrtN_-whqkAp2k70Tz3a1Pn4cFMGPV3awNBGwSTzIM
+```
+
+**Do not delete that record.** Google re-checks it, and removing it revokes
+verification silently: the property stops collecting data and nobody gets told.
+It is the only verification method on the property. Adding a second one, under
+Settings > Ownership verification, would be cheap insurance.
+
+Google offered a one-click flow that authorises Google to access the GoDaddy
+DNS account directly. That was declined deliberately. It grants Google standing
+write access to DNS for the whole domain, which is a much larger permission
+than the one job it is needed for, and the manual TXT record verifies exactly
+the same thing.
+
+`sitemap.xml` was submitted the same day and read immediately: status Success,
+47 pages discovered, no errors. URL inspection on the home page reports "URL is
+on Google", "Page is indexed", and **"Breadcrumbs: 1 valid item detected"**,
+which is Google parsing the BreadcrumbList out of the JSON-LD, so the
+structured data is not merely valid in a linter, it is being read.
+
+Bing Webmaster Tools has a one-click import from Search Console and has **not**
+been done: it needs a Microsoft account and an OAuth grant letting Bing read
+the Google account, which is Angad's to give.
 
 **To add or change a page's search entry, edit `src/lib/seo.js`.** Nothing
 else. `staticPaths` is derived from `routes.js`, so a page added there is

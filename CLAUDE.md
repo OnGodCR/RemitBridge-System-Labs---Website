@@ -35,6 +35,12 @@ Deferred by choice, not forgotten. Update this list as things land.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and
       is deliberately empty. Populating it is the same World Bank access
       request the RemitBench decision turns on.
+- [x] Google Search Console. Verified 2026-08-26 as a Domain property, by DNS
+      TXT record at GoDaddy. Sitemap submitted and read: Success, 47 pages, no
+      errors. The home page reports indexed, and Google detects the breadcrumb
+      structured data. **The TXT record is the only verification method: delete
+      it and the property goes quiet without saying so.** Bing not done, it
+      needs an OAuth grant only Angad can give.
 - [x] Per-page search and social metadata. Every page ships its own title,
       description, canonical, og:/twitter: and JSON-LD, from one table in
       `src/lib/seo.js`, applied at runtime by `lib/head.js` and baked into 47
