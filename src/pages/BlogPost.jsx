@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ArrowLeft, Check, X } from 'lucide-react'
 import { Container } from '@/components/Section'
-import Backdrop from '@/components/Backdrop'
 import PostCard, { PostCover } from '@/components/PostCard'
 import { relatedTo } from '@/data/blog'
 import { usePost } from '@/lib/usePosts'
@@ -65,7 +64,7 @@ function Block({ block, theme }) {
 
     case 'quote':
       return (
-        <blockquote className={cn('my-8 border-l-4 pl-5', theme.border)}>
+        <blockquote className={cn('my-8 border-l-4 pl-5', theme.rule)}>
           <p className="text-lg leading-relaxed">{postText(block.text, theme)}</p>
           {block.cite && (
             <footer className="mt-2 text-sm text-muted-foreground">{block.cite}</footer>
@@ -73,13 +72,16 @@ function Block({ block, theme }) {
         </blockquote>
       )
 
+    /* A raised card with a coloured left edge, not a filled tint. Inside a
+       figure a tinted cell means "this is the one that counts", set against a
+       plain white one; a paragraph of prose wearing the same fill read as a
+       highlight cell that had escaped. The card idiom is the site's own. */
     case 'callout':
       return (
         <p
           className={cn(
-            'my-8 rounded-2xl border p-5 text-base leading-relaxed',
-            theme.tint,
-            theme.border,
+            'my-8 rounded-2xl border border-l-4 border-border bg-card p-5 text-base leading-relaxed shadow-sm',
+            theme.rule,
           )}
         >
           {postText(block.text, theme)}
@@ -226,30 +228,12 @@ export default function BlogPost() {
   const theme = themeFor(post.series)
   const related = relatedTo(post)
 
-  /*
-   * A post whose cover is a logo gets a white header band, not the series
-   * tint. The plate itself is already white by rule, but it renders at 15%
-   * behind the title, so on a tinted band the tint won and the mark came out
-   * as a slightly wrong shade of that tint rather than a grey ghost of a
-   * logo. On white the field disappears and only the mark shows through,
-   * which is the whole point of putting it there.
-   *
-   * Photographic covers keep the tint. There the tint is doing real work: it
-   * is what makes the photo read as this post's colour rather than as stock.
-   */
-  const logoCover = Boolean(post.coverArt)
-
   return (
     <>
       {/* The cover sits behind the header rather than under it. Same pattern
           the green bands use: a painted surface, relative and clipped, with
           the content in its own relative container above it. */}
-      <header
-        className={cn(
-          'relative overflow-hidden border-b border-border py-14',
-          logoCover ? 'bg-card' : theme.tint,
-        )}
-      >
+      <header className="relative overflow-hidden border-b border-border bg-card py-14">
         {(post.cover || post.coverArt) && (
           <div
             aria-hidden
@@ -299,12 +283,26 @@ export default function BlogPost() {
         </Container>
       </header>
 
-      {/* The whole post carries its series colour, not just the header band.
-          Painting over the fixed site backdrop hides its pattern, so the same
-          one is rendered inside, the way the green bands do it. */}
-      <article className={cn('relative overflow-hidden py-14', theme.tint)}>
-        <Backdrop fadeClass={null} />
-        <Container width="prose" className="relative">
+      {/*
+        White, top to bottom. The whole post used to carry its series tint as a
+        background, which put a wash behind every figure and made the covers
+        fight it: a white logo plate at 15% opacity lost to the tint, and a
+        photograph came out shifted towards whichever hue the series owned.
+
+        The series colour did not go anywhere. It moved off the surface and
+        onto the marks that carry meaning: the dot and name above the title,
+        the bullets, the quote and callout rules, the filled cell inside a
+        figure that says which option is the one that counts. Colour that means
+        something reads better with nothing else tinted around it.
+
+        The backdrop pattern is not re-rendered inside. Painting a surface hides
+        the fixed one, and every other band on the site draws it back; here it
+        was the last thing making the post look banded, a plain masthead over a
+        textured body. It is also the one place on the site where the pattern
+        sits directly behind a thousand words of reading.
+      */}
+      <article className="bg-card py-14">
+        <Container width="prose">
           {/* Banner, only for posts written in the dashboard. Repo posts carry
               their generated cover on the index tile and no banner here. */}
 

@@ -172,12 +172,21 @@ claim this site argues against.
   there appears in the header, the footer and the home index at once.
 - Colour alternates strictly between white and mint green, section by section.
   No third accent colour.
-- **A logo always sits on white, and so does the band behind it.** Every cover
-  plate in `blog/Covers.jsx` shares one `FIELD` constant, and `BlogPost.jsx`
-  gives any post with a `coverArt` a white header instead of its series tint.
-  Brand colours were tried and each one fought the tint behind it; so did the
-  white plate, because it renders at 15% and the tint won. Photographic covers
-  keep the tint, where it is what makes the photo read as this post's colour.
+- **A blog post is white, top to bottom.** No tinted header band, no tinted
+  body, and no backdrop pattern behind the prose. The series tint as a page
+  background was tried and reverted: it put a wash behind every figure, and the
+  covers fought it, a white logo plate losing to it at 15% opacity and a
+  photograph coming out shifted towards whichever hue the series owned.
+- **The series colour lives on the marks, not the surface.** The dot and name
+  above the title, list bullets, the quote and callout rules, the filled cell
+  inside a figure that says which option counts. `palette.js` has five keys and
+  they are not interchangeable: `tint`/`border` are the pale pair and belong
+  only inside a figure; `ink`/`bar` are the saturated pair for text and dots;
+  `rule` is a saturated left edge, because the pale `border` was tuned for the
+  tint and goes washy on white.
+- **A logo always sits on white.** Every cover plate in `blog/Covers.jsx` shares
+  one `FIELD` constant. Brand colours were tried and each fought whatever was
+  behind it. A new mark inherits the constant; it does not get its own.
 - **No pill labels.** Status is small caps plus a filled or hollow dot; tags are
   a plain line of text. Buttons keep their shape, because a button should look
   pressable. The `Pill` helper was deleted on purpose.
