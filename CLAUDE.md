@@ -166,10 +166,12 @@ claim this site argues against.
   there appears in the header, the footer and the home index at once.
 - Colour alternates strictly between white and mint green, section by section.
   No third accent colour.
-- **A logo always sits on white.** Every cover plate in `blog/Covers.jsx` shares
-  one `FIELD` constant. Brand colours were tried and each one fought the series
-  tint behind it, reading as a wrong shade of that tint rather than a chosen
-  one. A new mark inherits the constant; it does not get its own.
+- **A logo always sits on white, and so does the band behind it.** Every cover
+  plate in `blog/Covers.jsx` shares one `FIELD` constant, and `BlogPost.jsx`
+  gives any post with a `coverArt` a white header instead of its series tint.
+  Brand colours were tried and each one fought the tint behind it; so did the
+  white plate, because it renders at 15% and the tint won. Photographic covers
+  keep the tint, where it is what makes the photo read as this post's colour.
 - **No pill labels.** Status is small caps plus a filled or hollow dot; tags are
   a plain line of text. Buttons keep their shape, because a button should look
   pressable. The `Pill` helper was deleted on purpose.

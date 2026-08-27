@@ -226,12 +226,30 @@ export default function BlogPost() {
   const theme = themeFor(post.series)
   const related = relatedTo(post)
 
+  /*
+   * A post whose cover is a logo gets a white header band, not the series
+   * tint. The plate itself is already white by rule, but it renders at 15%
+   * behind the title, so on a tinted band the tint won and the mark came out
+   * as a slightly wrong shade of that tint rather than a grey ghost of a
+   * logo. On white the field disappears and only the mark shows through,
+   * which is the whole point of putting it there.
+   *
+   * Photographic covers keep the tint. There the tint is doing real work: it
+   * is what makes the photo read as this post's colour rather than as stock.
+   */
+  const logoCover = Boolean(post.coverArt)
+
   return (
     <>
       {/* The cover sits behind the header rather than under it. Same pattern
           the green bands use: a painted surface, relative and clipped, with
           the content in its own relative container above it. */}
-      <header className={cn('relative overflow-hidden border-b border-border py-14', theme.tint)}>
+      <header
+        className={cn(
+          'relative overflow-hidden border-b border-border py-14',
+          logoCover ? 'bg-card' : theme.tint,
+        )}
+      >
         {(post.cover || post.coverArt) && (
           <div
             aria-hidden
