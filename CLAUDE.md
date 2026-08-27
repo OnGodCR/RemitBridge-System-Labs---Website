@@ -39,8 +39,14 @@ Deferred by choice, not forgotten. Update this list as things land.
       TXT record at GoDaddy. Sitemap submitted and read: Success, 47 pages, no
       errors. The home page reports indexed, and Google detects the breadcrumb
       structured data. **The TXT record is the only verification method: delete
-      it and the property goes quiet without saying so.** Bing not done, it
-      needs an OAuth grant only Angad can give.
+      it and the property goes quiet without saying so.**
+- [x] Bing Webmaster Tools. Site added and verified 2026-08-27 by
+      `public/BingSiteAuth.xml`, sitemap submitted with 0 errors and 0
+      warnings. Bing crawls a sitemap on its own schedule, so it read
+      "Processing" rather than a count. **Deleting that file revokes
+      verification, silently, exactly like the Google TXT record.** The import
+      from Search Console was declined: it wants an OAuth grant letting Bing
+      read the Google account.
 - [x] Per-page search and social metadata. Every page ships its own title,
       description, canonical, og:/twitter: and JSON-LD, from one table in
       `src/lib/seo.js`, applied at runtime by `lib/head.js` and baked into 47

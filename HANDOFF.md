@@ -202,6 +202,8 @@ Deploy: `npx supabase functions deploy <name> --no-verify-jwt`
 - **Deleting the `google-site-verification` TXT record on `remitbridgelabs.org`
   silently revokes Search Console.** It is the only verification method on the
   property. See section 8.
+- **Deleting `public/BingSiteAuth.xml` silently revokes Bing** the same way.
+  It looks like a stray file in `public/`. It is not.
 - **A build with no `SITE_URL` used to emit a whole localhost sitemap silently.**
   It now warns locally and hard-fails when `VERCEL` is set. If a deploy ever
   fails with "refusing to emit canonical URLs", the production domain did not
@@ -271,9 +273,33 @@ on Google", "Page is indexed", and **"Breadcrumbs: 1 valid item detected"**,
 which is Google parsing the BreadcrumbList out of the JSON-LD, so the
 structured data is not merely valid in a linter, it is being read.
 
-Bing Webmaster Tools has a one-click import from Search Console and has **not**
-been done: it needs a Microsoft account and an OAuth grant letting Bing read
-the Google account, which is Angad's to give.
+### Bing Webmaster Tools
+
+Added 2026-08-27 as the URL prefix `https://www.remitbridgelabs.org`. Bing has
+no equivalent of Google's domain property, so it tracks one spelling; `www` is
+the right one, because the apex redirects there and every canonical points
+there.
+
+Verified by **`public/BingSiteAuth.xml`**, which Vite copies to the root of
+`dist` verbatim. Bing offered three manual methods and this was the smallest:
+the meta tag would have put an ownership token on all fifty-one prerendered
+pages when it is only read at the root, and a CNAME would have added a
+subdomain to DNS for the same job.
+
+**Do not delete that file.** Bing re-checks it, and removing it revokes
+verification the same silent way the Google TXT record does.
+
+`sitemap.xml` was submitted the same day: 1 known sitemap, 0 errors, 0
+warnings. Status was **Processing** at the time of writing, and URLs discovered
+still `0`. That is normal and not a fault: Bing queues a sitemap and crawls it
+later, where Google read ours during the submit. Worth checking back that it
+reaches Success and finds 47.
+
+The one-click **import from Search Console was declined**, so Settings still
+reads "Google search console accounts: No accounts linked". The import wants an
+OAuth grant letting Bing read the Google account, which is a standing
+cross-service permission to do a job one static file does once. Same reasoning
+as declining Google's GoDaddy DNS flow.
 
 **To add or change a page's search entry, edit `src/lib/seo.js`.** Nothing
 else. `staticPaths` is derived from `routes.js`, so a page added there is
