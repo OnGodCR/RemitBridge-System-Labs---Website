@@ -68,7 +68,7 @@ export function SwiftCover() {
  * relationship that does not exist, and NEAR appears here because the post
  * examines Nightshade, not because they have anything to do with the lab.
  */
-const NEAR_FIELD = '#F4F1F8'
+const NEAR_FIELD = '#FFFFFF'
 const NEAR_INK = '#141414'
 
 export function NearCover() {
