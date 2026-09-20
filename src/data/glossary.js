@@ -221,6 +221,30 @@ export const terms = [
       'A direct link between two parties who lock funds up front, settle any number of payments between themselves off the chain, and record only the opening and closing balances on it. Fast, but the locked money cannot be used for anything else meanwhile.',
   },
   {
+    id: 'fixed-fee',
+    term: 'Fixed fee',
+    plain:
+      'A flat charge that is the same whatever the amount sent. It pays for the parts of a transfer that cost the provider about the same every time, which is why it weighs heaviest on the smallest transfers.',
+  },
+  {
+    id: 'percentage-fee',
+    term: 'Percentage fee',
+    plain:
+      'A charge that grows with the amount sent, taken as a share of it. Many providers blend one into a fixed fee and publish the sum, so the receipt never says which part is which.',
+  },
+  {
+    id: 'recipient-side-charges',
+    term: 'Recipient-side charges',
+    plain:
+      'Anything taken out at the receiving end: a commission at the pickup counter, or a deduction by the recipient\'s own bank for accepting an incoming transfer. The sender is rarely shown it, and often only learns of it when less money arrives than was sent.',
+  },
+  {
+    id: 'compliance-checks',
+    term: 'Compliance checks',
+    plain:
+      'The screening a provider runs before it moves money: confirming who the sender is and checking both names against sanctions lists. The work costs about the same whatever the amount, which is one reason fixed fees exist.',
+  },
+  {
     id: 'rpw',
     term: 'Remittance Prices Worldwide (RPW)',
     plain:

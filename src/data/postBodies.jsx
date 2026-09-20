@@ -311,7 +311,7 @@ export const bodies = {
     { type: 'h', text: 'Component One: The Fixed Fee' },
     {
       type: 'p',
-      text: 'This is the most prominent number and one that everyone recognizes. Most {{money-transfer-operator|MTOs}} and banks include a flat charge that doesn\'t change based on how much money is being sent. A $5.00 fee is a $5.00 fee whether the transfer is $50 or $500. Fixed fees exist because some parts of processing a transfer, verifying the sender, running compliance checks, routing the payment, cost the provider roughly the same amount no matter the transfer size.',
+      text: 'This is the most prominent number and one that everyone recognizes. Most {{money-transfer-operator|MTOs}} and banks include a flat charge that doesn\'t change based on how much money is being sent. A $5.00 fee is a $5.00 fee whether the transfer is $50 or $500. {{fixed-fee|Fixed fees}} exist because some parts of processing a transfer, verifying the sender, running {{compliance-checks|compliance checks}}, routing the payment, cost the provider roughly the same amount no matter the transfer size.',
     },
     {
       type: 'p',
@@ -321,7 +321,7 @@ export const bodies = {
     { type: 'h', text: 'Component Two: The Percentage Fee' },
     {
       type: 'p',
-      text: 'Some providers charge a fee that scales with the amount sent instead of, or in addition to, a flat charge. A straightforward 1% fee, for example, would be $2 on a $200 transfer and $10 on a $1,000 transfer. In practice, a lot of real-world "fees" are actually a blend of both components rather than a clean, separately stated fixed-plus-percentage structure. Real pricing data collected by the World Bank\'s {{rpw|Remittance Prices Worldwide}} database shows exactly this: on one Western Union {{corridor|corridor}} between Italy and Egypt, the listed fee for sending $200 was $6.50, while the fee for sending $500 through the same product was $12.00, not simply 2.5 times larger the way a pure percentage fee would scale, but not flat either. **Most providers don\'t publish which part of their fee is fixed and which part scales**, which means the "fee" a sender sees is often already an unlabeled mix of both components.',
+      text: 'Some providers charge a fee that scales with the amount sent instead of, or in addition to, a flat charge. A straightforward 1% fee, for example, would be $2 on a $200 transfer and $10 on a $1,000 transfer. In practice, a lot of real-world "fees" are actually a blend of both components rather than a clean, separately stated fixed-plus-percentage structure. Real pricing data collected by the World Bank\'s {{rpw|Remittance Prices Worldwide}} database shows exactly this: on one Western Union {{corridor|corridor}} between Italy and Egypt, the listed fee for sending $200 was $6.50, while the fee for sending $500 through the same product was $12.00, not simply 2.5 times larger the way a pure {{percentage-fee|percentage fee}} would scale, but not flat either. **Most providers don\'t publish which part of their fee is fixed and which part scales**, which means the "fee" a sender sees is often already an unlabeled mix of both components.',
     },
     { type: 'h', text: 'Component Three: The Foreign-Exchange Markup' },
     {
@@ -365,7 +365,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'Notice what this equation makes explicit that an advertised fee alone never does: **the FX markup applies to the exchange rate itself, not as a separate line item pulled out of the sender\'s account**, which is exactly why it\'s so easy for a provider to advertise a low fee while making up the difference on the rate. The fee is the part every provider knows senders will compare. The exchange rate is the part fewer senders know to check, and the recipient-side charges are the part almost nobody checks at all until the money has already been sent.',
+      text: 'Notice what this equation makes explicit that an advertised fee alone never does: **the FX markup applies to the exchange rate itself, not as a separate line item pulled out of the sender\'s account**, which is exactly why it\'s so easy for a provider to advertise a low fee while making up the difference on the rate. The fee is the part every provider knows senders will compare. The exchange rate is the part fewer senders know to check, and the {{recipient-side-charges|recipient-side charges}} are the part almost nobody checks at all until the money has already been sent.',
     },
     { type: 'h', text: 'Why This Equation Is the Only Honest Way to Compare Providers' },
     {
