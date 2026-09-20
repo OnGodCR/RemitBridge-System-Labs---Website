@@ -27,9 +27,15 @@ Deferred by choice, not forgotten. Update this list as things land.
       provider comparison tool. Asked several times, not yet answered, and
       nothing should be built until they are. See `HANDOFF.md`.
 - [ ] **One figure per section is the standing rule for blog posts**, set
-      2026-08-21. Posts 2 and 7 both meet it. Post 2's corridor map and post
+      2026-08-21. Posts 2, 3 and 7 all meet it. Post 2's corridor map and post
       7's hero row were dropped rather than built: the sections they were
-      planned for already carry a figure each.
+      planned for already carry a figure each. Post 3's two equations are set
+      as `equation` blocks in place, not drawn, so they are text, not figures.
+- [ ] **Post 3 prints three RPW fees with a dollar sign** that the records
+      give in sterling and euros (GBP 2.99; EUR 6.50 and 12.00). The
+      percentages are exactly RPW's and only come out on the local amounts.
+      Flagged 2026-09-20; left as approved until Angad says. `figures.js` and
+      the sources page carry the right currencies meanwhile.
 - [ ] **`data/measures.seed.md`.** Five of the six measures on What we measure
       ship `null` until the lab supplies real collected values with dates.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and

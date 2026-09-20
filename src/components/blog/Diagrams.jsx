@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
-import { ArrowDown, ArrowRight } from 'lucide-react'
-import { figures, derived, usMxQ3, wfStandardWire, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
+import { ArrowDown, ArrowRight, ArrowLeftRight, HandCoins, Percent, Tag } from 'lucide-react'
+import { figures, derived, usMxQ3, wfStandardWire, feeAnatomy, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -1736,5 +1736,195 @@ export function SidechainTradeoff({ theme }) {
         chosen for remittances, rather than inherited from whatever the tooling shipped with.
       </p>
     </figure>
+  )
+}
+
+/* ---------------------------------------------------------------- post 3 */
+
+/**
+ * The four components, and what each one looks like from the sender's side.
+ *
+ * The post's argument is that a receipt shows two numbers and there are four
+ * costs. So each cell says which of the two numbers the cost hides inside,
+ * and the fourth says none, which is the point of the section.
+ */
+export function FourComponents({ theme }) {
+  const parts = [
+    { Icon: Tag, name: 'Fixed fee', how: 'Shown as: the fee' },
+    { Icon: Percent, name: 'Percentage fee', how: 'Shown as: the fee, blended in' },
+    { Icon: ArrowLeftRight, name: 'FX markup', how: 'Shown as: the exchange rate' },
+    { Icon: HandCoins, name: 'Recipient-side charges', how: 'Shown as: nothing' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Four costs, two numbers on the screen
+      </figcaption>
+      <ol className="mt-4 grid gap-2 sm:grid-cols-2">
+        {parts.map((part, i) => (
+          <li key={part.name} className="flex gap-3 rounded-2xl border border-border bg-card p-3">
+            <part.Icon className={cn('mt-0.5 size-5 shrink-0', theme.ink)} aria-hidden />
+            <div className="min-w-0">
+              <p className="text-sm font-bold leading-snug">
+                <span className={cn('tabular-nums', theme.ink)}>{i + 1}.</span> {part.name}
+              </p>
+              <p className="mt-1 text-xs leading-snug text-muted-foreground">{part.how}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </figure>
+  )
+}
+
+/**
+ * The post's own example: a $5 fee on $50 and on $1,000. Arithmetic on the
+ * post's numbers, not a sourced figure. The bar for the small transfer is the
+ * one that is hard to miss, which is the order the post argues in.
+ */
+export function FixedFeeBite({ theme }) {
+  const fee = 5
+  const rows = [
+    { label: 'A $50 transfer', amount: 50 },
+    { label: 'A $1,000 transfer', amount: 1000 },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        The same ${fee} fee, as a share of what is sent
+      </figcaption>
+      <div className="mt-5 space-y-5">
+        {rows.map((r) => {
+          const share = (fee / r.amount) * 100
+          return (
+            <div key={r.label}>
+              <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+                <span className="text-sm font-bold">{r.label}</span>
+                <span className="text-sm font-bold tabular-nums">
+                  {share < 1 ? share.toFixed(1) : share.toFixed(0)}%
+                </span>
+              </div>
+              <div className="h-3 rounded-full bg-muted">
+                <div
+                  className={cn('h-3 rounded-l-full rounded-r-[4px]', theme.bar)}
+                  style={{ width: `${Math.max(share, 0.6)}%` }}
+                />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        Scale runs to 100%. The fee does not move; the transfer under it does.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * Fee and exchange rate margin as two segments of one bar, per provider.
+ *
+ * Shared by the two figures below because they make the same point with
+ * different rows: the fee is the visible part, the margin is the rest, and
+ * only the whole bar is the price. Fee is drawn in the series colour and the
+ * margin in the second green from post 2's two-products figure, so a reader
+ * who has seen that one is looking at the same convention.
+ *
+ * Everything is in percent of the amount sent. The two RPW rows are priced in
+ * sterling and euros on different benchmark amounts, and a percentage is the
+ * only unit on which they can share an axis.
+ */
+function FeeStack({ theme, rows, scale, label, note }) {
+  const pct = (v) => `${(v / scale) * 100}%`
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </figcaption>
+
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+        <span className="inline-flex items-center gap-2">
+          <span className={cn('size-2.5 rounded-sm', theme.bar)} aria-hidden />
+          <span className="font-bold">Fee</span>
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="size-2.5 rounded-sm" style={{ backgroundColor: MARKUP_FILL }} aria-hidden />
+          <span className="font-bold">Exchange rate margin</span>
+        </span>
+      </div>
+
+      <div className="mt-5 space-y-5">
+        {rows.map((row) => (
+          <div key={row.label}>
+            <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+              <span className="text-sm font-bold">{row.label}</span>
+              <span className="text-sm font-bold tabular-nums">{row.total}</span>
+            </div>
+            <div className="relative h-3 rounded-full bg-muted">
+              <div className="absolute inset-y-0 left-0 right-0 flex">
+                <span className={cn('h-3 rounded-l-full', theme.bar)} style={{ width: pct(row.feePct) }} />
+                <span
+                  className="h-3 rounded-r-[4px]"
+                  style={{ width: pct(row.marginPct), backgroundColor: MARKUP_FILL, marginLeft: 2 }}
+                />
+              </div>
+              <div
+                className="absolute inset-y-[-4px] w-px border-l border-dashed border-foreground/40"
+                style={{ left: pct(figures.targetPct) }}
+                aria-hidden
+              />
+            </div>
+            <p className="mt-1.5 text-xs tabular-nums text-muted-foreground">
+              fee {row.feePct.toFixed(2)}% &middot; margin {row.marginPct.toFixed(2)}%
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Dashed line: the UN target of {figures.targetPct}% by 2030. Scale runs to {scale}%. {note}
+      </p>
+    </figure>
+  )
+}
+
+/** Two RPW records: a low fee with a thin margin, a higher fee with a wide one. */
+export function FeeVersusTotal({ theme }) {
+  const wr = feeAnatomy.worldRemit
+  const wu = feeAnatomy.westernUnion
+  const feePct = (r) => (r.fee / r.sendAmount) * 100
+  return (
+    <FeeStack
+      theme={theme}
+      label="Fee against total cost, on the $200 benchmark"
+      scale={15}
+      rows={[
+        { label: wr.label, feePct: feePct(wr), marginPct: wr.marginPct, total: `${wr.totalPct}%` },
+        { label: wu.label, feePct: feePct(wu), marginPct: wu.marginPct, total: `${wu.totalPct}%` },
+      ]}
+      note="World Bank RPW, priced in the sending currency on its local benchmark amount. The fees are less than two to one; the totals are more than five."
+    />
+  )
+}
+
+/** The equation run on the two products post 2 priced. Same figures, same source. */
+export function EquationAtWork({ theme }) {
+  const rows = [usMxQ3.wellsFargo, usMxQ3.delgadoTravel].map((r) => {
+    const feePct = (r.feeUsd / figures.benchmarkUsd) * 100
+    return {
+      label: r.label,
+      feePct,
+      marginPct: r.totalPct - feePct,
+      total: `${r.totalPct}% \u00b7 $${r.totalUsd.toFixed(2)}`,
+    }
+  })
+  return (
+    <FeeStack
+      theme={theme}
+      label={`The equation, run on a $${figures.benchmarkUsd} send to Mexico`}
+      scale={6}
+      rows={rows}
+      note="The same $6.00 fee on both. Every cent of the difference is the exchange rate."
+    />
   )
 }

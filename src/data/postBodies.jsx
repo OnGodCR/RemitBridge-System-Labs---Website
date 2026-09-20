@@ -40,6 +40,10 @@ import {
   TwoArrivals,
   ShardVsSidechain,
   SidechainTradeoff,
+  FourComponents,
+  FixedFeeBite,
+  FeeVersusTotal,
+  EquationAtWork,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -59,9 +63,18 @@ import {
  * Definitions live in glossary.js, never here. Two copies of a definition is
  * one copy too many, and that file is the one the translators work from.
  *
- * Drafts of 3 and 20 were written but never reviewed. They are in git at
- * commit afdc44f, and `git show afdc44f:src/data/postBodies.jsx` brings them
- * back verbatim.
+ * A draft of 20 was written but never reviewed. It is in git at commit
+ * afdc44f, and `git show afdc44f:src/data/postBodies.jsx` brings it back
+ * verbatim. (A draft of 3 sat there too, superseded by the approved text
+ * published 2026-09-20.)
+ *
+ * Post 3 prints three RPW fees with a dollar sign that the records give in
+ * sterling and euros (2.99 GBP, 6.50 and 12.00 EUR). The percentages beside
+ * them are exactly RPW's and only come out on the local amounts, so the
+ * numbers are right and the symbol is not. Left as approved and flagged;
+ * figures.js carries the currencies. The text also calls post 2 "the first
+ * post in this series" three times; the link goes to post 2, which is the
+ * post the sources name.
  *
  * Post 1's opening once read "as demonstrated by a research study that took
  * place in" and ran straight into the next sentence, missing whatever was
@@ -70,7 +83,7 @@ import {
  * citation on the page. Leave it deleted unless the source turns up.
  *
  * Block types: p, h (level 3 for a subheading), label, quote, list, image,
- * callout, table, figure, sources.
+ * callout, table, figure, equation, sources, cta.
  */
 export const bodies = {
   2: [
@@ -273,6 +286,118 @@ export const bodies = {
         'Wells Fargo wire fee and exchange rate margin comparison: monito.com/en/wiki/international-wire-transfers-wells-fargo-us and wise.com/us/blog/wells-fargo-international-wire-transfer',
         'US-Mexico as the largest global remittance corridor: EMARKETER briefing, "Western Union advances brick-and-mortar push with Mexico rollout," emarketer.com',
       ],
+    },
+  ],
+
+  3: [
+    {
+      type: 'p',
+      text: '[The first post in this series](/blog/where-does-a-200-transfer-actually-go) traced one $200 transfer from the US to Mexico. One of our biggest findings in that particular blog post was that the {{transfer-fee|fee}} printed on the receipt wasn\'t even close to how much the transaction actually cost. A Wells Fargo transfer with a $6.00 fee actually cost the sender about $8.24 once the exchange rate was accounted for. A Delgado Travel {{cash-pickup|cash pickup}} with the same $6.00 fee actually cost about $9.95. **Both of these have the same advertised fee, but they provide 2 extremely different numbers.** A dollar here and there may not feel like a lot but when your family back home is struggling financially, any amount makes a difference and is worth saving.',
+    },
+    {
+      type: 'p',
+      text: 'This post intends to build out the actual equation. This is not "the fee plus a vague sense that exchange rates matter somehow," but **every component that determines what a sender actually pays and what a recipient actually receives, laid out piece by piece**, so the difference between an advertised number and a true cost stops being a mystery and starts being something you can calculate yourself.',
+    },
+    { type: 'h', text: 'The Two Numbers Everyone Sees, and Why They\'re Not Enough' },
+    {
+      type: 'p',
+      text: 'If you were to walk into a money transfer app or a bank\'s wire transfer page right now, two numbers usually show up front and center: a fee, and an exchange rate. That\'s it. Those two numbers feel like the whole transaction, because they\'re the only two numbers most {{provider|providers}} choose to display prominently. This is far from the reality, however. **There are at least four separate cost components hiding inside or around those two numbers.**',
+    },
+    {
+      type: 'p',
+      text: 'To completely build out the equation, we will start by identifying all 4 components.',
+    },
+    { type: 'figure', render: FourComponents },
+    { type: 'h', text: 'Component One: The Fixed Fee' },
+    {
+      type: 'p',
+      text: 'This is the most prominent number and one that everyone recognizes. Most {{money-transfer-operator|MTOs}} and banks include a flat charge that doesn\'t change based on how much money is being sent. A $5.00 fee is a $5.00 fee whether the transfer is $50 or $500. Fixed fees exist because some parts of processing a transfer, verifying the sender, running compliance checks, routing the payment, cost the provider roughly the same amount no matter the transfer size.',
+    },
+    {
+      type: 'p',
+      text: '**This is also exactly why fixed fees hit small transfers disproportionately hard:** a $5.00 fixed fee is 10% of a $50 transfer and 0.5% of a $1,000 transfer, the same flat charge landing completely differently depending on how much is actually being sent. Since World Bank Data on remittances has allowed us to draw the conclusion that {{remittance|remittances}} are typically sent in small amounts at frequent intervals, the fixed fee aspect hurts remitters very much.',
+    },
+    { type: 'figure', render: FixedFeeBite },
+    { type: 'h', text: 'Component Two: The Percentage Fee' },
+    {
+      type: 'p',
+      text: 'Some providers charge a fee that scales with the amount sent instead of, or in addition to, a flat charge. A straightforward 1% fee, for example, would be $2 on a $200 transfer and $10 on a $1,000 transfer. In practice, a lot of real-world "fees" are actually a blend of both components rather than a clean, separately stated fixed-plus-percentage structure. Real pricing data collected by the World Bank\'s {{rpw|Remittance Prices Worldwide}} database shows exactly this: on one Western Union {{corridor|corridor}} between Italy and Egypt, the listed fee for sending $200 was $6.50, while the fee for sending $500 through the same product was $12.00, not simply 2.5 times larger the way a pure percentage fee would scale, but not flat either. **Most providers don\'t publish which part of their fee is fixed and which part scales**, which means the "fee" a sender sees is often already an unlabeled mix of both components.',
+    },
+    { type: 'h', text: 'Component Three: The Foreign-Exchange Markup' },
+    {
+      type: 'p',
+      text: 'This is the component that did the most damage in the Path A and Path B breakdown from the first post in this series. It\'s usually the largest single cost, even though it\'s the one component most providers don\'t display as a cost at all. Every international transfer that changes currency involves converting from the sender\'s currency to the recipient\'s, and that conversion happens at a rate set by the provider, not at the real, underlying market rate that currency traders actually use. The gap between those two rates, the provider\'s rate and the true {{mid-market-rate|mid-market rate}}, is the {{exchange-rate-margin|FX markup}}. **This FX markup functions as a fee even though it never shows up on a fee line.**',
+    },
+    {
+      type: 'p',
+      text: 'The scale of this hidden cost varies enormously by provider and corridor. Pulling directly from World Bank pricing data: a WorldRemit transfer from the UK to the Philippines charged a $2.99 fee with a razor-thin 0.06% exchange rate margin, for a {{total-cost|total cost}} of 2.55% of the amount sent. On the Western Union Italy-to-Egypt corridor mentioned above, the $6.50 fee looked worse on its face, but the real damage was the 8.94% exchange rate margin sitting on top of it, pushing the total cost to 13.58%, more than five times higher than the WorldRemit example, despite a fee that was less than double.',
+    },
+    {
+      type: 'p',
+      text: '**A sender comparing only the two advertised fees would have guessed the gap between these two transfers was small**, which obviously is not the case. In general, the FX Markup is the hardest fee to compare from institution to institution.',
+    },
+    { type: 'figure', render: FeeVersusTotal },
+    { type: 'h', text: 'Component Four: Recipient-Side Charges' },
+    {
+      type: 'p',
+      text: 'The last piece is whatever gets taken out on the receiving end, separately from anything the sender was shown or charged upfront. This can include a cash pickup commission charged by a local agent, a fee the recipient\'s own bank deducts for accepting an incoming international transfer, or, in a lot of real-world pricing data, nothing separately listed at all, because the charge has already been folded into the sender-side fee before it ever reaches the recipient\'s side of the transaction.',
+    },
+    {
+      type: 'p',
+      text: '**This component is the hardest of the four to predict from the sender\'s side**, precisely because it\'s the one most likely to be invisible until the recipient actually goes to collect the money and finds out what\'s missing.',
+    },
+    { type: 'h', text: 'Putting the Equation Together' },
+    {
+      type: 'p',
+      text: 'With all four components named, the complete cost of a transfer looks like this:',
+    },
+    {
+      type: 'equation',
+      text: 'Total Cost = Fixed Fee + (Percentage Fee × Amount Sent) + (FX Markup % × Amount Sent) + Recipient-Side Charges',
+    },
+    {
+      type: 'p',
+      text: 'And the amount that actually lands in the recipient\'s hands, in their own currency, follows from that:',
+    },
+    {
+      type: 'equation',
+      text: 'Amount Received = (Amount Sent − Fixed Fee − Percentage Fee) × Actual Exchange Rate − Recipient-Side Charges',
+    },
+    {
+      type: 'p',
+      text: 'Notice what this equation makes explicit that an advertised fee alone never does: **the FX markup applies to the exchange rate itself, not as a separate line item pulled out of the sender\'s account**, which is exactly why it\'s so easy for a provider to advertise a low fee while making up the difference on the rate. The fee is the part every provider knows senders will compare. The exchange rate is the part fewer senders know to check, and the recipient-side charges are the part almost nobody checks at all until the money has already been sent.',
+    },
+    { type: 'h', text: 'Why This Equation Is the Only Honest Way to Compare Providers' },
+    {
+      type: 'p',
+      text: 'Go back to the Wells Fargo and Delgado Travel numbers from the first post in this series and this equation is exactly what produced them. Wells Fargo\'s $6.00 fee plus its 1.12% FX margin on a $200 transfer worked out to about $8.24 in total cost. Delgado Travel\'s identical $6.00 fee plus its 1.99% FX margin worked out to about $9.95. **The advertised fees alone didn\'t tell us the full story, but utilizing this equation did.**',
+    },
+    { type: 'figure', render: EquationAtWork },
+    {
+      type: 'p',
+      text: 'The same pattern shows up again and again across real corridors and real providers: two transfers with similar advertised fees can have wildly different total costs once the FX markup and any recipient-side charges are added in, and two transfers with very different advertised fees can end up costing the sender nearly the same amount once the full equation is run.',
+    },
+    {
+      type: 'p',
+      text: '**An advertised fee, taken on its own, isn\'t wrong exactly. It\'s just answering a much smaller question than the one that actually matters**, which is never "what\'s the fee" but always "what\'s left once every cost has been counted, and how much of that four-part equation was I even able to see before I hit send."',
+    },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'World Bank, Remittance Prices Worldwide, WorldRemit UK-Philippines record, $200 send, fee and exchange rate margin data: remittanceprices.worldbank.org/node/392473',
+        'World Bank, Remittance Prices Worldwide, Western Union Italy-Egypt record, $200 and $500 send, fee and exchange rate margin data: remittanceprices.worldbank.org/node/380467',
+        'World Bank, Remittance Prices Worldwide, methodology on fee, exchange rate margin, and total cost percent reporting: remittanceprices.worldbank.org/methodology',
+        'Prior post in this series, "Where Does a $200 Transfer Actually Go?", Wells Fargo and Delgado Travel case study figures used as the worked example above',
+      ],
+    },
+    /* Not part of the approved text. Asked for in the brief: this is the post
+       that walks through the arithmetic the calculator runs. */
+    {
+      type: 'cta',
+      text: 'See what this looks like for your own transfer. The TrueCost calculator runs this exact equation on a receipt: fee, exchange rate markup, and what actually lands.',
+      label: 'Open the TrueCost calculator',
+      to: '/truecost',
     },
   ],
 

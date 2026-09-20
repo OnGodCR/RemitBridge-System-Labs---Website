@@ -66,9 +66,15 @@ export const posts = [
   },
   {
     "id": 3,
+    "publishedOn": "2026-09-20",
     "series": "series1",
     "seriesName": "Why people send money",
-    "title": "The advertised fee is not the price",
+    "title": "The advertised fee is not the true price",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "Writing out the full cost as an equation. Fixed fee, percentage fee, the exchange rate markup, and the cash-out charge on the other end. The advertised number usually covers the first one and stops there.",
     "readTime": "8 min read",
     "tags": [

@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { ArrowLeft, Check, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react'
 import { Container } from '@/components/Section'
+import { Button } from '@/components/ui/button'
 import PostCard, { PostCover } from '@/components/PostCard'
 import { relatedTo } from '@/data/blog'
 import { usePost } from '@/lib/usePosts'
@@ -179,6 +180,33 @@ function Block({ block, theme }) {
       const Figure = block.render
       return <Figure theme={theme} />
     }
+
+    /* The approved text, set as a formula rather than a sentence. Not a
+       figure and not repeated: the equation is the post's own words, given
+       room and tabular figures so the terms line up when it wraps. Larger
+       type would be the obvious move and was not taken, because a long
+       equation at display size wraps into a mess at phone width. */
+    case 'equation':
+      return (
+        <p className="my-6 rounded-2xl border border-border bg-background px-5 py-4 font-medium leading-relaxed tabular-nums sm:text-lg">
+          {block.text}
+        </p>
+      )
+
+    /* A route to a tool, after the sources. Only where a post is the one
+       that explains what the tool computes; a button at the foot of every
+       post would be a banner, and read as one. */
+    case 'cta':
+      return (
+        <div className="mt-10 rounded-2xl border border-border bg-background p-6 sm:p-8">
+          <p className="text-lg leading-relaxed">{postText(block.text, theme)}</p>
+          <Button asChild size="lg" className="mt-5">
+            <Link to={block.to}>
+              {block.label} <ArrowRight className="size-4" />
+            </Link>
+          </Button>
+        </div>
+      )
 
     case 'sources':
       return (

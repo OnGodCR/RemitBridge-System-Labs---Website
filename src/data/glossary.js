@@ -221,6 +221,12 @@ export const terms = [
       'A direct link between two parties who lock funds up front, settle any number of payments between themselves off the chain, and record only the opening and closing balances on it. Fast, but the locked money cannot be used for anything else meanwhile.',
   },
   {
+    id: 'rpw',
+    term: 'Remittance Prices Worldwide (RPW)',
+    plain:
+      'The World Bank\'s quarterly survey of what it costs to send money, corridor by corridor and provider by provider. Every provider is priced on the same fixed benchmark amount, so a fee in one quarter can be set against a fee in another.',
+  },
+  {
     id: 'reference-rate',
     term: 'Reference rate',
     plain:

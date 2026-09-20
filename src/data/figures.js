@@ -51,6 +51,20 @@ export const sources = {
     date: 'Q3 2025 collection',
     href: 'https://remittanceprices.worldbank.org/node/396082',
   },
+  rpwWorldRemit: {
+    id: 'rpwWorldRemit',
+    title: 'Remittance Prices Worldwide: WorldRemit, United Kingdom to Philippines, bank account transfer',
+    publisher: 'World Bank',
+    date: 'Q3 2025 collection, recorded 20 August 2025',
+    href: 'https://remittanceprices.worldbank.org/node/392473',
+  },
+  rpwWesternUnionItEg: {
+    id: 'rpwWesternUnionItEg',
+    title: 'Remittance Prices Worldwide: Western Union, Italy to Egypt, cash at an agent',
+    publisher: 'World Bank',
+    date: 'Q1 2025 collection, recorded 4 February 2025',
+    href: 'https://remittanceprices.worldbank.org/node/380467',
+  },
   wfStandardWire: {
     id: 'wfStandardWire',
     title: 'Wells Fargo standard international wire: fee and exchange rate markup',
@@ -371,6 +385,51 @@ export const wfStandardWire = {
   flatFeeUsdHigh: 40,
 }
 
+/**
+ * Two RPW records blog post 3 sets side by side: a low fee with a thin
+ * margin against a higher fee with a wide one.
+ *
+ * RPW prices every corridor in the sending currency, on the local equivalent
+ * of its $200 and $500 benchmarks: GBP 120 and 300 from the UK, EUR 140 and
+ * 345 from Italy. The fees are in those currencies, and the percentages are
+ * of those amounts. 2.99 on 120 is 2.49%, plus the 0.06% margin, is the
+ * 2.55% RPW reports; 6.50 on 140 is 4.64%, plus 8.94%, is 13.58%. Read as
+ * dollars on $200 neither total comes out, which is how the currency was
+ * confirmed rather than assumed.
+ *
+ * The post's approved text prints all three fees with a dollar sign. The
+ * numbers are right and the currency label is not; the totals are exactly
+ * what RPW reports. Flagged to Angad on publication, left as written until
+ * he says otherwise, and recorded correctly here so the sources page is.
+ */
+export const feeAnatomy = {
+  worldRemit: {
+    label: 'WorldRemit, UK to Philippines',
+    currency: 'GBP',
+    sendAmount: 120,
+    fee: 2.99,
+    marginPct: 0.06,
+    totalPct: 2.55,
+    speed: 'Same day',
+    product: 'Bank account transfer',
+    source: sources.rpwWorldRemit,
+  },
+  westernUnion: {
+    label: 'Western Union, Italy to Egypt',
+    currency: 'EUR',
+    sendAmount: 140,
+    fee: 6.5,
+    marginPct: 8.94,
+    totalPct: 13.58,
+    /** The $500 benchmark row of the same record, EUR 345 sent. */
+    largerSendAmount: 345,
+    largerFee: 12.0,
+    speed: 'Under an hour',
+    product: 'Cash at an agent',
+    source: sources.rpwWesternUnionItEg,
+  },
+}
+
 export const figures = {
   /** Remittances to low- and middle-income countries, 2024. */
   flowsUsdBn: 905,
@@ -656,6 +715,7 @@ export const citations = [
       { page: 'Blog', where: 'Post 2, the side-by-side comparison table' },
       { page: 'Blog', where: 'Post 2, the total cost figure' },
       { page: 'Blog', where: 'Post 2, the two-products figure, as the fee on the direct rail' },
+      { page: 'Blog', where: 'Post 3, the opening and closing paragraphs, and the equation-at-work figure' },
     ],
   },
   {
@@ -667,6 +727,26 @@ export const citations = [
       { page: 'Blog', where: 'Post 2, the Delgado Travel figures list' },
       { page: 'Blog', where: 'Post 2, the side-by-side comparison table' },
       { page: 'Blog', where: 'Post 2, the total cost figure' },
+      { page: 'Blog', where: 'Post 3, the opening and closing paragraphs, and the equation-at-work figure' },
+    ],
+  },
+  {
+    value: `${feeAnatomy.worldRemit.totalPct}%`,
+    claim: `Total cost of WorldRemit's bank account transfer from the UK to the Philippines on the $200 benchmark, priced in sterling: a ${feeAnatomy.worldRemit.currency} ${feeAnatomy.worldRemit.fee.toFixed(2)} fee on a ${feeAnatomy.worldRemit.currency} ${feeAnatomy.worldRemit.sendAmount} send, plus a ${feeAnatomy.worldRemit.marginPct}% exchange rate margin. The post prints the fee with a dollar sign; the number is the sterling one.`,
+    source: sources.rpwWorldRemit,
+    usedOn: [
+      { page: 'Blog', where: 'Post 3, the foreign-exchange markup section' },
+      { page: 'Blog', where: 'Post 3, the fee-versus-total figure' },
+    ],
+  },
+  {
+    value: `${feeAnatomy.westernUnion.totalPct}%`,
+    claim: `Total cost of Western Union's cash pickup from Italy to Egypt on the $200 benchmark, priced in euros: a ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.fee.toFixed(2)} fee on a ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.sendAmount} send, plus an ${feeAnatomy.westernUnion.marginPct}% exchange rate margin. The same record prices the $500 benchmark at ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.largerFee.toFixed(2)} on ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.largerSendAmount}, which is the post's evidence that a fee can be neither flat nor proportional. The post prints both fees with a dollar sign; the numbers are the euro ones.`,
+    source: sources.rpwWesternUnionItEg,
+    usedOn: [
+      { page: 'Blog', where: 'Post 3, the percentage fee section, on the two benchmark amounts' },
+      { page: 'Blog', where: 'Post 3, the foreign-exchange markup section' },
+      { page: 'Blog', where: 'Post 3, the fee-versus-total figure' },
     ],
   },
   {
@@ -691,7 +771,10 @@ export const citations = [
     claim:
       'The two amounts Remittance Prices Worldwide surveys in every corridor. Set in 2008, adjusted once in 2009, frozen since so fee trends stay comparable over time. They are a fixed reference point, not a measured average transaction size, which is the distinction blog post 19 turns on.',
     source: sources.rpwMethod,
-    usedOn: [{ page: 'Blog', where: 'Post 19, the section asking whether $200 is an average or a benchmark' }],
+    usedOn: [
+      { page: 'Blog', where: 'Post 19, the section asking whether $200 is an average or a benchmark' },
+      { page: 'Blog', where: 'Post 3, in its sources, for how fee, margin and total cost are reported' },
+    ],
   },
   {
     value: `$${tps.usMxAvgUsd}`,
