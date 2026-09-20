@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
-import { ArrowDown, ArrowRight, ArrowLeftRight, HandCoins, Percent, Tag } from 'lucide-react'
-import { figures, derived, usMxQ3, wfStandardWire, feeAnatomy, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
+import { ArrowDown, ArrowRight, ArrowLeftRight, Banknote, Coins, HandCoins, Landmark, Map, Percent, Scale, Smartphone, Tag, Users } from 'lucide-react'
+import { figures, derived, usMxQ3, wfStandardWire, feeAnatomy, corridorCost, deRisking, channelCost, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -1926,5 +1926,203 @@ export function EquationAtWork({ theme }) {
       rows={rows}
       note="The same $6.00 fee on both. Every cent of the difference is the exchange rate."
     />
+  )
+}
+
+/* ---------------------------------------------------------------- post 4 */
+
+/**
+ * Corridor costs on one scale, drawn with the same bar as post 2's cost
+ * figure and the same dashed target line. Two figures share it: the opening
+ * gap, and the competition section's three. A `range` row is hollow, for a
+ * figure the post's source gives only as "around".
+ */
+function CorridorBars({ theme, rows, scale, label, note }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </figcaption>
+      <div className="mt-5 space-y-5">
+        {rows.map((row) => (
+          <div key={row.label}>
+            <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+              <span className="text-sm font-bold">{row.label}</span>
+              <span className="text-sm font-bold tabular-nums">
+                {row.approx ? 'about ' : ''}
+                {row.pct}%
+              </span>
+            </div>
+            <div className="relative h-3 rounded-full bg-muted">
+              <div
+                className={cn(
+                  'h-3 rounded-l-full rounded-r-[4px]',
+                  row.approx ? cn('border', theme.border, 'bg-transparent') : theme.bar,
+                )}
+                style={{ width: `${Math.max((row.pct / scale) * 100, 0.8)}%` }}
+              />
+              <div
+                className="absolute inset-y-[-4px] w-px border-l border-dashed border-foreground/40"
+                style={{ left: `${(figures.targetPct / scale) * 100}%` }}
+                aria-hidden
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Dashed line: the UN target of {figures.targetPct}% by 2030. Scale runs to {scale}%. {note}
+      </p>
+    </figure>
+  )
+}
+
+/** The opening contrast: same $200, two corridors, one scale. */
+export function CorridorGap({ theme }) {
+  const { usMx, zaMw } = corridorCost
+  return (
+    <CorridorBars
+      theme={theme}
+      label="Average total cost of a $200 send, Q3 2025"
+      scale={35}
+      rows={[usMx, zaMw]}
+      note={`World Bank RPW corridor averages. One is ${(zaMw.pct / usMx.pct).toFixed(1)} times the other.`}
+    />
+  )
+}
+
+/** The competition section's three, on the same scale as the opening pair. */
+export function CompetitionBars({ theme }) {
+  const { aeIn, saPk, zaBw } = corridorCost
+  return (
+    <CorridorBars
+      theme={theme}
+      label="Where providers compete, and where they do not"
+      scale={35}
+      rows={[aeIn, saPk, zaBw]}
+      note="Hollow bars are figures the post's source gives as approximate. Same scale as the figure above, so the three can be read against Malawi."
+    />
+  )
+}
+
+/**
+ * Correspondent counterparties lost, as the part of a bar that is gone.
+ *
+ * The suggestion was two shrinking network diagrams. A network drawn with
+ * an invented number of nodes would be a picture of a number the source
+ * does not give; the source gives a share, so the figure draws a share.
+ * South Africa's is a floor ("more than 10%") and is labelled as one.
+ */
+export function LostCounterparties({ theme }) {
+  const rows = [deRisking.southAfrica, deRisking.angola]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Foreign correspondent counterparties, 2013 to 2015
+      </figcaption>
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+        <span className="inline-flex items-center gap-2">
+          <span className={cn('size-2.5 rounded-sm', theme.bar)} aria-hidden />
+          <span className="font-bold">Kept</span>
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className={cn('size-2.5 rounded-sm border border-dashed', theme.border)} aria-hidden />
+          <span className="font-bold">Lost</span>
+        </span>
+      </div>
+      <div className="mt-5 space-y-5">
+        {rows.map((r) => (
+          <div key={r.label}>
+            <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+              <span className="text-sm font-bold">{r.label}</span>
+              <span className="text-sm font-bold tabular-nums">
+                {r.atLeast ? 'more than ' : ''}
+                {r.lostPct}% lost
+              </span>
+            </div>
+            <div className={cn('relative h-3 rounded-full border border-dashed', theme.border)}>
+              <div
+                className={cn('h-full rounded-l-full rounded-r-[4px]', theme.bar)}
+                style={{ width: `${100 - r.lostPct}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        SWIFT data, as reported at Sibos 2016. The whole bar is the counterparties a country's banks
+        had in 2013; the filled part is what was left two years on.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * The last mile, as hops. Where a map was suggested, and a map drawn by hand
+ * would be a guess at borders and a guess at where people live. The post's
+ * point is about how many steps stand between arrival and the recipient, and
+ * a chain shows steps.
+ */
+export function LastMile({ theme }) {
+  return (
+    <Chain
+      theme={theme}
+      aria="Two deliveries: one step to an urban recipient, four steps to a rural one"
+      stops={[
+        { title: 'Money arrives', sub: 'in the country' },
+        { title: 'Capital city', sub: 'bank or agent hub' },
+        { title: 'Regional town', sub: 'cash moved by road' },
+        { title: 'Village agent', sub: 'if there is one' },
+        { title: 'Recipient', sub: 'collects in cash', note: 'last mile' },
+      ]}
+      footer={[
+        { lead: 'Dense, urban:', rest: 'the first box and the last, with nothing between them.' },
+        { lead: 'Landlocked, rural:', rest: 'every box, and every one is a cost.' },
+      ]}
+    />
+  )
+}
+
+/** The two channel averages the post quotes, on one scale. */
+export function ChannelCost({ theme }) {
+  const rows = [channelCost.mobileMoney, channelCost.banks]
+  return (
+    <CorridorBars
+      theme={theme}
+      label="Average cost of a $200 send, by channel, Q1 2025"
+      scale={16}
+      rows={rows}
+      note={`World Bank RPW main report. Banks are ${(channelCost.banks.pct / channelCost.mobileMoney.pct).toFixed(1)} times mobile money.`}
+    />
+  )
+}
+
+/** The seven factors, in the order the post takes them. */
+export function SevenFactors({ theme }) {
+  const factors = [
+    { Icon: Users, name: 'Competition' },
+    { Icon: Landmark, name: 'Correspondent-banking relationships' },
+    { Icon: Coins, name: 'Currency liquidity' },
+    { Icon: Scale, name: 'Regulation' },
+    { Icon: Map, name: 'Geography' },
+    { Icon: Smartphone, name: 'Payment infrastructure' },
+    { Icon: Banknote, name: 'Cash-distribution networks' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Seven properties of a corridor, none of them of the transfer
+      </figcaption>
+      <ol className="mt-4 grid gap-2 sm:grid-cols-2">
+        {factors.map((f, i) => (
+          <li key={f.name} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
+            <f.Icon className={cn('size-5 shrink-0', theme.ink)} aria-hidden />
+            <p className="text-sm font-bold leading-snug">
+              <span className={cn('tabular-nums', theme.ink)}>{i + 1}.</span> {f.name}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </figure>
   )
 }

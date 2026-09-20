@@ -84,9 +84,15 @@ export const posts = [
   },
   {
     "id": 4,
+    "publishedOn": "2026-09-20",
     "series": "series1",
     "seriesName": "Why people send money",
-    "title": "Why the same transfer costs more on one route than another",
+    "title": "Why the same transfer can cost more on one corridor than another",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "Why the same $200 costs different amounts depending on where it is going. Competition, which banks talk to each other, how much of the currency is floating around, local rules, distance, and how many cash pickup points exist nearby.",
     "readTime": "9 min read",
     "tags": [

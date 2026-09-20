@@ -3,6 +3,7 @@ import { bodies } from './postBodies'
 import cover1 from '@/assets/local-shop.jpg'
 import cover2 from '@/assets/remittance-counter.jpg'
 import cover3 from '@/assets/remittance-receipt.jpg'
+import cover4 from '@/assets/africa-at-night.jpg'
 import cover17 from '@/assets/measurement-scale.jpg'
 import cover19 from '@/assets/trading-floor.jpg'
 import { coverArt } from '@/components/blog/Covers'
@@ -17,7 +18,7 @@ import { slugify } from '@/lib/slug'
  * PostCover still generates art for the rest, and that stays the default: a
  * generic stock photo on a research post is worse than an honest number.
  */
-const covers = { 1: cover1, 2: cover2, 3: cover3, 17: cover17, 19: cover19 }
+const covers = { 1: cover1, 2: cover2, 3: cover3, 4: cover4, 17: cover17, 19: cover19 }
 
 export const posts = raw.map((post) => ({
   ...post,

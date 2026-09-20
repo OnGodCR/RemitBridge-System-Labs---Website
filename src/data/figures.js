@@ -65,6 +65,41 @@ export const sources = {
     date: 'Q1 2025 collection, recorded 4 February 2025',
     href: 'https://remittanceprices.worldbank.org/node/380467',
   },
+  rpwCorridorsQ3: {
+    id: 'rpwCorridorsQ3',
+    title: 'Remittance Prices Worldwide: corridor pages, Q3 2025 collection (US to Mexico; South Africa to Malawi and to Botswana)',
+    publisher: 'World Bank',
+    date: 'Q3 2025, collected August to September 2025',
+    href: 'https://remittanceprices.worldbank.org/corridor/South-Africa/Malawi',
+  },
+  rpwQ1Report: {
+    id: 'rpwQ1Report',
+    title: 'Remittance Prices Worldwide, Issue 53: main report and annex, Q1 2025',
+    publisher: 'World Bank',
+    date: 'Q1 2025',
+    href: 'https://remittanceprices.worldbank.org/sites/default/files/rpw_main_report_and_annex_q125_1_0.pdf',
+  },
+  imtStats: {
+    id: 'imtStats',
+    title: 'Money Transfer Statistics 2025, on the cheapest corridors',
+    publisher: 'InternationalMoneyTransfer.com, citing World Bank RPW Q1 2025',
+    date: 'Updated 2026',
+    href: 'https://www.internationalmoneytransfer.com/guides/statistics',
+  },
+  swiftDerisking: {
+    id: 'swiftDerisking',
+    title: 'De-risking in Africa on the rise, according to latest SWIFT data',
+    publisher: 'SWIFT press release, reported by FinTech Futures as "Sibos 2016: De-risking in Africa"',
+    date: 'October 2016, on 2013 to 2015 data',
+    href: 'https://www.swift.com/news-events/press-releases/de-risking-africa-rise-according-latest-swift-data',
+  },
+  imfCbr: {
+    id: 'imfCbr',
+    title: 'The Withdrawal of Correspondent Banking Relationships: A Case for Policy Action',
+    publisher: 'IMF Staff Discussion Note 16/06, citing the World Bank\'s November 2015 survey',
+    date: 'June 2016',
+    href: 'https://www.imf.org/external/pubs/ft/sdn/2016/sdn1606.pdf',
+  },
   wfStandardWire: {
     id: 'wfStandardWire',
     title: 'Wells Fargo standard international wire: fee and exchange rate markup',
@@ -428,6 +463,41 @@ export const feeAnatomy = {
   },
 }
 
+/**
+ * Corridor averages and the structure behind them, for blog post 4.
+ *
+ * The three RPW corridor figures were read off the corridor pages on
+ * 2026-09-20, Q3 2025 tab, $200 benchmark. The approved text gives US to
+ * Mexico as 4.45%; the page says 4.54% ($500 is 2.99%, so neither amount
+ * gives 4.45). Recorded as the page has it and flagged to Angad; the ratio
+ * to Malawi is 6.9 either way, which is the "roughly seven times" the post
+ * turns on.
+ *
+ * UAE to India and Saudi Arabia to Pakistan are as the post's secondary
+ * source states them, rounded, and are labelled approximate here as there.
+ */
+export const corridorCost = {
+  usMx: { label: 'US to Mexico', pct: 4.54, source: sources.rpwCorridorsQ3 },
+  zaMw: { label: 'South Africa to Malawi', pct: 31.48, source: sources.rpwCorridorsQ3 },
+  zaBw: { label: 'South Africa to Botswana', pct: 16.45, source: sources.rpwCorridorsQ3 },
+  aeIn: { label: 'UAE to India', pct: 1.5, approx: true, source: sources.imtStats },
+  saPk: { label: 'Saudi Arabia to Pakistan', pct: 2.1, approx: true, source: sources.imtStats },
+}
+
+/** Share of foreign correspondent counterparties lost, 2013 to 2015, per SWIFT. */
+export const deRisking = {
+  southAfrica: { label: 'South Africa', lostPct: 10, atLeast: true },
+  angola: { label: 'Angola', lostPct: 37, atLeast: false },
+  /** World Bank survey, November 2015: banks in Africa reporting a decline. */
+  africanBanksDecliningShare: 'more than half',
+}
+
+/** Average cost by instrument, Q1 2025, from the RPW main report. */
+export const channelCost = {
+  mobileMoney: { label: 'Mobile money', pct: 3.63 },
+  banks: { label: 'Banks', pct: 14.55 },
+}
+
 export const figures = {
   /** Remittances to low- and middle-income countries, 2024. */
   flowsUsdBn: 905,
@@ -772,6 +842,46 @@ export const citations = [
     usedOn: [
       { page: 'Blog', where: 'Post 19, the section asking whether $200 is an average or a benchmark' },
       { page: 'Blog', where: 'Post 3, in its sources, for how fee, margin and total cost are reported' },
+    ],
+  },
+  {
+    value: `${corridorCost.zaMw.pct}%`,
+    claim: `Average total cost of sending the $200 benchmark from South Africa to Malawi, Q3 2025, against ${corridorCost.usMx.pct}% from the US to Mexico and ${corridorCost.zaBw.pct}% from South Africa to Botswana in the same quarter. Read off the corridor pages. The post's text gives US to Mexico as 4.45%; the page gives 4.54%, and neither benchmark amount produces 4.45.`,
+    source: sources.rpwCorridorsQ3,
+    usedOn: [
+      { page: 'Blog', where: 'Post 4, the opening paragraph and the closing section' },
+      { page: 'Blog', where: 'Post 4, the corridor gap figure' },
+      { page: 'Blog', where: 'Post 4, the competition section and its figure, for Botswana' },
+    ],
+  },
+  {
+    value: `about ${corridorCost.aeIn.pct}% and ${corridorCost.saPk.pct}%`,
+    claim: 'UAE to India and Saudi Arabia to Pakistan, among the cheapest corridors tracked. Not read from RPW directly: the post cites a secondary source that summarises RPW Q1 2025, and the figures are rounded there, so they are drawn as approximate.',
+    source: sources.imtStats,
+    usedOn: [{ page: 'Blog', where: 'Post 4, the competition section and its figure' }],
+  },
+  {
+    value: `${deRisking.southAfrica.lostPct}%+ and ${deRisking.angola.lostPct}%`,
+    claim: `Foreign correspondent counterparties lost between 2013 and 2015: South Africa more than ${deRisking.southAfrica.lostPct}%, Angola ${deRisking.angola.lostPct}%. SWIFT's own data, released at its 2016 Business Forum South Africa; the post cites the FinTech Futures report of it. The same release repeats the World Bank's 2015 finding that ${deRisking.africanBanksDecliningShare} of surveyed banks in Africa reported a moderate or significant decline.`,
+    source: sources.swiftDerisking,
+    usedOn: [
+      { page: 'Blog', where: 'Post 4, the correspondent-banking section' },
+      { page: 'Blog', where: 'Post 4, the lost-counterparties figure' },
+    ],
+  },
+  {
+    value: 'More than half',
+    claim: 'Share of banks in Africa reporting a moderate or significant decline in correspondent relationships, in the World Bank\'s November 2015 survey, as cited by the IMF.',
+    source: sources.imfCbr,
+    usedOn: [{ page: 'Blog', where: 'Post 4, the correspondent-banking section' }],
+  },
+  {
+    value: `${channelCost.mobileMoney.pct}% and ${channelCost.banks.pct}%`,
+    claim: 'Average cost of sending $200 by mobile money, the cheapest instrument, and through banks, the most expensive, in Q1 2025.',
+    source: sources.rpwQ1Report,
+    usedOn: [
+      { page: 'Blog', where: 'Post 4, the payment infrastructure section' },
+      { page: 'Blog', where: 'Post 4, the channel cost figure' },
     ],
   },
   {

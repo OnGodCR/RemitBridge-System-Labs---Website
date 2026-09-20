@@ -245,6 +245,42 @@ export const terms = [
       'The screening a provider runs before it moves money: confirming who the sender is and checking both names against sanctions lists. The work costs about the same whatever the amount, which is one reason fixed fees exist.',
   },
   {
+    id: 'de-risking',
+    term: 'De-risking',
+    plain:
+      'A large bank ending its correspondent relationships with smaller banks in markets it judges risky or not worth the compliance cost, rather than screening each one. Payments to those markets then need more hops, and each hop can add a fee.',
+  },
+  {
+    id: 'aml',
+    term: 'Anti-money-laundering (AML)',
+    plain:
+      'The rules that require a provider to check who is sending money, where it came from and where it is going, and to report anything suspicious. The cost of doing it is roughly fixed per relationship, whatever flows through it.',
+  },
+  {
+    id: 'currency-liquidity',
+    term: 'Currency liquidity',
+    plain:
+      'How easily a currency can be bought and sold in volume without moving its price. A heavily traded currency is cheap to convert into; a thinly traded one is harder to source, harder to hedge, and the difficulty ends up in the exchange rate.',
+  },
+  {
+    id: 'capital-controls',
+    term: 'Capital controls',
+    plain:
+      'Government limits on how freely money can enter or leave a country: caps, approvals, or restrictions on holding foreign currency. Every transfer across that border carries the friction they add.',
+  },
+  {
+    id: 'last-mile',
+    term: 'Last mile',
+    plain:
+      'The final step of getting money into the recipient\'s hands, after it has arrived in the country: the trip to a pickup agent, the agent\'s own cut, the cash that has to be physically there. Where the recipient lives far from town, this step alone can be a large share of the cost.',
+  },
+  {
+    id: 'diaspora',
+    term: 'Diaspora',
+    plain:
+      'The people from one country living in another. A large diaspora on a corridor means a large market for sending money along it, which is what draws providers in and pushes the price down.',
+  },
+  {
     id: 'rpw',
     term: 'Remittance Prices Worldwide (RPW)',
     plain:
