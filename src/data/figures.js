@@ -397,10 +397,8 @@ export const wfStandardWire = {
  * dollars on $200 neither total comes out, which is how the currency was
  * confirmed rather than assumed.
  *
- * The post's approved text prints all three fees with a dollar sign. The
- * numbers are right and the currency label is not; the totals are exactly
- * what RPW reports. Flagged to Angad on publication, left as written until
- * he says otherwise, and recorded correctly here so the sources page is.
+ * The approved text first printed all three fees with a dollar sign; Angad
+ * had the symbols corrected on 2026-09-20. The totals were always RPW's.
  */
 export const feeAnatomy = {
   worldRemit: {
@@ -732,7 +730,7 @@ export const citations = [
   },
   {
     value: `${feeAnatomy.worldRemit.totalPct}%`,
-    claim: `Total cost of WorldRemit's bank account transfer from the UK to the Philippines on the $200 benchmark, priced in sterling: a ${feeAnatomy.worldRemit.currency} ${feeAnatomy.worldRemit.fee.toFixed(2)} fee on a ${feeAnatomy.worldRemit.currency} ${feeAnatomy.worldRemit.sendAmount} send, plus a ${feeAnatomy.worldRemit.marginPct}% exchange rate margin. The post prints the fee with a dollar sign; the number is the sterling one.`,
+    claim: `Total cost of WorldRemit's bank account transfer from the UK to the Philippines on the $200 benchmark, priced in sterling: a ${feeAnatomy.worldRemit.currency} ${feeAnatomy.worldRemit.fee.toFixed(2)} fee on a ${feeAnatomy.worldRemit.currency} ${feeAnatomy.worldRemit.sendAmount} send, plus a ${feeAnatomy.worldRemit.marginPct}% exchange rate margin.`,
     source: sources.rpwWorldRemit,
     usedOn: [
       { page: 'Blog', where: 'Post 3, the foreign-exchange markup section' },
@@ -741,7 +739,7 @@ export const citations = [
   },
   {
     value: `${feeAnatomy.westernUnion.totalPct}%`,
-    claim: `Total cost of Western Union's cash pickup from Italy to Egypt on the $200 benchmark, priced in euros: a ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.fee.toFixed(2)} fee on a ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.sendAmount} send, plus an ${feeAnatomy.westernUnion.marginPct}% exchange rate margin. The same record prices the $500 benchmark at ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.largerFee.toFixed(2)} on ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.largerSendAmount}, which is the post's evidence that a fee can be neither flat nor proportional. The post prints both fees with a dollar sign; the numbers are the euro ones.`,
+    claim: `Total cost of Western Union's cash pickup from Italy to Egypt on the $200 benchmark, priced in euros: a ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.fee.toFixed(2)} fee on a ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.sendAmount} send, plus an ${feeAnatomy.westernUnion.marginPct}% exchange rate margin. The same record prices the $500 benchmark at ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.largerFee.toFixed(2)} on ${feeAnatomy.westernUnion.currency} ${feeAnatomy.westernUnion.largerSendAmount}, which is the post's evidence that a fee can be neither flat nor proportional.`,
     source: sources.rpwWesternUnionItEg,
     usedOn: [
       { page: 'Blog', where: 'Post 3, the percentage fee section, on the two benchmark amounts' },

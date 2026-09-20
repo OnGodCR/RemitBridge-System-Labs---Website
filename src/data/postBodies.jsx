@@ -68,13 +68,11 @@ import {
  * verbatim. (A draft of 3 sat there too, superseded by the approved text
  * published 2026-09-20.)
  *
- * Post 3 prints three RPW fees with a dollar sign that the records give in
- * sterling and euros (2.99 GBP, 6.50 and 12.00 EUR). The percentages beside
- * them are exactly RPW's and only come out on the local amounts, so the
- * numbers are right and the symbol is not. Left as approved and flagged;
- * figures.js carries the currencies. The text also calls post 2 "the first
- * post in this series" three times; the link goes to post 2, which is the
- * post the sources name.
+ * Post 3's approved text printed three RPW fees with a dollar sign that the
+ * records give in sterling and euros. Angad approved the symbol change on
+ * 2026-09-20 (£2.99; €6.50 and €12.00); the percentages were always RPW's
+ * own. The text also calls post 2 "the first post in this series" three
+ * times; the link goes to post 2, which is the post the sources name.
  *
  * Post 1's opening once read "as demonstrated by a research study that took
  * place in" and ran straight into the next sentence, missing whatever was
@@ -321,7 +319,7 @@ export const bodies = {
     { type: 'h', text: 'Component Two: The Percentage Fee' },
     {
       type: 'p',
-      text: 'Some providers charge a fee that scales with the amount sent instead of, or in addition to, a flat charge. A straightforward 1% fee, for example, would be $2 on a $200 transfer and $10 on a $1,000 transfer. In practice, a lot of real-world "fees" are actually a blend of both components rather than a clean, separately stated fixed-plus-percentage structure. Real pricing data collected by the World Bank\'s {{rpw|Remittance Prices Worldwide}} database shows exactly this: on one Western Union {{corridor|corridor}} between Italy and Egypt, the listed fee for sending $200 was $6.50, while the fee for sending $500 through the same product was $12.00, not simply 2.5 times larger the way a pure {{percentage-fee|percentage fee}} would scale, but not flat either. **Most providers don\'t publish which part of their fee is fixed and which part scales**, which means the "fee" a sender sees is often already an unlabeled mix of both components.',
+      text: 'Some providers charge a fee that scales with the amount sent instead of, or in addition to, a flat charge. A straightforward 1% fee, for example, would be $2 on a $200 transfer and $10 on a $1,000 transfer. In practice, a lot of real-world "fees" are actually a blend of both components rather than a clean, separately stated fixed-plus-percentage structure. Real pricing data collected by the World Bank\'s {{rpw|Remittance Prices Worldwide}} database shows exactly this: on one Western Union {{corridor|corridor}} between Italy and Egypt, the listed fee for sending $200 was €6.50, while the fee for sending $500 through the same product was €12.00, not simply 2.5 times larger the way a pure {{percentage-fee|percentage fee}} would scale, but not flat either. **Most providers don\'t publish which part of their fee is fixed and which part scales**, which means the "fee" a sender sees is often already an unlabeled mix of both components.',
     },
     { type: 'h', text: 'Component Three: The Foreign-Exchange Markup' },
     {
@@ -330,7 +328,7 @@ export const bodies = {
     },
     {
       type: 'p',
-      text: 'The scale of this hidden cost varies enormously by provider and corridor. Pulling directly from World Bank pricing data: a WorldRemit transfer from the UK to the Philippines charged a $2.99 fee with a razor-thin 0.06% exchange rate margin, for a {{total-cost|total cost}} of 2.55% of the amount sent. On the Western Union Italy-to-Egypt corridor mentioned above, the $6.50 fee looked worse on its face, but the real damage was the 8.94% exchange rate margin sitting on top of it, pushing the total cost to 13.58%, more than five times higher than the WorldRemit example, despite a fee that was less than double.',
+      text: 'The scale of this hidden cost varies enormously by provider and corridor. Pulling directly from World Bank pricing data: a WorldRemit transfer from the UK to the Philippines charged a £2.99 fee with a razor-thin 0.06% exchange rate margin, for a {{total-cost|total cost}} of 2.55% of the amount sent. On the Western Union Italy-to-Egypt corridor mentioned above, the €6.50 fee looked worse on its face, but the real damage was the 8.94% exchange rate margin sitting on top of it, pushing the total cost to 13.58%, more than five times higher than the WorldRemit example, despite a fee that was less than double.',
     },
     {
       type: 'p',
