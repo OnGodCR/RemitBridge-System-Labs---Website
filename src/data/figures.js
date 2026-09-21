@@ -467,11 +467,9 @@ export const feeAnatomy = {
  * Corridor averages and the structure behind them, for blog post 4.
  *
  * The three RPW corridor figures were read off the corridor pages on
- * 2026-09-20, Q3 2025 tab, $200 benchmark. The approved text gives US to
- * Mexico as 4.45%; the page says 4.54% ($500 is 2.99%, so neither amount
- * gives 4.45). Recorded as the page has it and flagged to Angad; the ratio
- * to Malawi is 6.9 either way, which is the "roughly seven times" the post
- * turns on.
+ * 2026-09-20, Q3 2025 tab, $200 benchmark. The approved text had US to
+ * Mexico as 4.45%, two digits swapped; corrected to the page's 4.54% with
+ * Angad's yes on 2026-09-21.
  *
  * UAE to India and Saudi Arabia to Pakistan are as the post's secondary
  * source states them, rounded, and are labelled approximate here as there.
@@ -846,7 +844,7 @@ export const citations = [
   },
   {
     value: `${corridorCost.zaMw.pct}%`,
-    claim: `Average total cost of sending the $200 benchmark from South Africa to Malawi, Q3 2025, against ${corridorCost.usMx.pct}% from the US to Mexico and ${corridorCost.zaBw.pct}% from South Africa to Botswana in the same quarter. Read off the corridor pages. The post's text gives US to Mexico as 4.45%; the page gives 4.54%, and neither benchmark amount produces 4.45.`,
+    claim: `Average total cost of sending the $200 benchmark from South Africa to Malawi, Q3 2025, against ${corridorCost.usMx.pct}% from the US to Mexico and ${corridorCost.zaBw.pct}% from South Africa to Botswana in the same quarter. Read off the corridor pages.`,
     source: sources.rpwCorridorsQ3,
     usedOn: [
       { page: 'Blog', where: 'Post 4, the opening paragraph and the closing section' },

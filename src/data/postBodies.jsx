@@ -86,10 +86,9 @@ import {
  * find the study, and naming one to fill the gap would put a fabricated
  * citation on the page. Leave it deleted unless the source turns up.
  *
- * Post 4 opens with US to Mexico at 4.45%. RPW's corridor page gives 4.54%
- * for the same quarter and amount, and 2.99% for $500, so no reading gives
- * 4.45. Flagged to Angad on publication and left as approved; figures.js
- * and the figure under it carry 4.54.
+ * Post 4's approved text opened with US to Mexico at 4.45%. RPW's corridor
+ * page gives 4.54% for that quarter and amount; Angad approved the
+ * correction on 2026-09-21.
  *
  * Block types: p, h (level 3 for a subheading), label, quote, list, image,
  * callout, table, figure, equation, sources, cta.
@@ -413,7 +412,7 @@ export const bodies = {
   4: [
     {
       type: 'p',
-      text: 'Send $200 from the US to Mexico and the average total cost is 4.45% of the amount sent. Send that same $200 from South Africa to Malawi, two neighboring countries on the same continent, and the average total cost is 31.48%, according to World Bank data from the third quarter of 2025. Both transfers are the same amount and are meant to have the same currency conversion. The transfer from South Africa to Malawi is even a fraction of the distance in some cases, and yet it costs roughly seven times more than the other.',
+      text: 'Send $200 from the US to Mexico and the average total cost is 4.54% of the amount sent. Send that same $200 from South Africa to Malawi, two neighboring countries on the same continent, and the average total cost is 31.48%, according to World Bank data from the third quarter of 2025. Both transfers are the same amount and are meant to have the same currency conversion. The transfer from South Africa to Malawi is even a fraction of the distance in some cases, and yet it costs roughly seven times more than the other.',
     },
     {
       type: 'p',
