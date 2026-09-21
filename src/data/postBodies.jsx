@@ -97,8 +97,9 @@ import {
  * as post 17 was, since the site sets all of them the same way. Its last
  * paragraph calls post 1 "the second post in this series"; the link goes
  * to post 1, where the large-commercial-payments point is made. Its
- * sources point to an arXiv paper for the El Salvador experiment that does
- * not discuss it; figures.js cites the primary study.
+ * sources first pointed to an arXiv paper for the El Salvador experiment
+ * that does not discuss it; Angad had the line repointed at the primary
+ * study on 2026-09-21.
  *
  * Block types: p, h (level 3 for a subheading), label, quote, list, image,
  * callout, table, figure, equation, sources, cta.
@@ -606,7 +607,7 @@ export const bodies = {
         'Inter-American Dialogue, on average remittance transaction size and annual sending frequency in the US-Mexico corridor (~16 times/year): thedialogue.org, "Understanding the Recent Growth in Remittances to Mexico"',
         'European Central Bank Working Paper 1683, "Migrants\' Choice of Remittance Channel," on remittance amount and frequency influencing channel choice, and fixed fees disproportionately affecting small transfers: ecb.europa.eu/pub/pdf/scpwps/ecbwp1683.pdf',
         'OECD, "Migration, Remittances and Development," on informal channels being preferred for smaller amounts as a matter of risk limitation: oecd.org, Development Dimension series',
-        'Ashraf, Aycinena, Martinez, and Yang (2015), household savings and remittance-monitoring experiment among Salvadoran migrants, as discussed in "Supercompliers": arxiv.org/pdf/2212.14105',
+        'Ashraf, Aycinena, Martinez, and Yang (2015), "Savings in Transnational Households: A Field Experiment among Migrants from El Salvador," Review of Economics and Statistics, on migrants\' limited ability to monitor how remittances are used: doi.org/10.1162/REST_a_00462',
         'Our World in Data, "The great global redistributor we never hear about," on migrant workers sending home approximately 15% of earnings on average, and on the effect of fees on how much migrants choose to send: ourworldindata.org/great-global-redistributor-money-sent-brought-back-migrants-remittances',
         'UN and IFAD, on migrant workers typically sending money home every one to two months as a recurring pattern: un.org, "Remittances matter: 8 facts you don\'t know about the money migrants send back home"; ifad.org, "15 reasons remittances matter"',
         'Prior posts in this series, "What Is an International Remittance and Why Is It More Than a Money Transfer?" and "The Advertised Fee Is Not the True Price," on remittances as household income and the disproportionate impact of fixed fees on small transfers',

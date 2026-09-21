@@ -947,7 +947,7 @@ export const citations = [
   },
   {
     value: 'Limited control over use',
-    claim: 'The El Salvador field experiment, run with Banco Agrícola among Salvadoran migrants in Washington DC: migrants have limited ability to monitor or control how remittances are used, and offering them control over savings accounts at home changed how much was saved. The post\'s sources point to an arXiv paper ("Supercompliers", 2212.14105) as discussing it; that paper does not mention it, so the primary study is recorded here instead.',
+    claim: 'The El Salvador field experiment, run with Banco Agrícola among Salvadoran migrants in Washington DC: migrants have limited ability to monitor or control how remittances are used, and offering them control over savings accounts at home changed how much was saved.',
     source: sources.ashrafSalvador,
     usedOn: [{ page: 'Blog', where: 'Post 5, the trust section' }],
   },
