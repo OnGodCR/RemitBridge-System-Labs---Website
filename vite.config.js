@@ -143,14 +143,23 @@ const listedPaths = () =>
 
 function seoPlugin() {
   const origin = siteUrl()
+  let ssr = false
 
   return {
     name: 'seo',
 
+    // The build runs twice: once for the browser, once for the server bundle
+    // that scripts/prerender.mjs uses to fill each page's body. The head and
+    // the sitemap are the browser build's job; doing it again on the second
+    // pass would rewrite every file the first one wrote.
+    configResolved(config) {
+      ssr = Boolean(config.build.ssr)
+    },
+
     // Not in siteUrl() itself: that runs for `define` on a dev server too,
     // where the warning is noise and there is nothing to deploy.
     buildStart() {
-      assertDeployable(origin)
+      if (!ssr) assertDeployable(origin)
     },
 
     // Runs in dev as well as in build, so `npm run dev` shows the real tags
@@ -167,11 +176,18 @@ function seoPlugin() {
      * which is the half that no crawler will run JavaScript to discover.
      */
     closeBundle() {
+      if (ssr) return
       const dist = path.resolve(__dirname, 'dist')
       const index = path.join(dist, 'index.html')
       if (!fs.existsSync(index)) return
 
       const template = fs.readFileSync(index, 'utf8')
+      if (!template.includes('<div id="root"></div>')) {
+        // The template must be the bare shell. A stale index.html that already
+        // carries a prerendered body would stamp the home page's text into
+        // every route's file, under that route's own head.
+        throw new Error('seo: dist/index.html already has a body; the template must be empty')
+      }
       const home = seoBlock('/', origin)
       if (!template.includes(home)) {
         // Failing loudly. A silent miss here ships a whole site of pages that

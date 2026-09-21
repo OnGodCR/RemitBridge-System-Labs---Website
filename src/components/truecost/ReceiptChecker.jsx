@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { fetchCurrencies, fetchRate, today, sourceOf } from '@/lib/fx'
 import { computeReceipt, validateReceipt, annualise } from '@/lib/receipt'
@@ -46,22 +46,39 @@ function readUrl() {
 }
 
 export default function ReceiptChecker() {
-  const fromUrl = useMemo(readUrl, [])
-
+  /*
+   * The form starts empty and dateless, and fills from the URL and today's
+   * date in the effect below. The build renders this page with no URL and on
+   * a different day from the reader, and the browser has to hydrate exactly
+   * what the build wrote before it is allowed to change it. Reading the URL
+   * during the first render put a query string's values into markup that
+   * the file did not have, and today() put the build day into the date
+   * field of every reader.
+   */
   const [form, setForm] = useState({
-    sent: fromUrl.sent ?? '',
-    from: fromUrl.from ?? 'USD',
-    to: fromUrl.to ?? 'MXN',
-    fee: fromUrl.fee ?? '',
-    rate: fromUrl.rate ?? '',
-    pickup: fromUrl.pickup ?? '',
-    date: fromUrl.date ?? today(),
+    sent: '',
+    from: 'USD',
+    to: 'MXN',
+    fee: '',
+    rate: '',
+    pickup: '',
+    date: '',
   })
 
   const [currencies, setCurrencies] = useState([])
   const [fx, setFx] = useState({ state: 'idle' })
-  const [manualRate, setManualRate] = useState(fromUrl.manual ?? '')
+  const [manualRate, setManualRate] = useState('')
   const [annual, setAnnual] = useState(false)
+
+  useEffect(() => {
+    const fromUrl = readUrl()
+    setForm((f) => ({
+      ...f,
+      ...Object.fromEntries(PARAMS.filter((k) => k !== 'manual' && k in fromUrl).map((k) => [k, fromUrl[k]])),
+      date: fromUrl.date ?? today(),
+    }))
+    if (fromUrl.manual != null) setManualRate(fromUrl.manual)
+  }, [])
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
   // The currency pickers hand back a code, not an event.
@@ -88,6 +105,8 @@ export default function ReceiptChecker() {
   }, [])
 
   useEffect(() => {
+    // No date yet means the first render, before the effect above has run.
+    if (!form.date) return
     loadRate(form.from, form.to, form.date)
   }, [form.from, form.to, form.date, loadRate])
 

@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 
 /** True when the user has asked their OS to reduce motion. */
 export function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(
-    () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
-  )
+  // False first, read in the effect. The build renders every page with no
+  // window at all, and the browser has to hydrate the same markup before it
+  // is allowed to differ, so the preference is applied one frame later.
+  const [reduced, setReduced] = useState(false)
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
     const onChange = () => setReduced(mq.matches)
+    onChange()
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
   }, [])

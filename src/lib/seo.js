@@ -192,7 +192,11 @@ export const staticPaths = ['/', ...routes.map((r) => r.path), '/remitbench', '/
 export const prerenderPaths = [...staticPaths, ...NOINDEX]
 
 /** Title, description and robots directive for a path. Never returns null. */
-export function metaFor(pathname) {
+export function metaFor(rawPathname) {
+  // /truecost/ is /truecost. Vercel serves the same file for both, and the
+  // runtime head used to fall through to the default title on the slashed
+  // one, which is the form `vite preview` needs and some links carry.
+  const pathname = rawPathname.length > 1 ? rawPathname.replace(/\/+$/, '') : rawPathname
   const page = pages[pathname]
   const noindex = isNoindex(pathname)
   if (page) return { ...page, noindex }

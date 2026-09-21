@@ -198,7 +198,13 @@ Deploy: `npx supabase functions deploy <name> --no-verify-jwt`
   It falls through to the SPA fallback unless you ask for `/truecost/` with the
   slash. Vercel resolves the directory index and does not need the slash. Do
   not conclude the prerender is broken from a preview run: read the file, or
-  add the trailing slash.
+  add the trailing slash. (`metaFor` strips a trailing slash since 2026-09-21,
+  so the slashed URL at least carries the right title.)
+- **A hydration mismatch is logged, not thrown.** `main.jsx` hydrates the
+  prerendered body and logs `hydration:` on a recoverable error; React then
+  re-renders on the client, so the page is right but the console says why it
+  had to be. Anything that reads the browser during the first render causes
+  one. See the convention in `CLAUDE.md`.
 - **Deleting the `google-site-verification` TXT record on `remitbridgelabs.org`
   silently revokes Search Console.** It is the only verification method on the
   property. See section 8.
@@ -318,9 +324,14 @@ What is deliberately absent, and why:
 - **No per-post `og:image`.** All pages share `/og-image.png`. Three posts have
   photo covers, but their URLs are content-hashed by Vite and the plugin has no
   clean way to resolve them.
-- **The body is still client-rendered.** The prerender fixes the head, not the
-  content. Google renders JavaScript and indexes the text; a crawler that does
-  not will see the `<noscript>` block. Full SSR is a much bigger job.
+- **Nothing, any more, on the body.** Since 2026-09-21 `npm run build` runs
+  three steps: the browser build (which writes the per-route files with their
+  heads), a server build of `src/entry-server.jsx`, and
+  `scripts/prerender.mjs`, which renders every route with React and writes the
+  body into its file, then deletes the server bundle. The browser hydrates
+  what it finds. Posts written in the dashboard are the one exception: they
+  live in the database, not the repo, so their pages are the SPA fallback and
+  render in the browser as before.
 
 ---
 

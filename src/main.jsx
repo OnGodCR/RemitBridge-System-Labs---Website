@@ -51,13 +51,32 @@ window.addEventListener('unhandledrejection', (e) => {
 })
 
 try {
-  ReactDOM.createRoot(document.getElementById('root')).render(
+  const root = document.getElementById('root')
+  const tree = (
     <React.StrictMode>
       <AuthProvider>
         <App />
       </AuthProvider>
-    </React.StrictMode>,
+    </React.StrictMode>
   )
+  /*
+   * The built HTML files carry the page already rendered, so the reader has
+   * the text before this script arrives and React takes over what is there
+   * rather than drawing it again. The dev server and the SPA fallback for a
+   * route with no file ship an empty root, which is rendered from scratch.
+   */
+  if (root.hasChildNodes()) {
+    ReactDOM.hydrateRoot(root, tree, {
+      onRecoverableError(error) {
+        // A mismatch here means the build rendered something the browser
+        // disagrees with. React recovers by re-rendering on the client, so
+        // the page is right either way, but the cause is worth a line.
+        console.warn('hydration:', error?.message || error)
+      },
+    })
+  } else {
+    ReactDOM.createRoot(root).render(tree)
+  }
 } catch (error) {
   showFatal(error?.message || 'Failed to start', error?.stack || String(error))
 }

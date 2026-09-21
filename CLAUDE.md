@@ -19,10 +19,6 @@ list is short on purpose; if it stops being short, that is worth saying.
 
 Deferred by choice, not forgotten. Update this list as things land.
 
-- [ ] **The prerender covers the head, not the body.** A crawler that does not
-      run JavaScript gets correct tags and an empty `#root`. Google renders JS
-      and indexes the text, so this is a real but second-order gap. Fixing it
-      properly means server rendering.
 - [ ] **RemitBench needs four decisions** before it can be rebuilt as the
       provider comparison tool. Asked several times, not yet answered, and
       nothing should be built until they are. See `HANDOFF.md`.
@@ -36,6 +32,13 @@ Deferred by choice, not forgotten. Update this list as things land.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and
       is deliberately empty. Populating it is the same World Bank access
       request the RemitBench decision turns on.
+- [x] Every page ships its body, not just its head. `npm run build` renders
+      each of the 52 routes with React at build time and writes the result
+      into its HTML file; the browser hydrates it. Done 2026-09-21. A crawler
+      that runs no JavaScript now reads the same text a reader does, and the
+      reader has it before the bundle arrives. Posts written in the dashboard
+      are still fetched in the browser: they are not in the repo at build
+      time.
 - [x] Google Search Console. Verified 2026-08-26 as a Domain property, by DNS
       TXT record at GoDaddy. Sitemap submitted and read: Success, 47 pages, no
       errors. The home page reports indexed, and Google detects the breadcrumb
@@ -188,6 +191,15 @@ claim this site argues against.
 - **A logo always sits on white.** Every cover plate in `blog/Covers.jsx` shares
   one `FIELD` constant. Brand colours were tried and each fought whatever was
   behind it. A new mark inherits the constant; it does not get its own.
+- **Every component renders without a window.** The build runs the whole tree
+  through `renderToString` (`src/entry-server.jsx`, `scripts/prerender.mjs`),
+  and the browser then hydrates exactly that markup. So: no `window`,
+  `document`, `localStorage` or `matchMedia` during render or in a `useState`
+  initialiser, and nothing that differs between build machine and reader
+  (today's date, the URL's query string, a saved preference) in the first
+  render. Read those in an effect and set state. `onRecoverableError` in
+  `main.jsx` logs `hydration:` when this rule is broken; a clean console on
+  `vite preview` is part of verifying anything new.
 - **No pill labels.** Status is small caps plus a filled or hollow dot; tags are
   a plain line of text. Buttons keep their shape, because a button should look
   pressable. The `Pill` helper was deleted on purpose.

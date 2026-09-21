@@ -23,9 +23,17 @@ import Dashboard from './pages/Dashboard'
 import { SignInPage, SignUpPage } from './pages/Account'
 import NotFound from './pages/NotFound'
 
-export default function App() {
+/**
+ * The route table, with no router around it.
+ *
+ * Split out so the same tree renders under two routers: BrowserRouter in the
+ * browser, StaticRouter at build time when scripts/prerender.mjs writes each
+ * page's body into its HTML file. One tree, two hosts, or the prerendered
+ * page and the live one could drift apart.
+ */
+export function AppRoutes() {
   return (
-    <BrowserRouter>
+    <>
       {/*
         Outer boundary. The one inside Layout only wraps the page, so an error
         in the header, the footer or AuthProvider escaped it and unmounted
@@ -65,6 +73,14 @@ export default function App() {
           </Route>
         </Routes>
       </ErrorBoundary>
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   )
 }

@@ -14,12 +14,16 @@ const num = (n, dp = 2) =>
  * calculator would be one more box explaining itself for no one.
  */
 export default function SavedChecks() {
-  const [rows, setRows] = useState(loadChecks)
+  // Empty first, loaded in the effect: the built page has no storage to
+  // read, and the browser must hydrate what the build rendered before it
+  // may show what this device has saved.
+  const [rows, setRows] = useState([])
 
   // The save button lives inside the checker's result panel. An event keeps
   // the two in sync without threading state through five components.
   useEffect(() => {
     const refresh = () => setRows(loadChecks())
+    refresh()
     window.addEventListener('truecost:saved', refresh)
     return () => window.removeEventListener('truecost:saved', refresh)
   }, [])
