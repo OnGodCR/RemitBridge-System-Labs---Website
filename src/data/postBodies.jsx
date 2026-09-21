@@ -105,10 +105,8 @@ import {
  * that does not discuss it; Angad had the line repointed at the primary
  * study on 2026-09-21.
  *
- * Post 6's opening says "six different kinds of shocks" and lists five,
- * and ends that list with "/" where a full stop was meant. Both left as
- * approved and flagged 2026-09-21; the figure under it shows five, which
- * is what the post covers and what its closing paragraph counts.
+ * Post 6's approved opening said "six different kinds of shocks" over a
+ * list of five, ending in "/". Angad had both corrected on 2026-09-21.
  *
  * Block types: p, h (level 3 for a subheading), label, quote, list, image,
  * callout, table, figure, equation, sources, cta.
@@ -627,7 +625,7 @@ export const bodies = {
   6: [
     {
       type: 'p',
-      text: '[An earlier post in this series](/blog/what-is-an-international-remittance-and-why-is-it-more-than-a-money-transfer) described {{remittance|remittances}} functioning as something close to informal insurance, money that shows up specifically when a crisis hits and a formal safety net isn\'t there to catch the family. While that blog post made the specific case, it left a lot to be desired in terms of specificity. This blog post, on the other hand, looks at the mechanism in more detail, across six different kinds of {{shock|shocks}} a household can face: medical emergencies, unemployment, natural disasters, crop failures, and political instability/ It also looks at when this "insurance" doesn\'t actually behave the way the theory predicts.',
+      text: '[An earlier post in this series](/blog/what-is-an-international-remittance-and-why-is-it-more-than-a-money-transfer) described {{remittance|remittances}} functioning as something close to informal insurance, money that shows up specifically when a crisis hits and a formal safety net isn\'t there to catch the family. While that blog post made the specific case, it left a lot to be desired in terms of specificity. This blog post, on the other hand, looks at the mechanism in more detail, across five different kinds of {{shock|shocks}} a household can face: medical emergencies, unemployment, natural disasters, crop failures, and political instability. It also looks at when this "insurance" doesn\'t actually behave the way the theory predicts.',
     },
     { type: 'figure', render: FiveShocks },
     { type: 'h', text: 'Medical Emergencies' },
