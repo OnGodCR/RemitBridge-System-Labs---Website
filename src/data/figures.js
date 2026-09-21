@@ -163,6 +163,13 @@ export const sources = {
     date: '2020',
     href: 'https://www.rgs.org',
   },
+  rpwDataset: {
+    id: 'rpwDataset',
+    title: 'Remittance Prices Worldwide, full dataset 2011 to Q3 2025 (rpw_dataset_2011_2025_q3.xlsx)',
+    publisher: 'World Bank, via the World Bank Data Catalog',
+    date: 'Q3 2025, published May 2026',
+    href: 'https://datacatalog.worldbank.org/search/dataset/0037898/Remittance-Prices-Worldwide',
+  },
   wfStandardWire: {
     id: 'wfStandardWire',
     title: 'Wells Fargo standard international wire: fee and exchange rate markup',
@@ -854,6 +861,15 @@ export const citations = [
       { page: 'Blog', where: 'Post 2 follows one $200 transfer, and prices both providers on it' },
       { page: 'Blog', where: 'Post 19, as the divisor for every TPS figure, and as the benchmark it argues is not an average' },
       { page: 'Blog', where: 'Post 1, on why $200 is the amount researchers benchmark against' },
+    ],
+  },
+  {
+    value: '348 corridors, Q3 2025',
+    claim:
+      'Every corridor the World Bank priced in Q3 2025, 6,470 provider records at the $200 benchmark, converted by scripts/rpw.mjs into one file per corridor under public/data/rpw. The corridor average is the plain mean of every service, which reproduces the figures on the survey site to the decimal. The cheapest-three figure is our reading of the survey\'s SmaRT rule, not its published number, and is labelled as such.',
+    source: sources.rpwDataset,
+    usedOn: [
+      { page: 'TrueCost', where: 'The corridor average and cheapest-three markers on the result scale' },
     ],
   },
   {

@@ -1,18 +1,24 @@
 /**
- * Corridor-level provider prices. Phase 2.
+ * Corridor-level provider prices, from the World Bank's Remittance Prices
+ * Worldwide survey.
  *
- * Deliberately empty. The intended source is the World Bank's Remittance
- * Prices Worldwide survey, which the lab does not have loaded yet, and a
- * comparison table populated with anything else would be an invented number of
- * exactly the kind the rest of this site refuses to publish.
+ * This file was empty for a long time, on purpose: a comparison populated
+ * with anything but the survey would have been an invented number. The data
+ * is here now, but not in this file. `scripts/rpw.mjs` turns the survey's
+ * spreadsheet into `public/data/rpw/index.json` (every corridor's averages,
+ * ~90 KB) and one file per corridor (that corridor's provider records and its
+ * history, 10 to 40 KB each), and the functions below fetch them on demand.
  *
- * This file exists so the shape is settled and the TrueCost page can ask
- * whether corridor data exists without knowing how it arrives. Every function
- * below returns nothing today. Nothing renders from it.
+ * That is the decision that makes all of the survey's corridors affordable
+ * rather than a hand-picked few. Nothing here enters the JavaScript bundle; a
+ * reader who prices one corridor downloads that corridor, and one who never
+ * opens TrueCost downloads none of it. Adding a quarter or a corridor is a
+ * rerun of the script, not a change to the site.
  *
  * ---------------------------------------------------------------------------
- * Attribution, required when this is populated. It must appear wherever any of
- * this data is displayed:
+ * Attribution, required wherever any of this data is displayed. It ships
+ * inside every file as `vintage.attribution` so a page cannot have the data
+ * without having the line:
  *
  *   The World Bank, Remittance Prices Worldwide, available at
  *   http://remittanceprices.worldbank.org
@@ -22,79 +28,91 @@
  * source that was consulted, never as a partner or a validator.
  * ---------------------------------------------------------------------------
  *
+ * The vintage is not optional. A price from a year ago presented without a
+ * date is worse than no price, because it looks current, so `vintage.quarter`
+ * renders next to anything drawn from here.
+ *
  * @typedef {Object} ServiceRecord
- * @property {string}  provider        Name as the survey records it.
- * @property {'bank'|'mto'|'mobile operator'|'post office'} providerType
- * @property {string}  corridor        'USD_MXN' style, sending then receiving.
- * @property {200|500} surveyedAmount  The two amounts the World Bank surveys.
- * @property {number}  fee             In the sending currency.
- * @property {number}  fxMarginPct     Markup over mid-market, percent.
- * @property {number}  totalCostPct    Fee plus margin, as a share of the amount.
- * @property {'cash pickup'|'bank deposit'|'mobile wallet'} deliveryMethod
- * @property {'cash'|'bank account'|'debit card'|'credit card'} fundingMethod
- * @property {'under an hour'|'same day'|'next day'|'two to five days'} speedBand
- * @property {boolean} transparent     Whether the exchange rate is disclosed
- *                                     before the customer commits. This is the
- *                                     whole argument of the TrueCost page, so
- *                                     it is a field and not a footnote.
+ * @property {string}  provider
+ * @property {'bank'|'mto'|'mobile operator'|'post office'|string} providerType
+ * @property {200|500} surveyedAmount   The two amounts the survey prices.
+ * @property {string}  sendCurrency
+ * @property {number}  sendAmount       In the sending currency.
+ * @property {number}  fee              In the sending currency.
+ * @property {number}  fxMarginPct      Markup over the interbank rate.
+ * @property {number}  totalCostPct     Fee plus margin, as a share of the amount.
+ * @property {string}  deliveryMethod
+ * @property {string}  speedBand
+ * @property {boolean} transparent      Whether the exchange rate is disclosed
+ *                                      before the customer commits. This is
+ *                                      the argument of the TrueCost page, so
+ *                                      it is a field and not a footnote.
  *
- * @typedef {Object} CorridorData
- * @property {string} corridor
- * @property {number} averageCostPct   Mean across surveyed services.
- * @property {number} smartCostPct     SmaRT: the average of the three cheapest
- *                                     services that disclose the rate up front.
- * @property {ServiceRecord[]} services
- * @property {DataVintage} dataVintage
- *
- * @typedef {Object} DataVintage
- * @property {string} quarter          'Q3 2025'.
- * @property {string} collectedOn      ISO date the survey was collected.
- * @property {string} sourceId         Key into `sources` in figures.js.
+ * @typedef {Object} Benchmark
+ * @property {number|null} averageCostPct    Mean of every service, as the
+ *                                           survey's own corridor figure.
+ * @property {number|null} cheapestThreePct  Mean of the three cheapest
+ *                                           transparent services delivering
+ *                                           within five days. Our reading of
+ *                                           the survey's SmaRT rule, not its
+ *                                           published number.
+ * @property {number}      services
  */
 
-/**
- * Survey quarter and collection date.
- *
- * Not optional when this is populated: a price from eighteen months ago
- * presented without a date is worse than no price, because it looks current.
- * The UI is required to display it next to anything drawn from this file.
- *
- * @type {import('./corridors').DataVintage | null}
- */
-export const dataVintage = null
+const BASE = '/data/rpw'
 
-/** @type {Record<string, import('./corridors').CorridorData>} */
-export const corridors = {}
+const cache = new Map()
 
-/** True once there is anything to show. The page branches on this. */
-export const hasCorridorData = () => Object.keys(corridors).length > 0
-
-/**
- * @param {string} corridor 'USD_MXN'
- * @returns {import('./corridors').CorridorData | null}
- */
-export const getCorridor = (corridor) => corridors[corridor] ?? null
-
-/**
- * Corridor average and SmaRT benchmark, for the reference scale on the result.
- * Returns null until the data exists, and the scale renders that slot only
- * when it is not null. No placeholder, no zero, no dash.
- *
- * @returns {{averageCostPct: number, smartCostPct: number} | null}
- */
-export const getBenchmarks = (corridor) => {
-  const found = getCorridor(corridor)
-  if (!found) return null
-  return { averageCostPct: found.averageCostPct, smartCostPct: found.smartCostPct }
+async function getJson(path) {
+  if (cache.has(path)) return cache.get(path)
+  const promise = fetch(path)
+    .then((r) => (r.ok ? r.json() : null))
+    .catch(() => null)
+  cache.set(path, promise)
+  return promise
 }
 
+/** Every corridor the survey has ever priced, with this quarter's averages. */
+export const loadIndex = () => getJson(`${BASE}/index.json`)
+
+/** One corridor's providers and history. `code` is 'USA_MEX'. */
+export const loadCorridor = (code) =>
+  /^[A-Z]{3}_[A-Z]{3}$/.test(code) ? getJson(`${BASE}/${code}.json`) : Promise.resolve(null)
+
 /**
- * @returns {import('./corridors').ServiceRecord[]} Sorted cheapest first.
+ * Which countries a currency stands for on the receiving end.
+ *
+ * ISO 4217 codes are the country's two-letter code plus one letter, so MXN is
+ * Mexico and PHP the Philippines. The exceptions are currencies shared across
+ * countries, listed here. The sending end needs no table: the survey records
+ * the sending currency on every row.
  */
-export const getServices = (corridor, surveyedAmount = 200) => {
-  const found = getCorridor(corridor)
-  if (!found) return []
-  return found.services
-    .filter((s) => s.surveyedAmount === surveyedAmount)
-    .sort((a, b) => a.totalCostPct - b.totalCostPct)
+const SHARED = {
+  EUR: ['AT','BE','HR','CY','EE','FI','FR','DE','GR','IE','IT','LV','LT','LU','MT','NL','PT','SK','SI','ES','XK','ME'],
+  USD: ['US','EC','SV','PA','ZW','TL'],
+  XOF: ['BJ','BF','CI','GW','ML','NE','SN','TG'],
+  XAF: ['CM','CF','TD','CG','GQ','GA'],
+  XCD: ['AG','DM','GD','KN','LC','VC'],
+  AUD: ['AU','KI','NR','TV'],
+  NZD: ['NZ','CK','NU','TK'],
+  ZAR: ['ZA','LS','NA','SZ'],
+  INR: ['IN','BT'],
+}
+const receivingAlpha2 = (currency) =>
+  SHARED[currency] ?? (/^[A-Z]{3}$/.test(currency) ? [currency.slice(0, 2)] : [])
+
+/**
+ * The corridors a currency pair can mean, biggest first.
+ *
+ * USD to MXN is one corridor; EUR to PHP is several, one per euro country the
+ * survey prices, and the page lets the reader say which. Only corridors priced
+ * this quarter are offered: a corridor the survey dropped has history but no
+ * present price to compare against.
+ */
+export function corridorsFor(index, sendCurrency, receiveCurrency) {
+  if (!index) return []
+  const to = new Set(receivingAlpha2(receiveCurrency))
+  return index.corridors
+    .filter((c) => c.current && c.sendCurrency === sendCurrency && to.has(c.to.alpha2))
+    .sort((a, b) => b.services - a.services)
 }

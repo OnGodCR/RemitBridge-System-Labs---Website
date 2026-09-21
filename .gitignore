@@ -15,3 +15,6 @@ graphify-out/
 # holds the owner email; use set-owner.sql.example as the template
 supabase/set-owner.sql
 supabase/set-notify.sql
+
+# World Bank RPW spreadsheet, 50 MB; scripts/rpw.mjs turns it into public/data/rpw
+data/raw/

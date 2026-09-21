@@ -6,7 +6,8 @@ import { saveCheck } from '@/lib/savedChecks'
 import SavedChecks from './SavedChecks'
 import CurrencyPicker from '@/components/CurrencyPicker'
 import { figures } from '@/data/figures'
-import { getBenchmarks } from '@/data/corridors'
+import { useCorridorBenchmarks } from '@/lib/useCorridors'
+import { formatPostDate } from '@/lib/postDate'
 import { cn } from '@/lib/utils'
 
 /*
@@ -523,7 +524,8 @@ function Result({
 
       <Scale
         totalCostPct={result.totalCostPct}
-        corridor={`${form.from}_${form.to}`}
+        sendCurrency={form.from}
+        receiveCurrency={form.to}
         source={rateSource}
       />
     </div>
@@ -575,25 +577,30 @@ function SaveRow({ result, form }) {
 /**
  * The result against what it is supposed to cost.
  *
- * The corridor average and SmaRT benchmark are a third marker that renders only
- * once corridor data exists. Until then the slot is absent rather than showing
- * a placeholder, because a marker with no number behind it would still read as
- * a claim.
+ * The corridor's own average and its cheapest-three figure are markers that
+ * render only once the survey file for that corridor has loaded. Until then,
+ * and for a pair the survey does not price, the slot is absent rather than a
+ * placeholder, because a marker with no number behind it still reads as a
+ * claim. Where a pair can mean several corridors, the reader picks.
  */
-function Scale({ totalCostPct, corridor, source }) {
-  const benchmarks = getBenchmarks(corridor)
+function Scale({ totalCostPct, sendCurrency, receiveCurrency, source }) {
+  const { options, code, choose, corridor, vintage } = useCorridorBenchmarks(
+    sendCurrency,
+    receiveCurrency,
+  )
+  const bench = corridor?.benchmark?.[200] ?? null
   const value = Math.max(0, totalCostPct)
-  const max = Math.max(12, value * 1.15, figures.globalCostPct * 1.5)
+  const max = Math.max(12, value * 1.15, figures.globalCostPct * 1.5, bench?.averageCostPct ?? 0)
   const at = (pct) => `${Math.min(100, (pct / max) * 100)}%`
 
   const markers = [
     { pct: figures.targetPct, label: `${figures.targetPct}% UN target for 2030` },
     { pct: figures.globalCostPct, label: `${figures.globalCostPct}% global average` },
-    ...(benchmarks
-      ? [
-          { pct: benchmarks.averageCostPct, label: `${benchmarks.averageCostPct}% corridor average` },
-          { pct: benchmarks.smartCostPct, label: `${benchmarks.smartCostPct}% cheapest three (SmaRT)` },
-        ]
+    ...(bench?.averageCostPct != null
+      ? [{ pct: bench.averageCostPct, label: `${bench.averageCostPct}% average of ${bench.services} providers, ${corridor.from.name} to ${corridor.to.name}` }]
+      : []),
+    ...(bench?.cheapestThreePct != null
+      ? [{ pct: bench.cheapestThreePct, label: `${bench.cheapestThreePct}% cheapest three that show their rate up front` }]
       : []),
   ]
 
@@ -645,6 +652,38 @@ function Scale({ totalCostPct, corridor, source }) {
         )}
         . Benchmarks from the World Bank and the UN, listed on the sources page.
       </p>
+
+      {/* The survey's terms: the attribution line wherever its data shows,
+          and the quarter, because a price without a date looks current. */}
+      {corridor && vintage && (
+        <div className="mt-3 text-xs leading-relaxed text-muted-foreground">
+          {options.length > 1 && (
+            <label className="mb-2 block">
+              <span className="mr-2">Which corridor:</span>
+              <select
+                value={code ?? ''}
+                onChange={(e) => choose(e.target.value)}
+                className="rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground"
+              >
+                {options.map((o) => (
+                  <option key={o.code} value={o.code}>
+                    {o.from.name} to {o.to.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          <p>
+            Corridor figures for the $200 benchmark, {vintage.quarter}, surveyed{' '}
+            {formatPostDate(vintage.collectedFrom)} to {formatPostDate(vintage.collectedTo)}.{' '}
+            {vintage.attribution.replace(/, available at .*/, '')}, available at{' '}
+            <a href={vintage.sourceUrl} className="underline underline-offset-2">
+              remittanceprices.worldbank.org
+            </a>
+            .
+          </p>
+        </div>
+      )}
     </div>
   )
 }
