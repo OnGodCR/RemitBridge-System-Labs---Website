@@ -50,6 +50,9 @@ import {
   LastMile,
   ChannelCost,
   SevenFactors,
+  SixteenAYear,
+  EarningsShare,
+  ExposureCap,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -89,6 +92,13 @@ import {
  * Post 4's approved text opened with US to Mexico at 4.45%. RPW's corridor
  * page gives 4.54% for that quarter and amount; Angad approved the
  * correction on 2026-09-21.
+ *
+ * Post 5 arrived with curly and straight apostrophes mixed; straightened,
+ * as post 17 was, since the site sets all of them the same way. Its last
+ * paragraph calls post 1 "the second post in this series"; the link goes
+ * to post 1, where the large-commercial-payments point is made. Its
+ * sources point to an arXiv paper for the El Salvador experiment that does
+ * not discuss it; figures.js cites the primary study.
  *
  * Block types: p, h (level 3 for a subheading), label, quote, list, image,
  * callout, table, figure, equation, sources, cta.
@@ -514,6 +524,92 @@ export const bodies = {
         'FinTech Futures, "Sibos 2016: De-risking in Africa," on SWIFT data showing South Africa\'s and Angola\'s loss of foreign correspondent counterparties: fintechfutures.com',
         'IMF, "Withdrawal of Correspondent Banking Relationships: A Case for Policy Action," on the World Bank\'s 2015 survey finding a majority of African banks reporting declining correspondent relationships: imf.org',
         'Kora, "Why Cross-Border Payments in Africa Are Still Broken," on de-risking\'s fixed compliance costs and its disproportionate impact on smaller markets: korahq.com/blog/why-cross-border-payments-in-africa-are-still-broken',
+      ],
+    },
+  ],
+
+  5: [
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/how-many-transactions-per-second-would-a-remittance-network-really-need) pointed out that {{remittance|remittances}} usually aren\'t one big transfer, they\'re a lot of small ones. **Research on the US-Mexico {{corridor|corridor}} found the average sender making around 16 transfers a year, each one closer to a few hundred dollars than a few thousand.** Any rational person may look at just the numbers and say "This isn\'t the right way!"',
+    },
+    {
+      type: 'p',
+      text: '[A previous post in this series](/blog/the-advertised-fee-is-not-the-true-price) walked through how {{fixed-fee|fixed fees}} hit small transfers much harder than large ones, a $5 fee is 10% of a $50 transfer but only 0.5% of a $1,000 transfer, so sending sixteen times a year instead of saving up for two or three bigger transfers seems like it\'s costing families extra money for no reason.',
+    },
+    { type: 'figure', render: SixteenAYear },
+    {
+      type: 'p',
+      text: 'But if we look deeper, we realize that **families send small amounts often because of how the money actually gets used and how much trust and risk are wrapped up in every transfer, and none of those reasons show up if you\'re only looking at the fee.** This post looks at what\'s actually driving that pattern: budgeting, emergencies, income cycles, risk, trust, and the day-to-day needs of the family receiving the money.',
+    },
+    { type: 'h', text: 'Budgeting and Income Cycles' },
+    {
+      type: 'p',
+      text: 'Most migrant workers get paid on a schedule, weekly, biweekly, or monthly, and most families back home have expenses that follow their own schedule. Some examples include rent being due on the first, school fees being due at the start of a term, and groceries being needed every single week regardless of what day it is. **Sending money in small installments lets both sides of that relationship line up their cash flow.** A migrant sending a portion of every paycheck home isn\'t disrupting their own budget the way one enormous transfer a few times a year would. A family receiving that money in a steady rhythm can also treat it like income which allows them to budget in a more effective way.',
+    },
+    {
+      type: 'p',
+      text: 'The UN estimates that migrant workers send home about 15% of their earnings on average. This is a recurring line item in a household budget, on both ends. **Budgeting around a paycheck-sized, paycheck-timed transfer is a very different exercise than budgeting around a single large sum that has to somehow cover months of unpredictable need.**',
+    },
+    { type: 'figure', render: EarningsShare },
+    { type: 'h', text: 'Emergencies' },
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/what-is-an-international-remittance-and-why-is-it-more-than-a-money-transfer) described remittances functioning as something close to informal insurance, money that shows up specifically when a crisis hits and a formal safety net isn\'t there to catch the family. **That function depends on the {{remittance-channel|channel}} already being active and familiar.** A family that\'s used to receiving small, regular transfers has a sender who\'s already set up, already comfortable with the process, and already in the habit of sending. When a medical emergency or an unexpected expense hits, both sides of the family are familiar with exactly how transferring money works and getting extra money moving quickly is just a matter of sending another transfer through a process that\'s already routine.',
+    },
+    {
+      type: 'p',
+      text: 'A family that only ever receives one or two large transfers a year doesn\'t have this amount of readiness. The sender hasn\'t built the habit and the person receiving the transfer may also be unsure of how the process works. This serves as a limiting factor.',
+    },
+    { type: 'h', text: 'Risk' },
+    {
+      type: 'p',
+      text: 'Sending money internationally always carries some risk, whether that\'s a transfer that gets delayed, a {{provider|provider}} that mishandles funds, or, in places where {{informal-channel|informal channels}} are still common, straightforward theft or fraud. Research on informal remittance systems has pointed directly to this as a reason people favor smaller amounts: it\'s a matter of risk limitation. Losing $200 out of a transfer gone wrong is a real problem. Losing $1,600 because it all rode on a single transfer is a much bigger problem, though, because that\'s an entire year\'s worth of money gone. **Spreading the same total amount of money across many smaller transfers means no single point of failure can wipe out months of support at once.**',
+    },
+    {
+      type: 'p',
+      text: 'This logic holds even when the channel is a fully formal, reliable one. Something can always go wrong with any given transfer, a wrong account number, a processing error, a delay that matters because the money was needed that week. **Smaller, more frequent transfers cap how much is ever exposed to any single mistake.**',
+    },
+    { type: 'figure', render: ExposureCap },
+    { type: 'h', text: 'Trust' },
+    {
+      type: 'p',
+      text: 'A researcher partnership with a bank in El Salvador studying migrants living in the US found something really interesting: **migrants often have very little ability to monitor or influence how the money they send actually gets used once it\'s in someone else\'s hands back home**, and that difficulty contributes directly to how families manage their finances around remittances. Sending in small, frequent amounts is one of the few tools a migrant actually has to stay engaged with that process. A steady drip of transfers keeps the relationship active, gives the sender natural opportunities to check in, ask how things are going, and adjust the next transfer based on what they hear. A single transfer worth a thousand dollars that\'s only being sent once per year doesn\'t allow for this, however.',
+    },
+    {
+      type: 'p',
+      text: 'Put plainly, **sending money often isn\'t just about logistics, it\'s about staying connected to how that money supports the people receiving it** instead of losing visibility the moment a large sum changes hands.',
+    },
+    { type: 'h', text: 'Family Needs, Not a One-Time Gift' },
+    {
+      type: 'p',
+      text: 'Tie all of this together and a clear picture forms: **for most families, a remittance isn\'t a gift with a beginning and an end. It\'s an ongoing, expected part of how the household functions, closer to a family member\'s paycheck than a one-off transfer.** Research on migrant remittance behavior consistently describes this as a recurring pattern rather than an occasional event, money sent every one or two months as a matter of course, not as a special occurrence.',
+    },
+    {
+      type: 'p',
+      text: 'That framing, remittances as a continuous obligation rather than a discrete transaction, is exactly why the frequency looks the way it does. Families aren\'t sending money sixteen times a year because they haven\'t thought about batching it into fewer, bigger transfers. They\'re adopting this pattern because it\'s what works best for them with all the other factors of remittances considered.',
+    },
+    { type: 'h', text: 'The Disproportionate Effect of Fixed Fees on Small Transfers' },
+    {
+      type: 'p',
+      text: 'None of this changes the math from earlier in this series. Every one of these reasons, budgeting, emergencies, risk limitation, trust, ongoing family support, points toward sending smaller amounts more often. **And the fee structure built by most banks and {{money-transfer-operator|money transfer operators}} does the opposite: it rewards sending less often in bigger chunks and penalizes exactly the behavior families have good reasons to prefer.** Research on how migrants choose which channel to remit through has found this pattern directly: larger amounts get sent through banks more often, while smaller transfers are more likely to go through informal channels instead, largely because of how large a bank or MTO\'s fee looks relative to a small amount being sent.',
+    },
+    { type: 'figure', render: FixedFeeBite },
+    {
+      type: 'p',
+      text: 'A family isn\'t choosing to send small, frequent transfers despite the cost. **They\'re choosing it because it\'s the only pattern that actually matches how the money gets budgeted, how emergencies get handled, how risk gets managed, and how trust gets maintained across a long-distance relationship.** Unfortunately, the traditional fee structure simply wasn\'t built with any of that in mind. It was built the way [the second post in this series](/blog/what-is-an-international-remittance-and-why-is-it-more-than-a-money-transfer) described, around infrastructure designed for large, infrequent commercial payments, and then handed to families whose actual needs point in the opposite direction. This is why the work we do at RemitBridge is so important for these families: we want to make sure they have a voice in changing a system that\'s clearly not built for them.',
+    },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'Inter-American Dialogue, on average remittance transaction size and annual sending frequency in the US-Mexico corridor (~16 times/year): thedialogue.org, "Understanding the Recent Growth in Remittances to Mexico"',
+        'European Central Bank Working Paper 1683, "Migrants\' Choice of Remittance Channel," on remittance amount and frequency influencing channel choice, and fixed fees disproportionately affecting small transfers: ecb.europa.eu/pub/pdf/scpwps/ecbwp1683.pdf',
+        'OECD, "Migration, Remittances and Development," on informal channels being preferred for smaller amounts as a matter of risk limitation: oecd.org, Development Dimension series',
+        'Ashraf, Aycinena, Martinez, and Yang (2015), household savings and remittance-monitoring experiment among Salvadoran migrants, as discussed in "Supercompliers": arxiv.org/pdf/2212.14105',
+        'Our World in Data, "The great global redistributor we never hear about," on migrant workers sending home approximately 15% of earnings on average, and on the effect of fees on how much migrants choose to send: ourworldindata.org/great-global-redistributor-money-sent-brought-back-migrants-remittances',
+        'UN and IFAD, on migrant workers typically sending money home every one to two months as a recurring pattern: un.org, "Remittances matter: 8 facts you don\'t know about the money migrants send back home"; ifad.org, "15 reasons remittances matter"',
+        'Prior posts in this series, "What Is an International Remittance and Why Is It More Than a Money Transfer?" and "The Advertised Fee Is Not the True Price," on remittances as household income and the disproportionate impact of fixed fees on small transfers',
       ],
     },
   ],

@@ -281,6 +281,12 @@ export const terms = [
       'The people from one country living in another. A large diaspora on a corridor means a large market for sending money along it, which is what draws providers in and pushes the price down.',
   },
   {
+    id: 'remittance-channel',
+    term: 'Remittance channel',
+    plain:
+      'The route the money takes: a bank transfer, a money transfer operator, mobile money, or an informal carrier. Which one a family uses tends to follow the amount, and the fee structure of each is different.',
+  },
+  {
     id: 'rpw',
     term: 'Remittance Prices Worldwide (RPW)',
     plain:

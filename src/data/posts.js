@@ -102,9 +102,15 @@ export const posts = [
   },
   {
     "id": 5,
+    "publishedOn": "2026-09-21",
     "series": "series1",
     "seriesName": "Why people send money",
-    "title": "Why families send small amounts often",
+    "title": "Why families often send small amounts frequently",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "Sending $40 every week instead of $300 once is about managing cash week to week and being able to react to an emergency. Fixed fees punish this pattern, since a flat $5 costs a lot more proportionally on $30 than it does on $300.",
     "readTime": "6 min read",
     "tags": [

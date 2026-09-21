@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { ArrowDown, ArrowRight, ArrowLeftRight, Banknote, Coins, HandCoins, Landmark, Map, Percent, Scale, Smartphone, Tag, Users } from 'lucide-react'
-import { figures, derived, usMxQ3, wfStandardWire, feeAnatomy, corridorCost, deRisking, channelCost, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
+import { figures, derived, usMxQ3, wfStandardWire, feeAnatomy, corridorCost, deRisking, channelCost, sendingPattern, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -2123,6 +2123,121 @@ export function SevenFactors({ theme }) {
           </li>
         ))}
       </ol>
+    </figure>
+  )
+}
+
+/* ---------------------------------------------------------------- post 5 */
+
+/**
+ * A year of sending, two ways. Sixteen marks for the observed pattern and
+ * two for the batched alternative the post argues against, each sized to
+ * its share of the same total, laid along one strip of twelve months. The
+ * sixteen are spaced evenly because the source gives a count, not dates.
+ */
+export function SixteenAYear({ theme }) {
+  const n = sendingPattern.sendsPerYear
+  const avg = tps.usMxAvgUsd
+  const rows = [
+    { label: `${n} transfers of about $${avg}`, count: n },
+    { label: `2 transfers of about $${((avg * n) / 2).toLocaleString('en-US')}`, count: 2 },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        The same year's money, sent two ways
+      </figcaption>
+      <div className="mt-5 space-y-6">
+        {rows.map((r) => (
+          <div key={r.label}>
+            <p className="mb-2 text-sm font-bold">{r.label}</p>
+            <div className="flex items-end gap-1" style={{ height: 40 }} aria-hidden>
+              {Array.from({ length: r.count }, (_, i) => (
+                <span
+                  key={i}
+                  className={cn('flex-1 rounded-t-[3px]', theme.bar)}
+                  /* Height is each transfer's share of the year, scaled so
+                     the batched pair fills the strip: 1/16 against 1/2. */
+                  style={{ height: `${(2 / r.count) * 100}%`, minHeight: 6, maxWidth: r.count === 2 ? '48%' : undefined }}
+                />
+              ))}
+            </div>
+            <div className="mt-1 flex justify-between text-[10px] uppercase tracking-widest text-muted-foreground">
+              <span>Jan</span>
+              <span>Dec</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+        Inter-American Dialogue, US to Mexico: about {n} sends a year at about ${avg} each. The
+        second row is what batching the same total into two would look like, which is the thing
+        the fee structure rewards and families do not do.
+      </p>
+    </figure>
+  )
+}
+
+/** Fifteen percent sent home, the rest stays. One bar, two segments, the UN's figure. */
+export function EarningsShare({ theme }) {
+  const sent = sendingPattern.earningsSharePct
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        A migrant worker's earnings, on average
+      </figcaption>
+      <div className="mt-5 flex h-8 overflow-hidden rounded-full bg-muted" role="img" aria-label={`${sent}% sent home, ${100 - sent}% stays where it was earned`}>
+        <div className={cn('h-full', theme.bar)} style={{ width: `${sent}%` }} />
+        <div className={cn('h-full border-l-2 border-background', theme.tint)} style={{ width: `${100 - sent}%` }} />
+      </div>
+      <div className="mt-2 flex justify-between text-sm">
+        <span className="font-bold">
+          <span className={theme.ink}>{sent}%</span> sent home
+        </span>
+        <span className="text-muted-foreground">{100 - sent}% stays where it was earned</span>
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        UN DESA. A recurring line in two household budgets at once, which is why it is sent on
+        the rhythm of a paycheck rather than in a lump.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * What one failed transfer can take, as the post's own example: $200 if the
+ * year is sent in eight pieces, $1,600 if it rides on one. Illustrative, and
+ * the caption says so.
+ */
+export function ExposureCap({ theme }) {
+  const { illustrativeSendUsd: small, illustrativeYearUsd: big } = sendingPattern
+  const rows = [
+    { label: 'Sent in small transfers', value: small, note: 'the most one mistake can cost' },
+    { label: 'Sent all at once', value: big, note: 'a year of support on one transfer' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        How much one transfer going wrong can take
+      </figcaption>
+      <div className="mt-5 space-y-5">
+        {rows.map((r) => (
+          <div key={r.label}>
+            <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+              <span className="text-sm font-bold">{r.label}</span>
+              <span className="text-sm font-bold tabular-nums">${r.value.toLocaleString()}</span>
+            </div>
+            <div className="h-3 rounded-full bg-muted">
+              <div className={cn('h-3 rounded-l-full rounded-r-[4px]', theme.bar)} style={{ width: `${(r.value / big) * 100}%` }} />
+            </div>
+            <p className="mt-1.5 text-xs text-muted-foreground">{r.note}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        The post's own example, not a measured figure: the same ${big.toLocaleString()} a year,
+        exposed ${small} at a time or all at once.
+      </p>
     </figure>
   )
 }

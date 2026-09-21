@@ -100,6 +100,20 @@ export const sources = {
     date: 'June 2016',
     href: 'https://www.imf.org/external/pubs/ft/sdn/2016/sdn1606.pdf',
   },
+  ecbChannel: {
+    id: 'ecbChannel',
+    title: "Migrants' Choice of Remittance Channel: Do General Payment Habits Play a Role? (Working Paper 1683)",
+    publisher: 'European Central Bank, Kosse and Vermeulen',
+    date: 'June 2014',
+    href: 'https://www.ecb.europa.eu/pub/pdf/scpwps/ecbwp1683.pdf',
+  },
+  ashrafSalvador: {
+    id: 'ashrafSalvador',
+    title: 'Savings in Transnational Households: A Field Experiment among Migrants from El Salvador',
+    publisher: 'Ashraf, Aycinena, Martínez and Yang, Review of Economics and Statistics',
+    date: '2015',
+    href: 'https://doi.org/10.1162/REST_a_00462',
+  },
   wfStandardWire: {
     id: 'wfStandardWire',
     title: 'Wells Fargo standard international wire: fee and exchange rate markup',
@@ -496,6 +510,20 @@ export const channelCost = {
   banks: { label: 'Banks', pct: 14.55 },
 }
 
+/**
+ * How families send, for blog post 5. The frequency and average size are
+ * post 19's Inter-American Dialogue figures, reused. The 15% is the UN's
+ * "8 facts" page, read 2026-09-21: "this represents only 15 per cent of
+ * what they earn". The $200 and $1,600 in the risk section are the post's
+ * own illustration (eight sends of $200), not a sourced pair.
+ */
+export const sendingPattern = {
+  earningsSharePct: 15,
+  sendsPerYear: 16,
+  illustrativeSendUsd: 200,
+  illustrativeYearUsd: 1600,
+}
+
 export const figures = {
   /** Remittances to low- and middle-income countries, 2024. */
   flowsUsdBn: 905,
@@ -889,6 +917,7 @@ export const citations = [
     usedOn: [
       { page: 'Blog', where: 'Post 19, on what a real observed average looks like' },
       { page: 'Blog', where: 'Post 19, the benchmark against observed average figure' },
+      { page: 'Blog', where: 'Post 5, the opening paragraph and the sixteen-a-year figure' },
     ],
   },
   {
@@ -896,7 +925,31 @@ export const citations = [
     claim:
       'What migrant workers typically send home every one to two months, described as a global pattern. A description of typical behaviour rather than a measured mean, which is why post 19 does not use it as one.',
     source: sources.unIfad,
-    usedOn: [{ page: 'Blog', where: 'Post 19, on the global pattern' }],
+    usedOn: [
+      { page: 'Blog', where: 'Post 19, on the global pattern' },
+      { page: 'Blog', where: 'Post 5, on remittances as a recurring pattern' },
+    ],
+  },
+  {
+    value: `${sendingPattern.earningsSharePct}%`,
+    claim: 'Share of their earnings migrant workers send home on average; the rest stays in the country where it was earned. The UN\'s figure, which the post attributes to the UN and its sources list also credits to Our World in Data.',
+    source: sources.unIfad,
+    usedOn: [
+      { page: 'Blog', where: 'Post 5, the budgeting section' },
+      { page: 'Blog', where: 'Post 5, the share-of-earnings figure' },
+    ],
+  },
+  {
+    value: 'Larger amounts by bank, smaller informally',
+    claim: 'From a survey of 1,680 migrants in the Netherlands: the amount sent is a key determinant of channel, with bank transfers preferred for large amounts and informal channels for small ones.',
+    source: sources.ecbChannel,
+    usedOn: [{ page: 'Blog', where: 'Post 5, the fixed fees section' }],
+  },
+  {
+    value: 'Limited control over use',
+    claim: 'The El Salvador field experiment, run with Banco Agrícola among Salvadoran migrants in Washington DC: migrants have limited ability to monitor or control how remittances are used, and offering them control over savings accounts at home changed how much was saved. The post\'s sources point to an arXiv paper ("Supercompliers", 2212.14105) as discussing it; that paper does not mention it, so the primary study is recorded here instead.',
+    source: sources.ashrafSalvador,
+    usedOn: [{ page: 'Blog', where: 'Post 5, the trust section' }],
   },
   {
     value: `$${tps.flows2023UsdBn} billion`,

@@ -361,5 +361,5 @@ Recommended if a tie-break is ever needed: RPW, cheapest-first without the word
   only when it is populated.
 - Glossary translations — six languages listed, all "no reviewer yet". A column
   publishes only when a named speaker consents in writing.
-- Blog — 30 planned, 9 written. The page counts entries in `postBodies.jsx`
+- Blog — 30 planned, 10 written. The page counts entries in `postBodies.jsx`
   and says so. Post 2 is the first one through review.
