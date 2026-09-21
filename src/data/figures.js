@@ -114,6 +114,55 @@ export const sources = {
     date: '2015',
     href: 'https://doi.org/10.1162/REST_a_00462',
   },
+  idbJamaica: {
+    id: 'idbJamaica',
+    title: 'Do Remittances Help Smooth Consumption During Health Shocks? Evidence From Jamaica (IDB-WP-522)',
+    publisher: 'Inter-American Development Bank, Beuermann, Ruprah and Sierra',
+    date: 'June 2014',
+    href: 'https://publications.iadb.org/en/do-remittances-help-smooth-consumption-during-health-shocks-evidence-jamaica',
+  },
+  wbUnemploymentRiddle: {
+    id: 'wbUnemploymentRiddle',
+    title: 'Global economic crisis and the remittance-unemployment riddle',
+    publisher: 'World Bank, People Move blog',
+    date: '2010, on 2009 data',
+    href: 'https://blogs.worldbank.org/en/peoplemove/global-economic-crisis-and-the-remittance-unemployment-riddle',
+  },
+  wbDisasters: {
+    id: 'wbDisasters',
+    title: 'Remittances and Natural Disasters: Ex-post Response and Contribution to Ex-ante Preparedness (Policy Research Working Paper 4972)',
+    publisher: 'World Bank, Mohapatra, Joseph and Ratha',
+    date: '2009',
+    href: 'https://documents.worldbank.org/en/publication/documents-reports/documentdetail/999101468340190301',
+  },
+  ghanaCoping: {
+    id: 'ghanaCoping',
+    title: 'Responding to harvest failure: Understanding farmers coping strategies in the semi-arid Northern Ghana',
+    publisher: 'PLoS One',
+    date: '2023',
+    href: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC10104303',
+  },
+  tvsepRemit: {
+    id: 'tvsepRemit',
+    title: 'Remittances in response to environmental shocks: a panel study of rural Thailand and Vietnam',
+    publisher: 'Population and Environment',
+    date: 'March 2026',
+    href: 'https://link.springer.com/article/10.1007/s11111-026-00519-9',
+  },
+  reganFrank: {
+    id: 'reganFrank',
+    title: 'Migrant remittances and the onset of civil war',
+    publisher: 'Regan and Frank, Conflict Management and Peace Science, as discussed by Ari and Koç',
+    date: '2014, on 1980 to 2005 data',
+    href: 'https://czasopisma.bg.ug.edu.pl',
+  },
+  rgsPandemic: {
+    id: 'rgsPandemic',
+    title: 'Remitting through the pandemic',
+    publisher: 'Royal Geographical Society, reviewing Vargas-Silva and Ruiz',
+    date: '2020',
+    href: 'https://www.rgs.org',
+  },
   wfStandardWire: {
     id: 'wfStandardWire',
     title: 'Wells Fargo standard international wire: fee and exchange rate markup',
@@ -522,6 +571,24 @@ export const sendingPattern = {
   sendsPerYear: 16,
   illustrativeSendUsd: 200,
   illustrativeYearUsd: 1600,
+}
+
+/**
+ * Shocks and the remittance response, for blog post 6. Each number is as
+ * its source states it; the Jamaica and 2009 figures were read at source
+ * on 2026-09-21. The Ghana paper's finding is weaker than the post's
+ * sentence: one more household member away leads to 0.04 fewer coping
+ * strategies in total, not specifically fewer costly ones. Recorded as the
+ * paper has it.
+ */
+export const shocks = {
+  jamaica: { spendingDropPct: 19, offsetPct: 100 },
+  crisis2009: {
+    moldova: { remittancesPct: -36, unemploymentPct: 61 },
+    fiji: { remittancesPct: 24, unemploymentPct: -7 },
+  },
+  gfcRemittanceDropPct: 5,
+  reganFrankCountries: 152,
 }
 
 export const figures = {
@@ -983,7 +1050,61 @@ export const citations = [
     claim:
       'Projected rise in remittances to Haiti over the year following the 2010 earthquake. Sustained across months rather than concentrated in a burst, which is what makes emergency demand a different load profile from a holiday one.',
     source: sources.wbHaiti,
-    usedOn: [{ page: 'Blog', where: 'Post 19, emergency-driven demand' }],
+    usedOn: [
+      { page: 'Blog', where: 'Post 19, emergency-driven demand' },
+      { page: 'Blog', where: 'Post 6, the natural disasters section' },
+    ],
+  },
+  {
+    value: `${shocks.jamaica.spendingDropPct}%`,
+    claim: 'Average fall in total household spending after a health shock in Jamaica, which remittances offset in full, but only for households without private health insurance.',
+    source: sources.idbJamaica,
+    usedOn: [
+      { page: 'Blog', where: 'Post 6, the medical emergencies section' },
+      { page: 'Blog', where: 'Post 6, the health shock figure' },
+    ],
+  },
+  {
+    value: 'Moldova −36% / +61%; Fiji +24% / −7%',
+    claim: 'Change in remittances and in unemployment in 2009: Moldova\'s remittances fell 36% as unemployment rose 61%; Fiji\'s rose 24% as unemployment fell 7%. Read off the blog post on 2026-09-21, which also reports a negative correlation across developing countries.',
+    source: sources.wbUnemploymentRiddle,
+    usedOn: [
+      { page: 'Blog', where: 'Post 6, the unemployment section' },
+      { page: 'Blog', where: 'Post 6, the unemployment figure' },
+    ],
+  },
+  {
+    value: 'Cash reserves, not livestock',
+    claim: 'After the 1998 floods in Ethiopia, households receiving remittances drew on cash reserves through the drought that followed rather than selling livestock, and remittances rise after disasters in proportion to the size of the diaspora.',
+    source: sources.wbDisasters,
+    usedOn: [
+      { page: 'Blog', where: 'Post 6, the natural disasters section' },
+      { page: 'Blog', where: 'Post 6, the two-paths figure' },
+    ],
+  },
+  {
+    value: '0.04 fewer strategies per member away',
+    claim: 'Farmers in northern Ghana cope with harvest failure by selling assets, cutting consumption, borrowing, and relying on family working elsewhere; each additional household member outside the community reduces the number of coping strategies adopted by 0.04. The post says such households need fewer of the costlier strategies; the paper measures fewer strategies overall.',
+    source: sources.ghanaCoping,
+    usedOn: [{ page: 'Blog', where: 'Post 6, the crop failure section' }],
+  },
+  {
+    value: 'Drier year, more remittances',
+    claim: 'In the Thailand Vietnam Socio-Economic Panel, severe drought-like conditions in a year raise the likelihood a rural household receives remittances that year.',
+    source: sources.tvsepRemit,
+    usedOn: [{ page: 'Blog', where: 'Post 6, the crop failure section' }],
+  },
+  {
+    value: `${shocks.reganFrankCountries} countries, 1980 to 2005`,
+    claim: 'A rise in remittances during a crisis lowers the likelihood of civil war onset the following year, across World Bank remittance data for 152 countries.',
+    source: sources.reganFrank,
+    usedOn: [{ page: 'Blog', where: 'Post 6, the political instability section' }],
+  },
+  {
+    value: `about ${shocks.gfcRemittanceDropPct}%`,
+    claim: 'Fall in recorded remittances to low- and middle-income countries through the 2008 to 2009 financial crisis, against far steeper falls in other international capital flows. The same review finds remittances sometimes countercyclical and sometimes procyclical.',
+    source: sources.rgsPandemic,
+    usedOn: [{ page: 'Blog', where: 'Post 6, the caveat section' }],
   },
   {
     value: '75% to 99.98%',

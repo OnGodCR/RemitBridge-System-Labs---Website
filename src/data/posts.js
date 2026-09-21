@@ -120,9 +120,15 @@ export const posts = [
   },
   {
     "id": 6,
+    "publishedOn": "2026-09-21",
     "series": "series1",
     "seriesName": "Why people send money",
-    "title": "Remittances as a kind of insurance",
+    "title": "Remittances as household insurance",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "When there is a medical emergency, a job loss, a bad harvest, a storm, or political trouble, transfers from abroad tend to go up. This paper tries to put actual numbers on that pattern.",
     "readTime": "7 min read",
     "tags": [

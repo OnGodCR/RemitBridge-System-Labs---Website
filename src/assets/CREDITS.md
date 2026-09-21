@@ -23,6 +23,7 @@ stays auditable and the images can be re-verified or replaced.
 | `remittance-receipt.jpg` | Sample Remittance Receipt of Vietnam Post (cropped to 21:9, below the sender's name) | CC0 | [source](https://commons.wikimedia.org/wiki/File:Sample_Remittance_Receipt_of_Vietnam_Post.jpg) |
 | `africa-at-night.jpg` | Black Marble: Africa, Europe and the Middle East at night, Suomi NPP composite, 2012 (cropped to 21:9 on Africa) | Public domain, NASA Earth Observatory | [source](https://commons.wikimedia.org/wiki/File:Black_Marble_-_Africa,_Europe,_and_the_Middle_East_(8247962102).jpg) |
 | `coin-stacks.jpg` | Stacks of Coins (cropped to 21:9) | CC0 | [source](https://commons.wikimedia.org/wiki/File:Stacks_of_Coins.jpg) |
+| `umbrella-rain.jpg` | Umbrella Rain, by Mary (cropped to 21:9) | CC0 | [source](https://stocksnap.io/photo/umbrella-rain-KIJJLUCS7S) |
 | `near-logo.png` | NEAR Protocol logo, used to identify NEAR in blog post 14 | CC0 | [source](https://commons.wikimedia.org/wiki/File:Near_Protocol_Logo.png) |
 | `polygon-logo.png` | Polygon logo, used to identify Polygon in blog post 15 | CC0 | [source](https://commons.wikimedia.org/wiki/File:Polygon_logo_blockchain.png) |
 | `founder.jpg` | Photo of the founder, provided by the founder (their own photo, shared in chat) | own photo | — |

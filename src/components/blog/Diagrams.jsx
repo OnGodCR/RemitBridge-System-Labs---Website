@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
-import { ArrowDown, ArrowRight, ArrowLeftRight, Banknote, Coins, HandCoins, Landmark, Map, Percent, Scale, Smartphone, Tag, Users } from 'lucide-react'
-import { figures, derived, usMxQ3, wfStandardWire, feeAnatomy, corridorCost, deRisking, channelCost, sendingPattern, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
+import { ArrowDown, ArrowRight, ArrowLeftRight, Banknote, Briefcase, CloudRain, Coins, Cross, HandCoins, Landmark, Map, Megaphone, Percent, Scale, Smartphone, Tag, Users, Wheat } from 'lucide-react'
+import { figures, derived, usMxQ3, wfStandardWire, feeAnatomy, corridorCost, deRisking, channelCost, sendingPattern, shocks, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -2237,6 +2237,187 @@ export function ExposureCap({ theme }) {
       <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
         The post's own example, not a measured figure: the same ${big.toLocaleString()} a year,
         exposed ${small} at a time or all at once.
+      </p>
+    </figure>
+  )
+}
+
+/* ---------------------------------------------------------------- post 6 */
+
+/** The five shocks the post takes in turn, in its order. */
+export function FiveShocks({ theme }) {
+  const items = [
+    { Icon: Cross, name: 'Medical emergencies' },
+    { Icon: Briefcase, name: 'Unemployment' },
+    { Icon: CloudRain, name: 'Natural disasters' },
+    { Icon: Wheat, name: 'Crop failure' },
+    { Icon: Megaphone, name: 'Political instability' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        One mechanism, five kinds of shock
+      </figcaption>
+      <ol className="mt-4 grid gap-2 sm:grid-cols-5">
+        {items.map((it, i) => (
+          <li key={it.name} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 sm:flex-col sm:items-start sm:gap-2">
+            <it.Icon className={cn('size-5 shrink-0', theme.ink)} aria-hidden />
+            <p className="text-sm font-bold leading-snug">
+              <span className={cn('tabular-nums', theme.ink)}>{i + 1}.</span> {it.name}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </figure>
+  )
+}
+
+/**
+ * Jamaica: spending falls 19% after a health shock, and remittances put
+ * it back. Two bars against a 100% baseline, the second with the offset
+ * drawn back in, because the finding is the restoration, not the drop.
+ */
+export function HealthShock({ theme }) {
+  const drop = shocks.jamaica.spendingDropPct
+  const rows = [
+    { label: 'After a health shock', value: 100 - drop, offset: 0 },
+    { label: 'With remittances', value: 100 - drop, offset: drop },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Household spending, Jamaica, as a share of before
+      </figcaption>
+      <div className="mt-5 space-y-5">
+        {rows.map((r) => (
+          <div key={r.label}>
+            <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+              <span className="text-sm font-bold">{r.label}</span>
+              <span className="text-sm font-bold tabular-nums">{r.value + r.offset}%</span>
+            </div>
+            <div className="relative h-3 rounded-full bg-muted">
+              <div className="absolute inset-y-0 left-0 right-0 flex">
+                <span className={cn('h-3 rounded-l-full', !r.offset && 'rounded-r-[4px]', theme.bar)} style={{ width: `${r.value}%` }} />
+                {r.offset > 0 && (
+                  <span className="h-3 rounded-r-[4px]" style={{ width: `${r.offset}%`, backgroundColor: MARKUP_FILL, marginLeft: 2 }} />
+                )}
+              </div>
+            </div>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              {r.offset ? `the ${drop}% put back, in the lighter green` : `${drop}% below where it was`}
+            </p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Inter-American Development Bank, 2014. The full offset holds only for households without
+        private health insurance; where there was cover, remittances did not move.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * 2009, two countries, two arrows each. Remittances and unemployment in
+ * opposite directions in both, which is the whole riddle. Bars run from a
+ * centre line so a fall and a rise read as different directions rather
+ * than different lengths.
+ */
+export function UnemploymentRiddle({ theme }) {
+  const c = shocks.crisis2009
+  const rows = [
+    { label: 'Moldova', ...c.moldova },
+    { label: 'Fiji', ...c.fiji },
+  ]
+  const scale = 70
+  const Bar = ({ value, fill }) => (
+    <div className="relative h-3 w-full rounded-full bg-muted">
+      <div className="absolute inset-y-[-3px] left-1/2 w-px bg-foreground/40" aria-hidden />
+      <div
+        className={cn('absolute inset-y-0 h-3', value >= 0 ? 'rounded-r-[4px]' : 'rounded-l-[4px]')}
+        style={{
+          left: value >= 0 ? '50%' : `${50 - (Math.abs(value) / scale) * 50}%`,
+          width: `${(Math.abs(value) / scale) * 50}%`,
+          backgroundColor: fill,
+        }}
+      />
+    </div>
+  )
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        2009: remittances and unemployment, change on the year
+      </figcaption>
+      <div className="mt-5 space-y-6">
+        {rows.map((r) => (
+          <div key={r.label}>
+            <p className="mb-2 text-sm font-bold">{r.label}</p>
+            <div className="grid grid-cols-[7rem_1fr_3.5rem] items-center gap-x-3 gap-y-2 text-xs">
+              <span className="text-muted-foreground">Remittances</span>
+              <Bar value={r.remittancesPct} fill="var(--color-primary)" />
+              <span className="text-right font-bold tabular-nums">{r.remittancesPct > 0 ? '+' : ''}{r.remittancesPct}%</span>
+              <span className="text-muted-foreground">Unemployment</span>
+              <Bar value={r.unemploymentPct} fill={MARKUP_FILL} />
+              <span className="text-right font-bold tabular-nums">{r.unemploymentPct > 0 ? '+' : ''}{r.unemploymentPct}%</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        World Bank, People Move. Falls run left of the line, rises right; scale runs to {scale}% each
+        way. In both countries the two moved in opposite directions.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * Two households through the same drought, from the Ethiopia finding: one
+ * draws on cash, one sells the livestock. Drawn as what each is left with
+ * on the other side, since that is the post's point.
+ */
+export function TwoPaths({ theme }) {
+  const rows = [
+    {
+      label: 'With remittances',
+      steps: ['Flood, then drought', 'Draws on cash reserves', 'Keeps the livestock'],
+      after: 'Income to rebuild with',
+      kept: true,
+    },
+    {
+      label: 'Without',
+      steps: ['Flood, then drought', 'Sells the livestock', 'Cash for now'],
+      after: 'Nothing earning next year',
+      kept: false,
+    },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Same shock, two ways through it
+      </figcaption>
+      <div className="mt-4 space-y-3">
+        {rows.map((r) => (
+          <div key={r.label} className="rounded-2xl border border-border bg-card p-3">
+            <p className={cn('text-xs font-bold uppercase tracking-widest', theme.ink)}>{r.label}</p>
+            <div className="mt-2 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+              {r.steps.map((st, i) => (
+                <Fragment key={st}>
+                  {i > 0 && <Hop />}
+                  <div className="min-w-0 flex-1 rounded-xl border border-border px-3 py-2 text-center text-sm font-bold leading-snug">{st}</div>
+                </Fragment>
+              ))}
+              <Hop />
+              <div className={cn('min-w-0 flex-1 rounded-xl border px-3 py-2 text-center text-sm font-bold leading-snug', r.kept ? cn(theme.border, theme.tint, theme.ink) : 'border-dashed border-border text-muted-foreground')}>
+                {r.after}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        World Bank, on Ethiopian households after the 1998 floods. The filled box is the one that
+        still has something earning when the drought ends.
       </p>
     </figure>
   )

@@ -53,6 +53,10 @@ import {
   SixteenAYear,
   EarningsShare,
   ExposureCap,
+  FiveShocks,
+  HealthShock,
+  UnemploymentRiddle,
+  TwoPaths,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -100,6 +104,11 @@ import {
  * sources first pointed to an arXiv paper for the El Salvador experiment
  * that does not discuss it; Angad had the line repointed at the primary
  * study on 2026-09-21.
+ *
+ * Post 6's opening says "six different kinds of shocks" and lists five,
+ * and ends that list with "/" where a full stop was meant. Both left as
+ * approved and flagged 2026-09-21; the figure under it shows five, which
+ * is what the post covers and what its closing paragraph counts.
  *
  * Block types: p, h (level 3 for a subheading), label, quote, list, image,
  * callout, table, figure, equation, sources, cta.
@@ -611,6 +620,95 @@ export const bodies = {
         'Our World in Data, "The great global redistributor we never hear about," on migrant workers sending home approximately 15% of earnings on average, and on the effect of fees on how much migrants choose to send: ourworldindata.org/great-global-redistributor-money-sent-brought-back-migrants-remittances',
         'UN and IFAD, on migrant workers typically sending money home every one to two months as a recurring pattern: un.org, "Remittances matter: 8 facts you don\'t know about the money migrants send back home"; ifad.org, "15 reasons remittances matter"',
         'Prior posts in this series, "What Is an International Remittance and Why Is It More Than a Money Transfer?" and "The Advertised Fee Is Not the True Price," on remittances as household income and the disproportionate impact of fixed fees on small transfers',
+      ],
+    },
+  ],
+
+  6: [
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/what-is-an-international-remittance-and-why-is-it-more-than-a-money-transfer) described {{remittance|remittances}} functioning as something close to informal insurance, money that shows up specifically when a crisis hits and a formal safety net isn\'t there to catch the family. While that blog post made the specific case, it left a lot to be desired in terms of specificity. This blog post, on the other hand, looks at the mechanism in more detail, across six different kinds of {{shock|shocks}} a household can face: medical emergencies, unemployment, natural disasters, crop failures, and political instability/ It also looks at when this "insurance" doesn\'t actually behave the way the theory predicts.',
+    },
+    { type: 'figure', render: FiveShocks },
+    { type: 'h', text: 'Medical Emergencies' },
+    {
+      type: 'p',
+      text: 'A 2014 study from the Inter-American Development Bank looked directly at this question in Jamaica, using illness and accidents as a natural test case. Since a health shock hitting one household and not another isn\'t something families choose, this allowed for clean measurements of remittance responses. The finding was very stark: **a health shock reduced total household spending by an average of 19%.** This is a serious hit to a family\'s ability to cover ordinary costs on top of new medical ones. The research also found, however, that **remittances offset this entire drop.** The researchers described this as complete insurance, with remittances covering the full economic impact of the health shock.',
+    },
+    { type: 'figure', render: HealthShock },
+    {
+      type: 'p',
+      text: 'One detail from the same study matters a lot for how this insurance actually works: **it was only relevant for households without formal private health insurance.** Where a family already had private coverage, remittances didn\'t play the same role, because it didn\'t really need to. The formal solution kicked in the way it was supposed to, not needing remittances to shift in response. Remittances stepped in specifically where nothing else would.',
+    },
+    { type: 'h', text: 'Unemployment' },
+    {
+      type: 'p',
+      text: 'When a wage earner loses their job, income disappears and expenses don\'t. Global data from the 2009 economic crisis showed a striking pattern here: **remittances and unemployment moved in opposite directions almost everywhere researchers looked.** In Moldova, remittances fell 36% that year while unemployment rose 61%. In Fiji, the pattern ran the other way, remittances rose 24% while unemployment fell 7%. Across a broad sample of developing countries, researchers found a consistent negative correlation between the two: the more unemployment rose in a country, the more remittances tended to fall, and vice versa. This is exactly what you\'d expect if remittances are functioning as a cushion against the labor-market conditions they\'re responding to.',
+    },
+    { type: 'figure', render: UnemploymentRiddle },
+    { type: 'h', text: 'Natural Disasters' },
+    {
+      type: 'p',
+      text: 'World Bank research studying a large sample of developing countries found that **remittances tend to rise in the aftermath of natural disasters, and rise more in countries that have larger migrant populations abroad able to respond.** What\'s more interesting than the aggregate pattern is what households actually do with that support once it arrives. Following flooding in Ethiopia in 1998, researchers found that remittance-receiving households leaned on cash reserves to get through the drought that followed, rather than selling off livestock the way households without that support often had to.',
+    },
+    {
+      type: 'p',
+      text: 'This is a much bigger deal than what it may seem like on the surface level. For a family to be able to survive without selling productive assets like livestock to survive a shock is an extremely important advantage. Selling assets like livestock may make money in the moment, but they basically remove the household\'s income and in turn the household\'s ability to recover afterward. **Remittances let families protect the very assets they\'d need to rebuild, instead of trading away their future to cover today.**',
+    },
+    { type: 'figure', render: TwoPaths },
+    {
+      type: 'p',
+      text: '[A previous post in this series](/blog/how-many-transactions-per-second-would-a-remittance-network-really-need) described a similar pattern following the 2010 Haiti earthquake, where the World Bank projected remittances to the country would rise roughly 20% over the following year. The Ethiopia and Haiti cases point to the same underlying behavior from two very different kinds of disasters, a sudden earthquake and a slower-moving drought.',
+    },
+    { type: 'h', text: 'Crop Failure' },
+    {
+      type: 'p',
+      text: 'For households that depend on farming, a bad harvest is its own kind of income shock, and researchers studying farmers in northern Ghana found that families respond to harvest failure with a mix of {{coping-strategy|coping strategies}}: selling off productive assets, cutting consumption, borrowing from family and friends, and relying on income from family members working elsewhere, remittances among them. One finding stood out: **households with more family members working abroad needed fewer of the costlier coping strategies, like liquidating assets, to get through a bad harvest.**',
+    },
+    {
+      type: 'p',
+      text: 'A separate study of rural households in Thailand and Vietnam found something similar from the weather side of the same story: unusually dry conditions in a given year made a household significantly more likely to receive remittances that same year, remittances arriving in direct response to the exact environmental conditions threatening the household\'s income.',
+    },
+    { type: 'h', text: 'Political Instability' },
+    {
+      type: 'p',
+      text: 'Remittances respond to conflict and political instability too, and the research here connects household-level support to something bigger. **A study using World Bank remittance data across 152 countries from 1980 to 2005 found that an increase in remittances during a crisis measurably reduced the likelihood of civil war breaking out in that country the following year.** This shows that income support reduces the kind of desperation that political violence often grows out of, which is another reason why remittances are so important in developing countries.',
+    },
+    {
+      type: 'p',
+      text: 'Separate research on Latin America found that remittances\' effect on reducing income inequality gets significantly stronger in conflict-affected areas specifically, with the biggest impact concentrated among the poorest households, exactly the population with the fewest other options when instability hits. In Kosovo, remittances were credited with playing a meaningful role in funding reconstruction after conflict ended, money moving in to rebuild precisely when formal investment and aid were hardest to come by.',
+    },
+    { type: 'h', text: 'The Honest Caveat' },
+    {
+      type: 'p',
+      text: '**None of this means remittances behave like a guaranteed, automatic insurance policy, however.** There are instances where mixed results have been recorded and it\'s important we go over those to get the full picture. A broader review of macroeconomic studies on remittances and home-country economic cycles found that remittances are sometimes {{countercyclical|countercyclical}}, rising when things get worse, but sometimes procyclical instead, rising when things are already improving, and the pattern isn\'t consistent across every country or every kind of shock.',
+    },
+    {
+      type: 'p',
+      text: 'The mixed picture gets even more complicated when a crisis hits both ends of a {{corridor|corridor}} at once, the migrant\'s host country and the family\'s home country struggling at the same time. The 2008-2009 Global Financial Crisis is an extremely clear example of this: it hit the wealthy economies where most migrants actually work, which should have squeezed remittances hard. **Instead, recorded remittances to low- and middle-income countries fell by only about 5%.** That\'s not the dramatic surge the insurance framing might suggest, but it\'s also far from a collapse. Remittances held up noticeably better than other forms of international {{capital-flows|capital flow}} during the same crisis, even while migrants themselves were losing income in their host countries. Remittances weren\'t a perfect shock absorber at that moment, but they were still a more reliable one than most of the alternatives.',
+    },
+    { type: 'h', text: 'What This Means Together' },
+    {
+      type: 'p',
+      text: 'Across medical emergencies, unemployment, natural disasters, crop failure, and political instability, the same basic pattern shows up in study after study: **remittances respond to hardship, not just to the passage of time.** It\'s important to recognize that remittances move with the conditions that a country is experiencing. They\'re not a fixed monthly gift disconnected from what\'s actually happening in a household\'s life, they move, at least partially, in response to exactly the shocks a family can\'t plan for.',
+    },
+    {
+      type: 'p',
+      text: '**That responsiveness is also exactly why the speed and reliability of the infrastructure carrying those transfers matters as much as its cost.** Insurance that arrives a week late, after a medical bill has already gone unpaid or a harvest has already failed, isn\'t doing the same job as insurance that arrives when it\'s actually needed. This is exactly what RemitBridge aims to build upon, advocating and spreading awareness for faster methods of money transfer.',
+    },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'Beuermann, Ruprah, and Sierra (2014), "Do Remittances Help Smooth Consumption During Health Shocks? Evidence From Jamaica," Inter-American Development Bank, on the 19% expenditure impact of health shocks and remittances offering complete insurance in the absence of private health coverage: publications.iadb.org/en/node/12089',
+        'World Bank Blog, "Global economic crisis and the remittance-unemployment riddle," on the 2009 Moldova and Fiji data and the broader negative correlation between remittances and unemployment: blogs.worldbank.org/peoplemove/global-economic-crisis-and-the-remittance-unemployment-riddle',
+        'World Bank Policy Research Working Paper 4972, "Remittances and Natural Disasters," on the countercyclical response of remittances to disasters and the Ethiopia 1998 flood/drought cash-reserves finding: gfdrr.org, "Remittances and Natural Disasters: Ex-post Response and Contribution to Ex-ante Preparedness"',
+        'Prior post in this series, on the 2010 Haiti earthquake and the projected 20% remittance surge that followed',
+        'Study of farmers\' coping strategies in semi-arid northern Ghana, on migration and remittances as one of several responses to harvest failure: ncbi.nlm.nih.gov/pmc/articles/PMC10104303',
+        '"Remittances in response to environmental shocks: a panel study of rural Thailand and Vietnam," on drought conditions increasing the likelihood of receiving remittances: link.springer.com/article/10.1007/s11111-026-00519-9',
+        'Regan and Frank (2014), on remittance increases during crises reducing the likelihood of civil war, using World Bank data across 152 countries from 1980-2005, as discussed in Ari and Koç, czasopisma.bg.ug.edu.pl',
+        'UCL Journal of Economics, "How does conflict moderate the impact of remittances on income inequality in Latin American countries?", on remittances\' amplified inequality-reducing effect in conflict-affected settings: student-journals.ucl.ac.uk/UJE/article/2055',
+        'Royal Geographical Society, "Remitting through the pandemic," on the mixed countercyclical/procyclical evidence reviewed by Vargas-Silva and Ruiz, and the roughly 5% decline in remittances to low- and middle-income countries during the 2008-2009 Global Financial Crisis: rgs.org',
       ],
     },
   ],

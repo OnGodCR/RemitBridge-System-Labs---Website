@@ -27,10 +27,13 @@ Deferred by choice, not forgotten. Update this list as things land.
       provider comparison tool. Asked several times, not yet answered, and
       nothing should be built until they are. See `HANDOFF.md`.
 - [ ] **One figure per section is the standing rule for blog posts**, set
-      2026-08-21. Posts 2, 3, 4, 5 and 7 all meet it. Post 2's corridor map and post
+      2026-08-21. Posts 2 through 7 all meet it. Post 2's corridor map and post
       7's hero row were dropped rather than built: the sections they were
       planned for already carry a figure each. Post 3's two equations are set
       as `equation` blocks in place, not drawn, so they are text, not figures.
+- [ ] **Post 6 says "six different kinds of shocks" and lists five**, and that
+      list ends with "/" where a full stop was meant. Flagged 2026-09-21, left
+      as approved until Angad says. The closing paragraph counts five.
 - [ ] **`data/measures.seed.md`.** Five of the six measures on What we measure
       ship `null` until the lab supplies real collected values with dates.
 - [ ] **Phase 2 corridor data.** `src/data/corridors.js` is the interface and

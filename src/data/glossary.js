@@ -287,6 +287,30 @@ export const terms = [
       'The route the money takes: a bank transfer, a money transfer operator, mobile money, or an informal carrier. Which one a family uses tends to follow the amount, and the fee structure of each is different.',
   },
   {
+    id: 'shock',
+    term: 'Shock',
+    plain:
+      'An unexpected event that cuts a household\'s income or raises its costs: an illness, a lost job, a flood, a failed harvest, a conflict. The word researchers use for the thing insurance exists to cover.',
+  },
+  {
+    id: 'countercyclical',
+    term: 'Countercyclical',
+    plain:
+      'Rising when conditions at home get worse, and easing when they improve. Procyclical is the reverse. Whether remittances behave one way or the other turns out to depend on the country and the kind of shock.',
+  },
+  {
+    id: 'coping-strategy',
+    term: 'Coping strategy',
+    plain:
+      'What a household does to get through a shock: sell something, eat less, borrow, send a member to work elsewhere. Some cost more later than they raise now; selling the animals that earn next year\'s income is the expensive kind.',
+  },
+  {
+    id: 'capital-flows',
+    term: 'Capital flows',
+    plain:
+      'Money crossing borders in any form: investment in businesses, loans, purchases of shares and bonds, aid, remittances. In a crisis the private, profit-seeking kinds tend to reverse fast. Remittances tend not to.',
+  },
+  {
     id: 'rpw',
     term: 'Remittance Prices Worldwide (RPW)',
     plain:
