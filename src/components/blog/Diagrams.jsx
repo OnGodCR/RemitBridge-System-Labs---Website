@@ -2422,3 +2422,140 @@ export function TwoPaths({ theme }) {
     </figure>
   )
 }
+
+/* ---------------------------------------------------------------- post 8 */
+
+/** The four roles, in the order a payment meets them. */
+export function FourRoles({ theme }) {
+  return (
+    <Chain
+      theme={theme}
+      aria="The four roles in a cross-border payment chain, in order: originator bank, correspondent bank, intermediary bank, beneficiary bank"
+      stops={[
+        { title: 'Originator bank', sub: 'where it starts' },
+        { title: 'Correspondent bank', sub: 'moves it on the originator\'s behalf', note: 'own fee' },
+        { title: 'Intermediary bank', sub: 'sometimes, before the last link', note: 'own fee' },
+        { title: 'Beneficiary bank', sub: 'credits the recipient' },
+      ]}
+      footer={[
+        { lead: 'Each one', rest: 'routes, screens, converts if needed, and deducts.' },
+        { lead: 'Each pair', rest: 'is joined by a Nostro and Vostro account, debited and credited in step.' },
+      ]}
+    />
+  )
+}
+
+/** The post's worked example, five institutions between London and Vietnam. */
+export function LondonToVietnam({ theme }) {
+  return (
+    <Chain
+      theme={theme}
+      aria="A payment from a bank in London to a bank in Vietnam passes through a correspondent in Frankfurt, a regional correspondent in Singapore and a domestic correspondent in Vietnam before reaching the recipient's bank: five institutions"
+      stops={[
+        { title: 'London', sub: 'originator' },
+        { title: 'Frankfurt', sub: 'large correspondent', note: 'own fee, own queue' },
+        { title: 'Singapore', sub: 'regional correspondent', note: 'own fee, own queue' },
+        { title: 'Vietnam', sub: 'domestic correspondent', note: 'own fee, own queue' },
+        { title: "Recipient's bank", sub: 'beneficiary' },
+      ]}
+      footer={[
+        { lead: 'Five institutions', rest: 'touch one payment: the originator, three correspondents, the beneficiary.' },
+        { lead: 'Each is a separate business', rest: 'with its own compliance, its own fee schedule, its own schedule.' },
+      ]}
+    />
+  )
+}
+
+/**
+ * Who pays the banks in the middle, under each of the three codes.
+ *
+ * The suggestion asked for three final amounts. The post gives no per-hop
+ * fees for its example, and any figures here would have been invented, so
+ * the figure shows the thing the codes actually decide: at each hop, whose
+ * money the fee comes out of. That is enough to see why the same chain
+ * lands three different amounts.
+ */
+export function WhoPays({ theme }) {
+  const hops = ['Originator', 'Frankfurt', 'Singapore', 'Vietnam', 'Beneficiary']
+  const codes = [
+    { code: 'SHA', name: 'Shared', who: ['sender', 'in transit', 'in transit', 'in transit', 'in transit'], lands: 'less each fee in the middle' },
+    { code: 'OUR', name: 'Sender pays', who: ['sender', 'sender', 'sender', 'sender', 'sender'], lands: 'the full amount' },
+    { code: 'BEN', name: 'Recipient pays', who: ['in transit', 'in transit', 'in transit', 'in transit', 'in transit'], lands: 'less every fee in the chain' },
+  ]
+  const tone = (w) => (w === 'sender' ? cn(theme.border, theme.tint, theme.ink) : 'border-dashed border-border text-muted-foreground')
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Same chain, same amount sent, three codes
+      </figcaption>
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+        <span className="inline-flex items-center gap-2">
+          <span className={cn('size-2.5 rounded-sm border', theme.border, theme.tint)} aria-hidden />
+          <span className="font-bold">Fee paid by the sender up front</span>
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="size-2.5 rounded-sm border border-dashed border-border" aria-hidden />
+          <span className="font-bold">Fee taken from the money in transit</span>
+        </span>
+      </div>
+      <div className="-mx-4 mt-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+        <table className="w-full min-w-[30rem] border-collapse text-xs">
+          <thead>
+            <tr>
+              <th scope="col" className="py-2 pr-3 text-left font-bold">Code</th>
+              {hops.map((h) => (
+                <th key={h} scope="col" className="py-2 pr-2 text-left font-bold">{h}</th>
+              ))}
+              <th scope="col" className="py-2 text-left font-bold">Recipient gets</th>
+            </tr>
+          </thead>
+          <tbody>
+            {codes.map((c) => (
+              <tr key={c.code} className="border-t border-border">
+                <th scope="row" className="py-2.5 pr-3 text-left">
+                  <span className={cn('font-bold', theme.ink)}>{c.code}</span>
+                  <span className="block text-muted-foreground">{c.name}</span>
+                </th>
+                {c.who.map((w, i) => (
+                  <td key={i} className="py-2.5 pr-2">
+                    <span className={cn('inline-block rounded-md border px-2 py-1 font-medium', tone(w))}>{w}</span>
+                  </td>
+                ))}
+                <td className="py-2.5 font-bold">{c.lands}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Whose money each bank's fee comes out of, under each code. No per-hop amount is drawn
+        because the post's sources give none for this route; the size of the gap is a fact about
+        the banks, the direction of it is a fact about the code.
+      </p>
+    </figure>
+  )
+}
+
+/** Three effects, one per hop, with what the post says each one does. */
+export function ThreeEffects({ theme }) {
+  const rows = [
+    { name: 'Time', what: 'Received, screened, queued and forwarded on that bank\'s own schedule. One to five business days in total.' },
+    { name: 'Cost', what: 'A fee taken before forwarding, nothing to $50 or more, from a schedule no customer can read in advance.' },
+    { name: 'Visibility', what: 'The sender\'s bank does not know which banks come next until the payment is under way.' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        What every extra link adds
+      </figcaption>
+      <ul className="mt-4 grid gap-2 sm:grid-cols-3">
+        {rows.map((r) => (
+          <li key={r.name} className={cn('rounded-2xl border p-3', theme.border, theme.tint)}>
+            <p className={cn('text-sm font-bold', theme.ink)}>{r.name}</p>
+            <p className="mt-1 text-xs leading-snug text-muted-foreground">{r.what}</p>
+          </li>
+        ))}
+      </ul>
+    </figure>
+  )
+}

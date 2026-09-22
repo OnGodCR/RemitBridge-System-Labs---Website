@@ -156,9 +156,15 @@ export const posts = [
   },
   {
     "id": 8,
+    "publishedOn": "2026-09-21",
     "series": "series2",
     "seriesName": "How banks move it",
-    "title": "The chain of banks nobody tells you about",
+    "title": "Correspondent banks, Vostro accounts, and the hidden chain behind a transfer",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "The banks sitting between a sender and a recipient, what Nostro and Vostro accounts are, and what each intermediary does. A longer chain means more time, more cost, and less ability to see where the money currently is.",
     "readTime": "10 min read",
     "tags": [

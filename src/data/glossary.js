@@ -311,6 +311,30 @@ export const terms = [
       'Money crossing borders in any form: investment in businesses, loans, purchases of shares and bonds, aid, remittances. In a crisis the private, profit-seeking kinds tend to reverse fast. Remittances tend not to.',
   },
   {
+    id: 'originator-bank',
+    term: 'Originator bank',
+    plain:
+      'The bank where a payment starts: the sender\'s own. The only bank in the chain the sender deals with, and the only fee the sender is shown for certain.',
+  },
+  {
+    id: 'intermediary-bank',
+    term: 'Intermediary bank',
+    plain:
+      'A bank in the middle of the chain that neither the sender nor the recipient chose or can see. It forwards the payment to the next link, and may take its own fee out of it on the way.',
+  },
+  {
+    id: 'beneficiary-bank',
+    term: 'Beneficiary bank',
+    plain:
+      'The last bank in the chain, the recipient\'s own, which credits whatever arrives to their account. It sees only what reached it, not what left.',
+  },
+  {
+    id: 'charge-codes',
+    term: 'SHA, OUR and BEN',
+    plain:
+      'A three-letter code on every SWIFT payment saying who pays the banks in the middle. SHA: shared, each intermediary takes its fee from the money in transit. OUR: the sender pays every fee up front. BEN: the recipient pays all of them, out of what arrives.',
+  },
+  {
     id: 'rpw',
     term: 'Remittance Prices Worldwide (RPW)',
     plain:

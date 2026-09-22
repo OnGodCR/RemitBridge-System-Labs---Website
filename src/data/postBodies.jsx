@@ -57,6 +57,10 @@ import {
   HealthShock,
   UnemploymentRiddle,
   TwoPaths,
+  FourRoles,
+  LondonToVietnam,
+  WhoPays,
+  ThreeEffects,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -816,6 +820,89 @@ export const bodies = {
         'Fedwire as a real-time gross settlement service operated by the Federal Reserve: federalreserve.gov/paymentsystems/fedfunds_about.htm and en.wikipedia.org/wiki/Fedwire',
         'CHIPS as the privately-owned US large-value payment system operating alongside Fedwire: en.wikipedia.org/wiki/Clearing_House_Interbank_Payments_System',
         'TARGET2 as the Eurozone\'s real-time gross settlement system, settlement in central bank money: ecb.europa.eu/paym/target/target2 and en.wikipedia.org/wiki/TARGET2',
+      ],
+    },
+  ],
+
+  8: [
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/swift-sends-the-message-so-who-moves-the-money) explained that {{swift|SWIFT}} only sends a message. SWIFT is not the real system that moves money. **{{correspondent-bank|Correspondent banks}} are what actually move the money.** What that post didn\'t do was map out what that chain of correspondent banks actually looks like in practice, and what happens to a transfer, in time, in cost, and in how much either side can actually see, as it passes through each additional bank along the way. This post aims to map that chain step by step so you can understand why a SWIFT transfer takes so long.',
+    },
+    { type: 'h', text: 'The Cast of Characters' },
+    {
+      type: 'p',
+      text: 'Most international payments involve more than just "the sender\'s bank" and "the recipient\'s bank." A full chain typically includes an {{originator-bank|originator bank}}, where the transaction starts, and one or more correspondent banks that move money on behalf of the originator. Sometimes a separate {{intermediary-bank|intermediary bank}} is also included before the money finally reaches the {{beneficiary-bank|beneficiary bank}}, which actually credits the recipient\'s account. **Each of these institutions plays its own role in routing the payment, screening it for compliance, converting currency if needed, and, notably, deducting its own fee before passing the rest of the money along.**',
+    },
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/swift-sends-the-message-so-who-moves-the-money) introduced {{nostro-vostro|Nostro and Vostro accounts}}, the mechanism that lets two banks with no direct relationship still move value between them. This mechanism of Nostro and Vostro accounts allow for each of these corresponding banks to transfer money among each other. Each bank in the chain holds one of these accounts with the next bank down the line, and passing a payment along means debiting and crediting those accounts in step, one link at a time, all the way from the originator to the beneficiary.',
+    },
+    { type: 'figure', render: FourRoles },
+    { type: 'h', text: 'A Real Chain, Mapped' },
+    {
+      type: 'p',
+      text: 'Something that could help with visualization is seeing a full chain in action. Let\'s take the example of a payment from a bank in London to a bank in Vietnam. These two banks have no direct relationship, so money might realistically travel something like this: the London bank passes it to a large correspondent bank in Frankfurt, which passes it to a regional correspondent bank in Singapore, which passes it to a domestic correspondent bank inside Vietnam, which finally delivers it to the recipient\'s own bank. **That\'s five institutions total touching a single payment, the originator, three correspondents, and the beneficiary.** Each link is ultimately a separate business with its own systems, regardless of how standardized SWIFT makes protocol. These banks have their own compliance department, and their own fee schedule and more. This makes the entire process extremely lengthy, which is something remitters can\'t afford.',
+    },
+    { type: 'figure', render: LondonToVietnam },
+    {
+      type: 'p',
+      text: 'This isn\'t a rare or unusually complicated example. Payments between two currencies other than USD, EUR, or GBP, or involving smaller or less well-connected banks, commonly require three or four intermediary hops before they reach their destination. **A general rule is the more obscure the {{corridor|corridor}}, the longer this chain tends to get.** This is also why smaller corridors have higher fees.',
+    },
+    { type: 'h', text: 'How Each Hop Affects Time' },
+    {
+      type: 'p',
+      text: 'Every additional bank in the chain is a separate point where the payment has to be received, checked, processed, and forwarded, and with the current SWIFT system in place, none of this can happen instantaneously. Each institution runs its own {{compliance-checks|compliance screening}}, its own sanctions checks, its own internal processing queue, on its own schedule. **That\'s a large part of why an international wire typically takes one to five business days to settle**, with the actual time depending heavily on how many institutions the payment has to pass through and how much scrutiny it draws at each one.',
+    },
+    {
+      type: 'p',
+      text: 'This has also been getting worse in a lot of corridors, not better. [An earlier post in this series](/blog/why-the-same-transfer-can-cost-more-on-one-corridor-than-another) described {{de-risking|de-risking}}, large banks pulling back from correspondent relationships with smaller banks in markets they see as lower-revenue or higher-risk. As those direct relationships disappear, transactions that used to require a single hop increasingly need three or four instead, since the payment now has to route through larger regional aggregators to reach a bank it once could have paid directly. **Fewer direct relationships means more hops, and more hops means more time, compounding at every additional step.**',
+    },
+    { type: 'h', text: 'How Each Hop Affects Cost' },
+    {
+      type: 'p',
+      text: 'Every bank in the chain can deduct its own fee before forwarding what\'s left, and these fees aren\'t small or predictable. **Intermediary bank charges can range anywhere from nothing at all up to $50 or more per hop**, and because these banks typically have no direct relationship with the actual customer, they don\'t publish a fee schedule anyone can check in advance. The sender\'s own bank usually can\'t say with certainty which intermediaries a given payment will pass through, which means it often can\'t say exactly what the total cost will be either.',
+    },
+    {
+      type: 'p',
+      text: 'Apart from all this uncertainty, there\'s an additional layer of complexity we haven\'t discussed yet. Most senders never even know it exists: **SWIFT payments carry a code, {{charge-codes|SHA, OUR, or BEN}}, that determines who\'s actually responsible for covering these intermediary fees.** SHA splits the cost between sender and recipient, with each intermediary deducting its fee from the amount in transit. OUR means the sender agrees upfront to cover every fee along the entire chain, so the recipient gets the full amount. BEN means the recipient absorbs every fee the chain generates, and receives whatever is left after all of them are deducted.',
+    },
+    {
+      type: 'p',
+      text: 'The same five-bank chain can produce a noticeably different amount landing in the recipient\'s account depending purely on which of these three codes was selected when the payment was sent. This is something that isn\'t discussed much because it\'s something that\'s inherently part of SWIFT. You can\'t get rid of this system without getting rid of SWIFT itself.',
+    },
+    { type: 'figure', render: WhoPays },
+    { type: 'h', text: 'How Each Hop Affects Visibility' },
+    {
+      type: 'p',
+      text: 'This might be the most consequential effect of all, because it\'s the one that makes the other two so hard to plan around. Industry analysis has pointed to this directly: these correspondent chains are a major reason international transfers have historically settled more slowly than domestic ones, and **the sender often can\'t see the full cost or the expected arrival time in advance, because the sender\'s own bank frequently doesn\'t know exactly which intermediaries a specific payment will end up routing through until it\'s already underway.**',
+    },
+    {
+      type: 'p',
+      text: 'That opacity is exactly why a transfer can leave the sender\'s account showing one number and arrive in the recipient\'s account showing a noticeably smaller one. This can breed distrust in families, especially those who lack the financial literacy needed to understand the whole SWIFT ecosystem, which is why raising awareness about this is so important. **The sender\'s bank can only really speak to its own fee.** Everything that happens after the payment leaves that bank\'s hands, how many correspondents it touches, what each one deducts, how long each one takes, happens largely out of view, and often out of the sending bank\'s own direct knowledge, until the payment has already reached wherever it\'s going.',
+    },
+    { type: 'h', text: 'Why This Structure Persists' },
+    {
+      type: 'p',
+      text: 'None of this is unique to any one bank behaving badly. **It\'s a structural consequence of a payment system built on bilateral relationships between individual institutions rather than one unified network everyone connects to directly.** When two banks have a direct relationship, a payment between them is simple. When they don\'t, the payment has to be handed off, link by link, through however many intermediaries it takes to bridge that gap, and every one of those links adds its own delay, its own fee, and its own blind spot for everyone outside that specific institution.',
+    },
+    {
+      type: 'p',
+      text: 'This post aimed to cover the real story behind why a $200 {{remittance|remittance}} can leave one country and arrive in another looking meaningfully smaller, later than expected, and without a clear explanation of what happened in between. **It was never one transaction handled by one system. It was a relay, passed hand to hand through a chain of separate businesses, each one doing its own job correctly while the sender and recipient on either end could see almost none of it happening.**',
+    },
+    { type: 'figure', render: ThreeEffects },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'Globalinvestments.net, "Correspondent Banking: How Wire Transfers Really Work," on the London-to-Vietnam correspondent chain example (Barclays to Deutsche Bank Frankfurt to a Singapore correspondent to a Vietnam domestic correspondent to the recipient\'s bank): globalinvestments.net/banking/guides/correspondent-banking-guide',
+        'Globalinvestments.net, "Correspondent Banking and International Wire Transfers: What Expats Need to Know," on SHA, OUR, and BEN fee codes and on corridors requiring three or four intermediary hops: globalinvestments.net/articles/correspondent-banking-international-wire-transfers',
+        'Payment Expert, "Correspondent banking 101: a guide to international transfers," citing J.P. Morgan on correspondent chains as the primary reason cross-border transfers settle more slowly than domestic ones, and on senders being unable to see full cost or arrival time in advance: paymentexpert.com/2026/09/14/correspondent-banking-transfers',
+        'Plisio, "Intermediary Bank: What It Does, Fees and Wire Transfers," on the 1-to-5-business-day settlement range and on each intermediary bank adding its own fee, processing time, and compliance check: plisio.net/education/intermediary-bank-how-does-it-work',
+        'SoFi, "What Are Intermediary Banks? What Do They Do?", on typical intermediary bank fees ranging from $0 to $50 or more per hop: sofi.com/learn/content/what-is-intermediary-bank',
+        'AcceleronBank, "Correspondent Bank vs. Intermediary Bank vs. Beneficiary Bank: What\'s the Difference?", on the four key roles in a cross-border payment chain: acceleronbank.com/articles/correspondent-bank-vs-intermediary-bank-vs-beneficiary-bank',
+        'XTransfer, "Decoding the Cross-Border Payment Chain," on de-risking increasing the number of required transit hops in emerging-market corridors: xtransfer.com/knowledge-hub/69e0848dab39456f29e9ef40',
+        'Prior posts in this series, "SWIFT Sends the Message, So Who Moves the Money?" and "Why the Same Transfer Can Cost More on One Corridor Than Another," on Nostro/Vostro accounts and correspondent-banking de-risking',
       ],
     },
   ],
