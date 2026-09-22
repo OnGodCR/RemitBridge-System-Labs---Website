@@ -64,6 +64,11 @@ import {
   ThreeStages,
   ProvisionalWindow,
   WhatSentMeans,
+  WorldClock,
+  BatchVsStream,
+  DelaysRepeat,
+  ChargedVsAvailable,
+  EightGears,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -114,6 +119,11 @@ import {
  *
  * Post 6's approved opening said "six different kinds of shocks" over a
  * list of five, ending in "/". Angad had both corrected on 2026-09-21.
+ *
+ * Post 10's closing paragraph reads "Rather than one individual steps, It's
+ * eight smaller ones", a stray plural and a capital after the comma, and
+ * its opening has "aims to breakdown" for "break down". Left as approved
+ * and flagged 2026-09-22.
  *
  * Block types: p, h (level 3 for a subheading), label, quote, list, image,
  * callout, table, figure, equation, sources, cta.
@@ -970,6 +980,78 @@ export const bodies = {
         'Paychex, "What Is a Provisional Credit? A Guide for Business Owners," on provisional credit as a temporary, reversible credit distinct from final settlement: paychex.com/glossary/what-is-a-provisional-credit',
         'Law Insider, sample ACH Entries account agreement language, on credit to an account being "provisional until we have received settlement," with the originator entitled to a refund if final settlement is not received: lawinsider.com/clause/ach-entries',
         'Prior posts in this series, "SWIFT Sends the Message, So Who Moves the Money?" and "Correspondent Banks, Vostro Accounts, and the Hidden Chain Behind a Transfer," on SWIFT messaging, RTGS settlement, and the correspondent-bank chain',
+      ],
+    },
+  ],
+
+  10: [
+    {
+      type: 'p',
+      text: 'Earlier posts in this series [explained what {{swift|SWIFT}} actually does](/blog/swift-sends-the-message-so-who-moves-the-money), [mapped the chain of {{correspondent-bank|correspondent banks}} a payment travels through](/blog/correspondent-banks-vostro-accounts-and-the-hidden-chain-behind-a-transfer), and [drew the line between a payment being sent, settled, and actually final](/blog/clearing-settlement-and-finality-are-not-the-same-thing). This post pulls those threads together into the most obvious next question: **why does the whole thing still take days?** This blog post aims to breakdown the exact process, with all the previous blog posts discussing each individual factor. We will take a look at eight smaller factors, that when stacked on top of each other, cause SWIFT transfers to take days.',
+    },
+    { type: 'h', text: 'Time Zones' },
+    {
+      type: 'p',
+      text: '**The simplest reason has nothing to do with banking rules at all, it\'s just geography.** A transfer initiated in the afternoon in one country can arrive at the receiving bank in the middle of that country\'s night, when nobody there is even working yet. A real example makes all of these factors much easier to understand, so I will try to include these for each of the factors. For timezones specifically, let\'s take an example of someone sending money from California at 4 p.m. This is a full hour before their own bank\'s cutoff, but it\'s sending it at midnight in the UK. Their own bank can start processing right away, but the UK bank on the receiving end can\'t do anything at all until it opens the next morning, no matter how quickly the sending side moves.',
+    },
+    { type: 'figure', render: WorldClock },
+    { type: 'h', text: 'Banking Hours and Cutoff Times' },
+    {
+      type: 'p',
+      text: 'Every bank sets a daily {{cutoff-time|cutoff time}}, a deadline by which a transfer has to be submitted to be processed that same business day. In the US, this is typically somewhere between 2 p.m. and 5 p.m. local time. Missing it, even by a few minutes, leads to the transfer not processing until the next business day. **Missing the Friday cutoff specifically can lead to the delay stretching to roughly 72 hours**, since most banks don\'t process anything over the weekend, pushing the start date all the way to Monday. Some countries compound this further. An example is India\'s banking system, which observes the second and fourth Saturday of each month as a holiday, which means a payment arriving on the wrong Friday can end up waiting even longer than a typical weekend would suggest.',
+    },
+    { type: 'h', text: 'Batching' },
+    {
+      type: 'p',
+      text: 'Not every payment system processes transactions the instant they\'re submitted. {{ach|ACH}} transfers, the system behind most everyday domestic transfers in the US, move through {{batch-processing|batch processing}}, meaning many transactions get grouped together and processed in scheduled windows rather than continuously throughout the day. This is a big tradeoff, but it is a choice that governments make deliberately. This is because batching a large number of smaller payments together is more efficient for the institutions running the system. **This does, however, come at the direct cost of speed for any individual payment caught waiting for the next batch window to open.** International wires are typically processed individually rather than batched, but the compliance and currency-conversion steps sitting around them often run on their own separate windows, which produces a similar effect: a transfer that\'s technically ready still has to wait for the next available slot.',
+    },
+    { type: 'figure', render: BatchVsStream },
+    { type: 'h', text: 'Compliance Review' },
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/correspondent-banks-vostro-accounts-and-the-hidden-chain-behind-a-transfer) described the {{compliance-checks|compliance screening}} every bank in a correspondent chain runs, checking a payment against sanctions lists like the US Treasury\'s OFAC list and others maintained by different governments around the world. **Most of the payments that get flagged during this process turn out to be false positives**, a name that happens to resemble someone on a watchlist rather than an actual match, and these get manually reviewed and cleared. But that manual review takes real time, and in more serious or ambiguous cases, a flagged transfer can be held for weeks or even months while it gets sorted out. A payment doesn\'t need to be doing anything wrong to get caught here. It just needs to look, on paper, similar enough to something a {{sanctions-screening|screening system}} was built to catch.',
+    },
+    { type: 'h', text: 'Intermediary Institutions' },
+    {
+      type: 'p',
+      text: '[A previous post in this series](/blog/correspondent-banks-vostro-accounts-and-the-hidden-chain-behind-a-transfer) mapped out exactly what this looks like in practice, a payment passing through an {{originator-bank|originator bank}}, one or more correspondent banks, sometimes a separate {{intermediary-bank|intermediary bank}}, and finally a {{beneficiary-bank|beneficiary bank}}, each one a fully separate business with its own systems and its own processing schedule. **Every one of the delays described so far in this post, cutoff times, batching windows, compliance review, doesn\'t just happen once. It happens again at every single institution the payment passes through on its way to the recipient**, and none of those institutions are working from a shared, synchronized schedule.',
+    },
+    { type: 'figure', render: DelaysRepeat },
+    { type: 'h', text: 'Foreign-Exchange Conversion' },
+    {
+      type: 'p',
+      text: 'Converting a payment from one currency to another isn\'t instantaneous either, particularly when the destination currency isn\'t one of the handful that trade in enormous global volume. Many banks run their currency conversion through a dedicated {{fx-desk|forex desk}} operating its own hours, separate from general banking hours, meaning a payment that clears every other step can still end up waiting on the specific window when currency conversion actually happens. [An earlier post in this series](/blog/why-the-same-transfer-can-cost-more-on-one-corridor-than-another) described how {{currency-liquidity|thinly-traded currencies}} carry wider costs for exactly this reason. **That same thinness can add time as well as expense**, since converting into a less commonly traded currency is a more involved process than converting into one that trades constantly, all day, in enormous volume.',
+    },
+    { type: 'h', text: 'Exceptions' },
+    {
+      type: 'p',
+      text: 'Beyond the routine steps, a long list of one-off problems can independently add delay, and **any one of them is enough on its own to push a transfer past its expected window.** Incorrect beneficiary details, a mistyped account number or a mismatched name, force a manual correction before the payment can continue. Transfers to certain countries, particularly ones with more extensive financial regulation, can run 5 to 7 business days or longer even under normal conditions. Even providers built around speed are upfront about this in their own fine print. They state that cash that\'s supposed to be ready for pickup within minutes can still be delayed by the destination country, currency availability, identification requirements, agent location hours, or straightforward time zone differences. These are all listed as real exceptions to the advertised timeline.',
+    },
+    { type: 'h', text: 'Local Distribution' },
+    {
+      type: 'p',
+      text: 'Even once a payment has technically arrived, that isn\'t always the same as the recipient actually having usable money. {{cash-pickup|Cash pickup}} remains the most widely used way remittances are collected around the world, and unlike everything before it in this post, **this last step is fundamentally physical.** A person has to walk into a real location, during its real operating hours, and present real identification before anything is handed over. One remittance sender\'s own account of this captured the gap well: their card was charged the moment they initiated the transfer, but it took four full days before the money was actually available for their family to pick up on the other end. **The charge was instant. The usable money wasn\'t**, leaving a four day gap where both parties are deprived of their hard earned money.',
+    },
+    { type: 'figure', render: ChargedVsAvailable },
+    { type: 'h', text: 'Eight Gears, Not One Bottleneck' },
+    {
+      type: 'p',
+      text: '**None of these eight things is a single point of failure that, if just fixed, would make international transfers instant.** They\'re eight separate and independent delays. Things like time zones, cutoff times, batching, compliance review, the correspondent chain itself, currency conversion, one-off exceptions, and the physical {{last-mile|last mile}} are what contribute to the long gap between when a transaction is "sent!" and when a transaction\'s amount is actually usable. This is the answer to why "1 to 5 business days" shows up so consistently across international transfers. Rather than one individual steps, It\'s eight smaller ones, running one after another, each doing its own job correctly while the total time quietly adds up in between.',
+    },
+    { type: 'figure', render: EightGears },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'Remitly, "How Time Zones Affect International Money Transfers," on cutoff times and the California-to-UK timing example: remitly.com/blog/money-transfer/confusing-time-zones-for-international-money-transfers',
+        'Razorpay, "Cut Off Time for International Payments & Wire Deadlines," on typical US and Indian bank cutoff times, the Friday weekend delay, and India\'s forex processing window: razorpay.com/blog/cut-off-time-for-international-payments-guide',
+        'Wise, "How long does a wire transfer take?", on domestic versus international processing rules and the Expedited Funds Availability Act: wise.com/us/blog/how-long-does-a-wire-transfer-take',
+        'WealthVieu, "Wire Transfer Time: How Long Do Wire Transfers Take?", on ACH batch processing versus individually processed wires, and delays to certain jurisdictions extending to 5-7+ business days: wealthvieu.com/banking/wire-transfers/time',
+        'BankPulse, "Bank Sanctions Lists Explained," on OFAC and other sanctions screening, false positives, and transfers held for weeks or months when flagged: bankpulse.io/howto/bank-sanctions-lists-explained',
+        'Faisal Khan LLC, "Cash pickup," on cash pickup remaining the world\'s most widely used remittance delivery method and its inherently physical last-mile nature: faisalkhan.com/solutions/money-transfer/cash-pickup',
+        'World Bank Blog, "Remittances and Consumer Protection," on a sender\'s account being charged immediately while funds took four days to become available for pickup: blogs.worldbank.org/en/peoplemove/remittances-and-consumer-protection',
+        'Western Union, on delivery-time exceptions including destination country, currency availability, identification requirements, agent location hours, and time zone differences: westernunion.com/bn/en/send-money-to-india.html',
+        'Prior posts in this series, "SWIFT Sends the Message, So Who Moves the Money?", "Correspondent Banks, Vostro Accounts, and the Hidden Chain Behind a Transfer," and "Clearing, Settlement, and Finality Are Not the Same Thing"',
       ],
     },
   ],

@@ -192,9 +192,15 @@ export const posts = [
   },
   {
     "id": 10,
+    "publishedOn": "2026-09-22",
     "series": "series2",
     "seriesName": "How banks move it",
-    "title": "Why a transfer can still take several days",
+    "title": "Why can an international transfer still take several days?",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "Time zones, banking hours, batch schedules, compliance checks, currency conversion, and the last step of getting cash out to a local branch. Each one adds a bit, and they stack.",
     "readTime": "9 min read",
     "tags": [

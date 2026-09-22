@@ -353,6 +353,30 @@ export const terms = [
       'Money that shows in an account before the payment behind it is final. It can be spent, and it can also be taken back if settlement does not go through. The word is in the account agreement, not on the screen.',
   },
   {
+    id: 'cutoff-time',
+    term: 'Cutoff time',
+    plain:
+      'The time of day after which a bank stops counting new instructions as today\'s. Miss it by a minute and the transfer starts tomorrow; miss it on a Friday and it starts Monday.',
+  },
+  {
+    id: 'batch-processing',
+    term: 'Batch processing',
+    plain:
+      'Collecting payments and processing them together at set times rather than one by one as they arrive. Cheaper for the system, and every payment waits for the next window.',
+  },
+  {
+    id: 'sanctions-screening',
+    term: 'Sanctions screening',
+    plain:
+      'Checking the names on a payment against government lists of people and organisations banks may not deal with, such as the US Treasury\'s OFAC list. Most matches are a similar name, not the person, and clearing them takes a human.',
+  },
+  {
+    id: 'fx-desk',
+    term: 'Forex desk',
+    plain:
+      'The part of a bank that buys and sells currency. It keeps its own hours, which are not the branch\'s, so a payment that needs converting can be held for the desk\'s next window.',
+  },
+  {
     id: 'rpw',
     term: 'Remittance Prices Worldwide (RPW)',
     plain:

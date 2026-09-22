@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { ArrowDown, ArrowRight, ArrowLeftRight, Banknote, Briefcase, CloudRain, Coins, Cross, HandCoins, Landmark, Map, Megaphone, Percent, Scale, Smartphone, Tag, Users, Wheat } from 'lucide-react'
+import { AlertTriangle, ArrowDown, ArrowRight, ArrowLeftRight, Banknote, Briefcase, Clock, CloudRain, Coins, Cross, Globe, HandCoins, Landmark, Layers, Map, Megaphone, Percent, Scale, ShieldCheck, Smartphone, Store, Tag, Users, Wheat } from 'lucide-react'
 import { figures, derived, usMxQ3, wfStandardWire, feeAnatomy, corridorCost, deRisking, channelCost, sendingPattern, shocks, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
@@ -2654,6 +2654,178 @@ export function WhatSentMeans({ theme }) {
           ))}
         </ul>
       </div>
+    </figure>
+  )
+}
+
+/* --------------------------------------------------------------- post 10 */
+
+/** The post's own example: 4 p.m. in California is midnight in the UK. */
+export function WorldClock({ theme }) {
+  const places = [
+    { name: 'California', time: '4 p.m.', state: 'bank open, an hour before cutoff', open: true },
+    { name: 'United Kingdom', time: 'midnight', state: 'bank closed until morning', open: false },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        The same moment, at both ends
+      </figcaption>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {places.map((p) => (
+          <div key={p.name} className={cn('rounded-2xl border p-4', p.open ? cn(theme.border, theme.tint) : 'border-dashed border-border')}>
+            <p className="text-sm font-bold">{p.name}</p>
+            <p className={cn('mt-1 text-3xl font-extrabold tabular-nums', p.open ? theme.ink : 'text-muted-foreground')}>{p.time}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{p.state}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Eight hours apart. The sending side can start at once; the receiving side cannot start at
+        all until it opens.
+      </p>
+    </figure>
+  )
+}
+
+/**
+ * Continuous against batched: the same eight payments, one row released as
+ * they come, the other held and released in two windows. Dots, not a
+ * queue simulation; the point is the gap, not the throughput.
+ */
+export function BatchVsStream({ theme }) {
+  const Dot = ({ on }) => (
+    <span className={cn('size-3 shrink-0 rounded-full', on ? theme.bar : cn('border', theme.border))} aria-hidden />
+  )
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Eight payments, two ways of processing them
+      </figcaption>
+      <div className="mt-5 space-y-5">
+        <div>
+          <p className="mb-2 text-sm font-bold">One by one, as they arrive</p>
+          <div className="flex items-center justify-between" aria-label="Eight payments processed as each arrives">
+            {Array.from({ length: 8 }, (_, i) => <Dot key={i} on />)}
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground">Each moves the moment it is ready. Wires work this way.</p>
+        </div>
+        <div>
+          <p className="mb-2 text-sm font-bold">In batches, at set windows</p>
+          <div className="flex items-center justify-between" aria-label="Eight payments held and released in two batches">
+            <span className="flex items-center gap-1">{Array.from({ length: 4 }, (_, i) => <Dot key={i} on={i === 3} />)}</span>
+            <span className={cn('text-xs font-bold', theme.ink)}>window</span>
+            <span className="flex items-center gap-1">{Array.from({ length: 4 }, (_, i) => <Dot key={i} on={i === 3} />)}</span>
+            <span className={cn('text-xs font-bold', theme.ink)}>window</span>
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            Hollow dots wait; the batch moves together at the window. ACH works this way, and so do
+            the compliance and conversion steps around a wire.
+          </p>
+        </div>
+      </div>
+    </figure>
+  )
+}
+
+/** The chain from post 8, with the three delays stacked under every link. */
+export function DelaysRepeat({ theme }) {
+  const banks = ['Originator', 'Correspondent', 'Correspondent', 'Beneficiary']
+  const delays = [
+    { Icon: Clock, name: 'cutoff' },
+    { Icon: Layers, name: 'batch window' },
+    { Icon: ShieldCheck, name: 'compliance' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Every delay, at every bank
+      </figcaption>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-start">
+        {banks.map((b, i) => (
+          <Fragment key={i}>
+            {i > 0 && <div className="flex shrink-0 items-center justify-center sm:pt-4" aria-hidden><Hop /></div>}
+            <div className="min-w-0 flex-1 rounded-2xl border border-border bg-card p-3">
+              <p className="text-sm font-bold">{b}</p>
+              <ul className="mt-2 space-y-1">
+                {delays.map((d) => (
+                  <li key={d.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <d.Icon className={cn('size-3.5 shrink-0', theme.ink)} aria-hidden />
+                    {d.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Fragment>
+        ))}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        The chain from the previous post. Each bank runs its own cutoff, its own windows and its
+        own screening, and none of them share a clock.
+      </p>
+    </figure>
+  )
+}
+
+/** The sender's account from the World Bank blog: charged at once, usable four days on. */
+export function ChargedVsAvailable({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        One transfer, two moments
+      </figcaption>
+      <div className="mt-6">
+        <div className="relative h-3 rounded-full bg-muted">
+          <div className={cn('absolute inset-y-0 left-0 w-full rounded-full border border-dashed', theme.border)} aria-hidden />
+          <span className={cn('absolute inset-y-[-5px] left-0 w-1 rounded-full', theme.bar)} aria-hidden />
+          <span className={cn('absolute inset-y-[-5px] right-0 w-1 rounded-full', theme.bar)} aria-hidden />
+        </div>
+        <div className="mt-2 flex justify-between text-xs">
+          <span>
+            <span className="block font-bold">Card charged</span>
+            <span className="text-muted-foreground">the moment it was sent</span>
+          </span>
+          <span className="text-right">
+            <span className="block font-bold">Cash ready to collect</span>
+            <span className={cn('font-bold', theme.ink)}>four days later</span>
+          </span>
+        </div>
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        One sender's account, as told to the World Bank. The dashed stretch is the four days in
+        which neither side had the money.
+      </p>
+    </figure>
+  )
+}
+
+/** The eight, in the order the post takes them. */
+export function EightGears({ theme }) {
+  const gears = [
+    { Icon: Globe, name: 'Time zones' },
+    { Icon: Clock, name: 'Cutoff times' },
+    { Icon: Layers, name: 'Batching' },
+    { Icon: ShieldCheck, name: 'Compliance review' },
+    { Icon: Landmark, name: 'Intermediary institutions' },
+    { Icon: ArrowLeftRight, name: 'FX conversion' },
+    { Icon: AlertTriangle, name: 'Exceptions' },
+    { Icon: Store, name: 'Local distribution' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Eight gears, none of them the bottleneck
+      </figcaption>
+      <ol className="mt-4 grid gap-2 sm:grid-cols-4">
+        {gears.map((g, i) => (
+          <li key={g.name} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
+            <g.Icon className={cn('size-5 shrink-0', theme.ink)} aria-hidden />
+            <p className="text-sm font-bold leading-snug">
+              <span className={cn('tabular-nums', theme.ink)}>{i + 1}.</span> {g.name}
+            </p>
+          </li>
+        ))}
+      </ol>
     </figure>
   )
 }
