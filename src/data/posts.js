@@ -210,9 +210,15 @@ export const posts = [
   },
   {
     "id": 11,
+    "publishedOn": "2026-09-22",
     "series": "series2",
     "seriesName": "How banks move it",
-    "title": "How mismatched standards slow everything down",
+    "title": "How fragmented standards increase cross-border payment friction",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "Different countries and banks use different message formats, so information gets dropped or retyped at every handoff. We look at the mess, and at ISO 20022, which is the current attempt to standardise it.",
     "readTime": "8 min read",
     "tags": [

@@ -377,6 +377,42 @@ export const terms = [
       'The part of a bank that buys and sells currency. It keeps its own hours, which are not the branch\'s, so a payment that needs converting can be held for the desk\'s next window.',
   },
   {
+    id: 'swift-mt',
+    term: 'SWIFT MT messages',
+    plain:
+      'The older family of SWIFT message formats, numbered by type; an MT103 carries a customer payment. Much of each message is free text, which is why an address can arrive as one unbroken line.',
+  },
+  {
+    id: 'straight-through-processing',
+    term: 'Straight-through processing',
+    plain:
+      'A payment handled end to end by software, with no person reading it. Anything a machine cannot parse, a truncated address, a name in the wrong field, drops out of that flow into a queue for someone to fix.',
+  },
+  {
+    id: 'api',
+    term: 'API',
+    plain:
+      'A way for one piece of software to ask another for information or an action directly, without a message file in between. Each bank tends to build its own, which is the message-format problem again in newer clothes.',
+  },
+  {
+    id: 'iso-20022',
+    term: 'ISO 20022',
+    plain:
+      'The newer standard for financial messages, replacing SWIFT MT. It puts each piece of information in its own labelled field, street, building, postcode, city, country, so that software at the other end can read it without guessing.',
+  },
+  {
+    id: 'uetr',
+    term: 'UETR',
+    plain:
+      'Unique end-to-end transaction reference: one identifier attached to a payment at the start that every bank along the chain keeps and can look up, instead of each bank knowing the payment only by its own internal number.',
+  },
+  {
+    id: 'sepa',
+    term: 'SEPA',
+    plain:
+      'The Single Euro Payments Area: the European countries that agreed to run euro payments on one set of rules and formats, so a transfer between two of them works like a domestic one.',
+  },
+  {
     id: 'rpw',
     term: 'Remittance Prices Worldwide (RPW)',
     plain:

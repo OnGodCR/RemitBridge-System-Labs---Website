@@ -2867,3 +2867,172 @@ export function EightGears({ theme }) {
     </figure>
   )
 }
+
+/* --------------------------------------------------------------- post 11 */
+
+/** Twice translated: domestic format, the MT format, another domestic format. */
+export function DoubleTranslation({ theme }) {
+  return (
+    <Chain
+      theme={theme}
+      aria="A payment is converted from the sending country's domestic format into SWIFT MT to cross the border, then converted again into the receiving country's domestic format"
+      stops={[
+        { title: 'Domestic format A', sub: "the sender's country", note: 'converted' },
+        { title: 'SWIFT MT', sub: 'crosses the border', note: 'converted again' },
+        { title: 'Domestic format B', sub: "the recipient's country" },
+      ]}
+      footer={[
+        { lead: 'Two translations', rest: 'before the payment reaches anyone.' },
+        { lead: 'Three formats', rest: 'none of them designed with the others in mind.' },
+      ]}
+    />
+  )
+}
+
+/**
+ * One address, two shapes. The example is a made-up address, not a person;
+ * what it shows is the shape of the fields, which is the post's point.
+ */
+export function AddressFields({ theme }) {
+  const fields = [
+    ['Street name', 'Calle Reforma'],
+    ['Building number', '12'],
+    ['Postal code', '06000'],
+    ['City', 'Mexico City'],
+    ['Country', 'MX'],
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        The same address, in a free-text field and in structured fields
+      </figcaption>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl border border-dashed border-border p-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">MT, free text</p>
+          <p className="mt-2 font-mono text-sm leading-relaxed">CALLE REFORMA 12 06000 MEXICO CITY MX</p>
+          <p className="mt-2 text-xs text-muted-foreground">One line. Which part is the number, which the postcode, is for a person or a guess.</p>
+        </div>
+        <div className={cn('rounded-2xl border p-3', theme.border, theme.tint)}>
+          <p className={cn('text-xs font-bold uppercase tracking-widest', theme.ink)}>ISO 20022, structured</p>
+          <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+            {fields.map(([k, v]) => (
+              <Fragment key={k}>
+                <dt className="text-xs text-muted-foreground">{k}</dt>
+                <dd className="font-mono">{v}</dd>
+              </Fragment>
+            ))}
+          </dl>
+        </div>
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        An invented address, to show the shape. Software reads the right-hand version without help;
+        the left-hand one is where a payment drops out of straight-through processing.
+      </p>
+    </figure>
+  )
+}
+
+/** One reference through the whole chain, against one per bank. */
+export function OneReference({ theme }) {
+  const banks = ['Originator', 'Correspondent', 'Correspondent', 'Beneficiary']
+  const own = ['REF-A-4471', 'TXN-88213', 'IN-0093-Q', 'CR-55020']
+  const Row = ({ label, refs, shared }) => (
+    <div>
+      <p className="mb-2 text-sm font-bold">{label}</p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+        {banks.map((b, i) => (
+          <Fragment key={i}>
+            {i > 0 && <Hop />}
+            <div className={cn('min-w-0 flex-1 rounded-2xl border p-3', shared ? cn(theme.border, theme.tint) : 'border-border bg-card')}>
+              <p className="text-xs text-muted-foreground">{b}</p>
+              <p className={cn('mt-1 truncate font-mono text-xs font-bold', shared ? theme.ink : 'text-foreground')}>{refs[i]}</p>
+            </div>
+          </Fragment>
+        ))}
+      </div>
+    </div>
+  )
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Who can find the payment
+      </figcaption>
+      <div className="mt-4 space-y-6">
+        <Row label="Before: each bank knows its own number" refs={own} />
+        <Row label="With a UETR: every bank knows the same one" refs={Array(4).fill('UETR 97ed4827-…')} shared />
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        The references are invented. The point is that the top row cannot be searched from either
+        end, and the bottom row can be searched from anywhere in it.
+      </p>
+    </figure>
+  )
+}
+
+/** Five banks, one on the old format, and what happens to the structure. */
+export function WeakLink({ theme }) {
+  const banks = [
+    { name: 'Originator', iso: true },
+    { name: 'Correspondent', iso: true },
+    { name: 'Correspondent', iso: false },
+    { name: 'Correspondent', iso: true },
+    { name: 'Beneficiary', iso: true },
+  ]
+  let intact = true
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        A chain is as structured as its least-updated link
+      </figcaption>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-stretch">
+        {banks.map((b, i) => {
+          if (!b.iso) intact = false
+          const state = !b.iso ? 'strips the structure' : intact ? 'structured data' : 'free text from here on'
+          return (
+            <Fragment key={i}>
+              {i > 0 && <Hop />}
+              <div className={cn('min-w-0 flex-1 rounded-2xl border p-3 text-center', !b.iso ? 'border-dashed border-border' : intact ? cn(theme.border, theme.tint) : 'border-border bg-card')}>
+                <p className="text-sm font-bold leading-snug">{b.name}</p>
+                <p className={cn('mt-1 text-xs', !b.iso ? 'font-bold text-muted-foreground' : intact ? theme.ink : 'text-muted-foreground')}>{b.iso ? 'ISO 20022' : 'legacy format'}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{state}</p>
+              </div>
+            </Fragment>
+          )
+        })}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Four banks on the new standard and one on the old. The structure the first two carried does
+        not reach the last two, because the middle one could not carry it.
+      </p>
+    </figure>
+  )
+}
+
+/** Two layers of friction, this post's on top of the previous post's. */
+export function TwoLayers({ theme }) {
+  const layers = [
+    { name: 'Data friction', post: 'this post', items: ['domestic formats', 'free-text MT fields', 'fragmented APIs', 'uneven ISO 20022 adoption'], top: true },
+    { name: 'Scheduling friction', post: 'the previous post', items: ['time zones', 'cutoff times', 'batching', 'compliance review', 'the correspondent chain', 'FX conversion', 'exceptions', 'the last mile'], top: false },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Two kinds of friction, stacked
+      </figcaption>
+      <div className="mt-4 space-y-2">
+        {layers.map((l) => (
+          <div key={l.name} className={cn('rounded-2xl border p-3', l.top ? cn(theme.border, theme.tint) : 'border-border bg-card')}>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+              <p className={cn('text-sm font-bold', l.top && theme.ink)}>{l.name}</p>
+              <p className="text-xs text-muted-foreground">{l.post}</p>
+            </div>
+            <p className="mt-1 text-xs leading-snug text-muted-foreground">{l.items.join(' · ')}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        A payment that clears every step on the bottom layer still has to survive the top one.
+      </p>
+    </figure>
+  )
+}

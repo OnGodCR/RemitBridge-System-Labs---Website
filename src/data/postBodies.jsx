@@ -69,6 +69,11 @@ import {
   DelaysRepeat,
   ChargedVsAvailable,
   EightGears,
+  DoubleTranslation,
+  AddressFields,
+  OneReference,
+  WeakLink,
+  TwoLayers,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -1050,6 +1055,73 @@ export const bodies = {
         'World Bank Blog, "Remittances and Consumer Protection," on a sender\'s account being charged immediately while funds took four days to become available for pickup: blogs.worldbank.org/en/peoplemove/remittances-and-consumer-protection',
         'Western Union, on delivery-time exceptions including destination country, currency availability, identification requirements, agent location hours, and time zone differences: westernunion.com/bn/en/send-money-to-india.html',
         'Prior posts in this series, "SWIFT Sends the Message, So Who Moves the Money?", "Correspondent Banks, Vostro Accounts, and the Hidden Chain Behind a Transfer," and "Clearing, Settlement, and Finality Are Not the Same Thing"',
+      ],
+    },
+  ],
+
+  11: [
+    {
+      type: 'p',
+      text: 'Earlier posts in this series [mapped the physical chain a payment travels through](/blog/correspondent-banks-vostro-accounts-and-the-hidden-chain-behind-a-transfer), bank to bank, and [the scheduling friction layered on top of it](/blog/why-can-an-international-transfer-still-take-several-days), cutoff times, time zones, batching windows. There\'s a completely different problem that we haven\'t addressed at all so far, however, that is extremely fundamental to our approach on {{remittance|remittance}} based transactions. **This is, of course, the language barrier.** The banks in a payment chain often don\'t describe the same transaction the same way, and every time that description has to be translated from one format into another, something can get lost, garbled, or delayed in the process.',
+    },
+    { type: 'h', text: 'Different Countries, Different Domestic Languages' },
+    {
+      type: 'p',
+      text: '**Before a payment ever crosses a border, it usually has to be translated once already.** Most countries run their own domestic payment systems with their own proprietary message formats, built independently of each other and independently of the international standard historically used for cross-border payments, the {{swift-mt|SWIFT MT format}}. That means a payment starting its life inside one country\'s domestic system typically has to be converted into the MT format to cross the border, and then converted again into whatever format the destination country\'s own domestic system expects once it arrives. Every one of these countries was solving its own domestic problem on its own timeline, with no coordination requirement to make sure any of those formats lined up with each other, leading to this mismatch.',
+    },
+    { type: 'figure', render: DoubleTranslation },
+    { type: 'h', text: 'Unstructured Data Makes the Problem Worse' },
+    {
+      type: 'p',
+      text: 'The international standard sitting in the middle of all that translation has its own limitations. SWIFT\'s MT message format, including the MT103 used for customer payments, relies heavily on free-text fields rather than clearly defined, separate data fields. A beneficiary\'s address, for example, is typically just a block of unstructured text rather than distinct fields for street name, building number, city, and country. **Translating a structured domestic format into that kind of free-text MT field, and then back out into a different structured domestic format on the receiving end, is exactly where information tends to get truncated or scrambled.** Regulators studying this directly have pointed to insufficient or unstructured data in these fields as a direct cause of delays, since a payment that can\'t be automatically read and processed by a computer system, {{straight-through-processing|straight-through processing}}, in the industry\'s own terms, has to fall back on a person manually reviewing and correcting it instead.',
+    },
+    { type: 'figure', render: AddressFields },
+    { type: 'h', text: 'Fragmented APIs Add a Newer Version of the Same Problem' },
+    {
+      type: 'p',
+      text: 'Message formats like MT and its replacements aren\'t the only way banks and payment providers exchange information anymore. A growing share of payment activity now runs through {{api|APIs}} and direct software connections that let one system request information or trigger an action in another system in real time. APIs solve a lot of problems the older messaging formats couldn\'t. **They also introduce a new version of the same fragmentation problem: API technical standards are just as inconsistent across providers as message formats ever were.** International banking regulators studying this directly found that fragmented API standards are actively hindering their potential in cross-border payments, leading to longer processing times, higher costs, and a greater risk of errors, largely because every bank, country, and provider has tended to build its own API independently, the same uncoordinated pattern that produced the MT-format translation problem in the first place, just showing up again in newer technology.',
+    },
+    { type: 'h', text: 'ISO 20022: A Common Language Being Built' },
+    {
+      type: 'p',
+      text: 'The industry\'s answer to all of this is a newer messaging standard called {{iso-20022|ISO 20022}}, and it\'s specifically designed to fix the structural problems described above. **Instead of a free-text address field, ISO 20022 breaks that same information into clearly defined, separate data elements**, street name, building number, postal code, city, and country each captured on their own. The same structured approach applies to remittance information: where an MT103 offers only a limited free-text reference, its ISO 20022 equivalent, a message type called pacs.008, can carry a full structured remittance block, including invoice references and line-item detail. ISO 20022 also introduced something genuinely new for tracking a payment\'s progress: **a unique reference number, the {{uetr|UETR}}, that stays attached to a transaction across every single bank it passes through**, letting anyone in the chain look up the same payment using the same identifier rather than each bank only knowing its own internal reference for it.',
+    },
+    { type: 'figure', render: OneReference },
+    { type: 'h', text: 'Adoption Isn\'t Instant, and It Isn\'t Uniform' },
+    {
+      type: 'p',
+      text: 'None of this fixes the problem the moment it\'s introduced, and it\'s worth being direct about why. **Financial institutions and the domestic payment infrastructure they connect to don\'t all adopt ISO 20022 on the same schedule or to the same depth.** Global banks tend to follow international release timelines, while individual countries\' own payment infrastructure often applies updates on its own domestic schedule and frequently supports only a limited subset of what the full standard actually offers. This is the exact problem we are seeing currently as well: there\'s disagreement between what global leaders want domestic partners to adopt and what\'s actually being adopted.',
+    },
+    {
+      type: 'p',
+      text: 'Another version of this problem is the fact that sending a payment with rich, structured ISO 20022 data doesn\'t guarantee that data survives the whole journey. If even one bank in a five-institution chain is still running an older format internally, that single {{intermediary-bank|intermediary}} can strip the structure back out of the payment before passing it along, reintroducing exactly the kind of manual, unstructured friction ISO 20022 was built to eliminate. **A chain is only as consistent as its least-updated link**, and getting every single institution in every single {{corridor|corridor}} onto the same standard, at the same time, at the same depth, is a coordination problem on a global scale.',
+    },
+    { type: 'figure', render: WeakLink },
+    { type: 'h', text: 'Proof That Fixing This Actually Works' },
+    {
+      type: 'p',
+      text: 'The Single Euro Payments Area, {{sepa|SEPA}}, is a real example of what happens when a group of countries actually standardizes their payment systems around each other. Before SEPA, cross-border euro payments between European countries were meaningfully more expensive and slower than they needed to be, specifically because each country\'s national clearing system worked differently from its neighbors\'. Standardizing those systems around a shared set of rules and formats is a large part of why euro payments within that region now move faster and more cheaply than most cross-border transfers anywhere else in the world. **It\'s a working demonstration that the fragmentation described throughout this post is actually correctable.** It\'s ultimately just a coordination problem, and if regions are willing to cooperate, this is a problem that requires no additional technical innovation.',
+    },
+    { type: 'h', text: 'Two Kinds of Friction, Stacked Together' },
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/why-can-an-international-transfer-still-take-several-days) explained why an international transfer can take several days even when every institution involved is doing its job correctly, cutoff times, banking hours, compliance review, currency conversion, the physical last mile. **This post describes a separate, compounding layer sitting on top of all of it**: even once a payment clears every one of those steps, the information describing it has often been translated, truncated, and reassembled multiple times along the way, through formats and APIs that were never built to match each other in the first place. ISO 20022 and the broader push toward harmonized APIs are real, active efforts to close that gap. Closing it fully means getting every bank, in every country, on every corridor, speaking close to the same language at close to the same time, and that\'s a much bigger coordination challenge than updating any single bank\'s own systems.',
+    },
+    { type: 'figure', render: TwoLayers },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'Bank for International Settlements, CPMI Brief 11, "The future of financial messaging: navigating the ISO 20022 migration journey," on the G20 Roadmap identifying fragmented messaging standards, MT-to-domestic-format translation causing data truncation, and inconsistent adoption timelines creating friction: bis.org/cpmi/publ/brief11.pdf',
+        'Citi, "ISO 20022: The New Language of Global Payments," on unstructured and incomplete data in SWIFT MT messaging as a primary friction point: citigroup.com/rcs/citigpa/storage/public/icpublic/ISO20022_Global_Payments.pdf',
+        'Thunes, "How ISO 20022 is reshaping cross-border payments," on the cross-border consistency problem, where structured data sent from one end doesn\'t guarantee structured data received at the other: thunes.com/insights/learn/data-rich-payments-in-an-iso-20022-world',
+        'Evonsys, "Payment Investigations Migrating to ISO 20022," on MT103\'s unstructured fields versus pacs.008\'s structured remittance block: evonsys.com/tracei-blogs/payment-investigations-migrating-to-iso-20022-how-data-rich-messages-reshape-workflows',
+        'ACI Worldwide, "Your Guide To Taking On ISO 20022," on pacs.008 as the ISO 20022 equivalent of MT103: aciworldwide.com/how-to-migrate-to-iso-20022',
+        'Razorpay, "MT103 vs MT202: Differences & Meaning for Customer Transfers," on the UETR as a unique reference that stays with a transaction across all banks: razorpay.com/blog/mt103-vs-mt202-differences-customer-transfer-meaning',
+        'Bank for International Settlements, CPMI, "Promoting the harmonisation of application programming interfaces to enhance cross-border payments," on fragmented API technical standards increasing processing time, expense, and error risk: bis.org/cpmi/publ/d224.htm',
+        'Bank for International Settlements, CPMI, "Harmonised ISO 20022 data requirements for enhancing cross-border payments," on the G20 cross-border payments programme and the 12 harmonized data requirements developed with industry: bis.org/cpmi/publ/d218.htm',
+        'ProgreSoft, "Bridging Fragmentation: A Central Bank Imperative," on SEPA as an example of standardization reducing cross-border euro payment cost and time compared to fragmented national clearing systems: progressoft.com/blogs/bridging-fragmentation-a-central-bank-imperative',
+        'Prior posts in this series, "Correspondent Banks, Vostro Accounts, and the Hidden Chain Behind a Transfer" and "Why Can an International Transfer Still Take Several Days?"',
       ],
     },
   ],
