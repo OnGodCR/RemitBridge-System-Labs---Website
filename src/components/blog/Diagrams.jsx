@@ -2559,3 +2559,101 @@ export function ThreeEffects({ theme }) {
     </figure>
   )
 }
+
+/* ---------------------------------------------------------------- post 9 */
+
+/**
+ * The three stages as rungs, the third hollow. Drawn where the post has
+ * covered two of them and is about to name the third, so the empty rung is
+ * the set-up rather than a summary.
+ */
+export function ThreeStages({ theme }) {
+  const rungs = [
+    { name: 'Clearing', what: 'Instruction sent, details reconciled, obligation confirmed. No money moves.', done: true },
+    { name: 'Settlement', what: 'The money moves and becomes available, between accounts at a central bank.', done: true },
+    { name: 'Finality', what: 'The point after which it cannot be undone.', done: false },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Three stages, two covered so far
+      </figcaption>
+      <ol className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-stretch">
+        {rungs.map((r, i) => (
+          <Fragment key={r.name}>
+            {i > 0 && <Hop />}
+            <li className={cn('min-w-0 flex-1 rounded-2xl border p-3', r.done ? cn(theme.border, theme.tint) : 'border-dashed border-border')}>
+              <p className={cn('text-sm font-bold', r.done ? theme.ink : 'text-muted-foreground')}>
+                <span className="tabular-nums">{i + 1}.</span> {r.name}
+              </p>
+              <p className="mt-1 text-xs leading-snug text-muted-foreground">{r.what}</p>
+            </li>
+          </Fragment>
+        ))}
+      </ol>
+    </figure>
+  )
+}
+
+/**
+ * The ACH window: credit visible on day one, provisional for five business
+ * days, final after. The post's own example, with NACHA's number.
+ */
+export function ProvisionalWindow({ theme }) {
+  const days = 5
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        An ACH credit, from appearing to final
+      </figcaption>
+      <div className="mt-6">
+        <div className="relative h-3 rounded-full bg-muted">
+          <div className={cn('absolute inset-y-0 left-0 rounded-l-full border border-dashed', theme.border)} style={{ width: '78%' }} aria-hidden />
+          <div className={cn('absolute inset-y-0 rounded-r-full', theme.bar)} style={{ left: '78%', right: 0 }} aria-hidden />
+          <span className="absolute inset-y-[-5px] left-0 w-0.5 bg-foreground/60" aria-hidden />
+          <span className="absolute inset-y-[-5px] w-0.5 bg-foreground/60" style={{ left: '78%' }} aria-hidden />
+        </div>
+        <div className="mt-2 grid grid-cols-[auto_1fr_auto] text-xs">
+          <span className="font-bold">Day 1: credit appears</span>
+          <span className="text-center text-muted-foreground">provisional for {days} business days</span>
+          <span className={cn('font-bold', theme.ink)}>final</span>
+        </div>
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        NACHA rules let the originating bank reverse the credit for up to {days} business days. The
+        dashed stretch is money the recipient can see and spend that has not reached finality.
+      </p>
+    </figure>
+  )
+}
+
+/** What "sent" has and has not done, stage by stage. */
+export function WhatSentMeans({ theme }) {
+  const rows = [
+    { stage: 'Clearing', status: 'done', note: 'the instruction has left', tone: 'done' },
+    { stage: 'Settlement', status: 'maybe', note: 'the money may not have moved', tone: 'maybe' },
+    { stage: 'Finality', status: 'almost certainly not yet', note: 'it can still be undone', tone: 'no' },
+  ]
+  const tone = (t) => (t === 'done' ? cn(theme.border, theme.tint, theme.ink) : t === 'maybe' ? 'border-border bg-card text-foreground' : 'border-dashed border-border text-muted-foreground')
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        What the word "sent" is telling you
+      </figcaption>
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className={cn('rounded-2xl border px-5 py-4 text-center sm:w-40 sm:shrink-0', theme.border, theme.tint)}>
+          <p className={cn('text-2xl font-extrabold', theme.ink)}>Sent</p>
+          <p className="text-xs text-muted-foreground">on the screen</p>
+        </div>
+        <ul className="grid flex-1 gap-2">
+          {rows.map((r) => (
+            <li key={r.stage} className={cn('flex flex-wrap items-baseline justify-between gap-x-3 rounded-xl border px-3 py-2', tone(r.tone))}>
+              <span className="text-sm font-bold">{r.stage}: {r.status}</span>
+              <span className="text-xs">{r.note}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </figure>
+  )
+}

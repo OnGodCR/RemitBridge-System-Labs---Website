@@ -335,6 +335,24 @@ export const terms = [
       'A three-letter code on every SWIFT payment saying who pays the banks in the middle. SHA: shared, each intermediary takes its fee from the money in transit. OUR: the sender pays every fee up front. BEN: the recipient pays all of them, out of what arrives.',
   },
   {
+    id: 'clearing',
+    term: 'Clearing',
+    plain:
+      'The checking stage of a payment: the instruction is sent, both sides reconcile the details, and each confirms what it now owes the other. No money moves. A SWIFT message is a clearing event.',
+  },
+  {
+    id: 'ach',
+    term: 'ACH',
+    plain:
+      'The Automated Clearing House, the network behind most everyday bank-to-bank payments in the United States, direct deposits and bill payments included. Cheap and batch-processed, and a credit sent through it can be reversed for days afterwards.',
+  },
+  {
+    id: 'provisional-credit',
+    term: 'Provisional credit',
+    plain:
+      'Money that shows in an account before the payment behind it is final. It can be spent, and it can also be taken back if settlement does not go through. The word is in the account agreement, not on the screen.',
+  },
+  {
     id: 'rpw',
     term: 'Remittance Prices Worldwide (RPW)',
     plain:

@@ -174,9 +174,15 @@ export const posts = [
   },
   {
     "id": 9,
+    "publishedOn": "2026-09-21",
     "series": "series2",
     "seriesName": "How banks move it",
-    "title": "Clearing, settlement, and finality are three different things",
+    "title": "Clearing, settlement, and finality are not the same thing",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "What each of those words means, and why an app can say \"sent\" while the receiving bank still does not have money anyone can actually spend. The gap between those two moments is where most of the confusion lives.",
     "readTime": "7 min read",
     "tags": [

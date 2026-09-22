@@ -25,6 +25,7 @@ stays auditable and the images can be re-verified or replaced.
 | `coin-stacks.jpg` | Stacks of Coins (cropped to 21:9) | CC0 | [source](https://commons.wikimedia.org/wiki/File:Stacks_of_Coins.jpg) |
 | `umbrella-rain.jpg` | Umbrella Rain, by Mary (cropped to 21:9) | CC0 | [source](https://stocksnap.io/photo/umbrella-rain-KIJJLUCS7S) |
 | `metal-chain.jpg` | Metal chain, by JJ Ying (cropped to 21:9) | CC0 | [source](https://commons.wikimedia.org/wiki/File:Metal_chain_(Unsplash).jpg) |
+| `hourglass.jpg` | Hourglass with wooden top and bottom, by bluedigitalist (cropped to 21:9) | CC0 | [source](https://wordpress.org/photos/photo/98365ccf5b/) |
 | `near-logo.png` | NEAR Protocol logo, used to identify NEAR in blog post 14 | CC0 | [source](https://commons.wikimedia.org/wiki/File:Near_Protocol_Logo.png) |
 | `polygon-logo.png` | Polygon logo, used to identify Polygon in blog post 15 | CC0 | [source](https://commons.wikimedia.org/wiki/File:Polygon_logo_blockchain.png) |
 | `founder.jpg` | Photo of the founder, provided by the founder (their own photo, shared in chat) | own photo | — |

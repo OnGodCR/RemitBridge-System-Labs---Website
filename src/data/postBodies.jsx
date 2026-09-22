@@ -61,6 +61,9 @@ import {
   LondonToVietnam,
   WhoPays,
   ThreeEffects,
+  ThreeStages,
+  ProvisionalWindow,
+  WhatSentMeans,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -903,6 +906,70 @@ export const bodies = {
         'AcceleronBank, "Correspondent Bank vs. Intermediary Bank vs. Beneficiary Bank: What\'s the Difference?", on the four key roles in a cross-border payment chain: acceleronbank.com/articles/correspondent-bank-vs-intermediary-bank-vs-beneficiary-bank',
         'XTransfer, "Decoding the Cross-Border Payment Chain," on de-risking increasing the number of required transit hops in emerging-market corridors: xtransfer.com/knowledge-hub/69e0848dab39456f29e9ef40',
         'Prior posts in this series, "SWIFT Sends the Message, So Who Moves the Money?" and "Why the Same Transfer Can Cost More on One Corridor Than Another," on Nostro/Vostro accounts and correspondent-banking de-risking',
+      ],
+    },
+  ],
+
+  9: [
+    {
+      type: 'p',
+      text: 'Open a money transfer app after sending a payment and it almost always shows one word: sent. Any rational person would think the process has started and ended, and money has changed wallets. This is far from the truth, however. **In reality, "sent" usually describes something much earlier in the process than most people assume**, and the gap between what "sent" actually means and what people think it means comes down to three separate concepts that get treated as one: {{clearing|clearing}}, {{settlement|settlement}}, and {{finality|finality}}. All three of these terms are extremely important to understand to explain the delay between the start and end of a {{remittance|remittance}} transfer.',
+    },
+    { type: 'h', text: 'Clearing' },
+    {
+      type: 'p',
+      text: '**Clearing is the checking stage.** It involves the process of transmitting a payment instruction, reconciling the details on both sides, and confirming that everything, the amount, the currency, the account information, matches before any actual money moves. Banking regulators define it in the following way: clearing is about transmitting, reconciling, and confirming payment instructions prior to settlement. This means that no money actually moves in the clearing stage. **Clearing answers one question: what do we now owe each other?** It doesn\'t answer whether that obligation has actually been paid.',
+    },
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/swift-sends-the-message-so-who-moves-the-money) described exactly what clearing looks like at the start of an international transfer: a {{swift|SWIFT}} message being sent from one bank to another. **That message is a clearing-stage event.** It transmits and confirms the instruction. It doesn\'t carry the money itself, and it doesn\'t discharge anyone\'s obligation to actually deliver funds.',
+    },
+    { type: 'h', text: 'Settlement' },
+    {
+      type: 'p',
+      text: 'Settlement is the step clearing sets up. **It\'s the actual transfer of funds, the point where money moves from one account to another and becomes available.** Regulators define settlement as the act that discharges obligations between parties, in respect of funds or securities. For interbank payments, this typically means money moving between accounts held at a central bank, which is exactly the role [an earlier post in this series](/blog/swift-sends-the-message-so-who-moves-the-money) described {{rtgs|RTGS}} systems, like Fedwire in the US, playing: the layer where money actually, finally changes hands between banks\' own accounts.',
+    },
+    {
+      type: 'p',
+      text: 'Settlement sounds like it should be the end of the story, and often it\'s treated that way. It isn\'t quite. Settlement means funds have been transferred and made available. **It doesn\'t automatically mean that transfer can never be undone.**',
+    },
+    { type: 'figure', render: ThreeStages },
+    { type: 'h', text: 'Finality' },
+    {
+      type: 'p',
+      text: '**Finality is the property of a payment being irrevocable and unconditional**, meaning it cannot be reversed, clawed back, or disputed away once it\'s reached this point. Settlement and finality can happen at the same moment in some systems. In others, they\'re separated by days, during which funds look settled and available but are still, technically, reversible.',
+    },
+    {
+      type: 'p',
+      text: 'The clearest everyday example of this gap is domestic {{ach|ACH}} transfers in the US. Under NACHA\'s own operating rules, **a credit transferred through ACH can be reversed by the originating bank for up to five business days after it was sent**, and the credit that shows up in the recipient\'s account before that window closes is explicitly described in bank account agreements as {{provisional-credit|provisional}}, meaning it can be pulled back if final settlement doesn\'t actually go through. A recipient can see the money, spend it, and treat it as theirs, while it technically hasn\'t reached finality yet.',
+    },
+    { type: 'figure', render: ProvisionalWindow },
+    { type: 'h', text: 'Why an App Can Say "Sent" Before Any of This Is Actually Done' },
+    {
+      type: 'p',
+      text: 'Put these three concepts back together and the confusion around that single word "sent" makes complete sense. **In most consumer-facing apps, "sent" reflects that a payment instruction has been transmitted, a clearing-stage event, not that settlement has happened and certainly not that finality has been reached.** For an international remittance specifically, "sent" often means little more than a SWIFT message left the sender\'s bank. The money it describes still has to move through whatever {{correspondent-bank|correspondent chain}} [an earlier post in this series](/blog/correspondent-banks-vostro-accounts-and-the-hidden-chain-behind-a-transfer) mapped out, get settled through an RTGS system at the appropriate central bank, and only then, potentially, reach a point where it can\'t be reversed or disputed by anyone in that chain.',
+    },
+    {
+      type: 'p',
+      text: 'This matters most in exactly the situations where people are watching that "sent" status most closely. [A previous post in this series](/blog/remittances-as-household-insurance) described remittances functioning as emergency support, money that needs to arrive fast because a medical bill or an unexpected expense can\'t wait. A family checking an app during exactly that kind of moment, seeing "sent" and assuming the money is already sitting, usable and irreversible, in their relative\'s account, is trusting a word that was never making that promise in the first place. **Clearing had happened. Settlement might not have. Finality almost certainly hadn\'t.**',
+    },
+    { type: 'figure', render: WhatSentMeans },
+    { type: 'h', text: 'Three Words, Three Different Moments' },
+    {
+      type: 'p',
+      text: '**Clearing confirms what\'s owed. Settlement moves the money and makes it available. Finality is the point where that movement can no longer be undone.** Treating these as one event, or assuming that seeing "sent" on a screen means all three have already happened, is exactly how a transfer can look finished long before the money it represents is actually, fully, irreversibly in the recipient\'s hands.',
+    },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'Finextra, "Clearing vs Settlement: What Happens Between Payment Initiation and Final Funds Transfer," citing the Bank for International Settlements\' definitions of clearing and settlement: finextra.com/blogposting/30705/clearing-vs-settlement-what-happens-between-payment-initiation-and-final-funds-transfer',
+        'Financial Professionals Organization glossary, on the distinction between settlement (availability) and finality (irrevocability): financialprofessionals.org/glossary/payments',
+        'Bank for International Settlements, Committee on Payment and Settlement Systems glossary, on the formal definitions of clearing and settlement: bis.org/cpmi/glossary_030301.pdf',
+        'Stripe Support, "ACH Credit Transfer Reversals," on NACHA rules allowing ACH credit reversals within 5 business days of the original transaction: support.stripe.com/questions/ach-credit-transfer-reversals',
+        'Paychex, "What Is a Provisional Credit? A Guide for Business Owners," on provisional credit as a temporary, reversible credit distinct from final settlement: paychex.com/glossary/what-is-a-provisional-credit',
+        'Law Insider, sample ACH Entries account agreement language, on credit to an account being "provisional until we have received settlement," with the originator entitled to a refund if final settlement is not received: lawinsider.com/clause/ach-entries',
+        'Prior posts in this series, "SWIFT Sends the Message, So Who Moves the Money?" and "Correspondent Banks, Vostro Accounts, and the Hidden Chain Behind a Transfer," on SWIFT messaging, RTGS settlement, and the correspondent-bank chain',
       ],
     },
   ],

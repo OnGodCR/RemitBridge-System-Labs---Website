@@ -378,5 +378,5 @@ Recommended if a tie-break is ever needed: RPW, cheapest-first without the word
   commit. RemitBench's comparison table can read the same files.
 - Glossary translations — six languages listed, all "no reviewer yet". A column
   publishes only when a named speaker consents in writing.
-- Blog — 30 planned, 12 written. The page counts entries in `postBodies.jsx`
+- Blog — 30 planned, 13 written. The page counts entries in `postBodies.jsx`
   and says so. Post 2 is the first one through review.
