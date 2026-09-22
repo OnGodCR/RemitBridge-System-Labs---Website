@@ -2689,40 +2689,78 @@ export function WorldClock({ theme }) {
 }
 
 /**
- * Continuous against batched: the same eight payments, one row released as
- * they come, the other held and released in two windows. Dots, not a
- * queue simulation; the point is the gap, not the throughput.
+ * Continuous against batched, on one time axis.
+ *
+ * Eight payments arrive at the same eight moments in both rows. In the
+ * first each is processed where it arrives. In the second they wait on the
+ * track, hollow, until one of two windows, where the four that have
+ * accumulated are released together. Same arrivals, same axis, so the
+ * only difference on the page is the waiting.
  */
 export function BatchVsStream({ theme }) {
-  const Dot = ({ on }) => (
-    <span className={cn('size-3 shrink-0 rounded-full', on ? theme.bar : cn('border', theme.border))} aria-hidden />
+  const n = 8
+  const at = (i) => `${((i + 0.5) / n) * 100}%`
+  const windows = [4, 8] // after the 4th and 8th arrival
+  const Track = ({ children, label, room }) => (
+    // `room` leaves space above for the window labels.
+    <div className={cn('relative h-8', room ? 'mt-7' : 'mt-3')} aria-label={label}>
+      <div className="absolute inset-x-0 top-1/2 h-px bg-border" aria-hidden />
+      {children}
+    </div>
   )
+  const dot = (cls) => cn('absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full', cls)
   return (
     <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
       <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
         Eight payments, two ways of processing them
       </figcaption>
-      <div className="mt-5 space-y-5">
-        <div>
-          <p className="mb-2 text-sm font-bold">One by one, as they arrive</p>
-          <div className="flex items-center justify-between" aria-label="Eight payments processed as each arrives">
-            {Array.from({ length: 8 }, (_, i) => <Dot key={i} on />)}
-          </div>
-          <p className="mt-1.5 text-xs text-muted-foreground">Each moves the moment it is ready. Wires work this way.</p>
-        </div>
-        <div>
-          <p className="mb-2 text-sm font-bold">In batches, at set windows</p>
-          <div className="flex items-center justify-between" aria-label="Eight payments held and released in two batches">
-            <span className="flex items-center gap-1">{Array.from({ length: 4 }, (_, i) => <Dot key={i} on={i === 3} />)}</span>
-            <span className={cn('text-xs font-bold', theme.ink)}>window</span>
-            <span className="flex items-center gap-1">{Array.from({ length: 4 }, (_, i) => <Dot key={i} on={i === 3} />)}</span>
-            <span className={cn('text-xs font-bold', theme.ink)}>window</span>
-          </div>
-          <p className="mt-1.5 text-xs text-muted-foreground">
-            Hollow dots wait; the batch moves together at the window. ACH works this way, and so do
-            the compliance and conversion steps around a wire.
-          </p>
-        </div>
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+        <span className="inline-flex items-center gap-2">
+          <span className={cn('size-2.5 rounded-full', theme.bar)} aria-hidden />
+          <span className="font-bold">Processed</span>
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className={cn('size-2.5 rounded-full border', theme.border)} aria-hidden />
+          <span className="font-bold">Waiting</span>
+        </span>
+      </div>
+
+      <div className="mt-5">
+        <p className="text-sm font-bold">One by one, as they arrive</p>
+        <Track label="Eight payments, each processed at the moment it arrives">
+          {Array.from({ length: n }, (_, i) => (
+            <span key={i} className={dot(theme.bar)} style={{ left: at(i) }} aria-hidden />
+          ))}
+        </Track>
+        <p className="mt-1 text-xs text-muted-foreground">Each moves the moment it is ready. Wires work this way.</p>
+      </div>
+
+      <div className="mt-6">
+        <p className="text-sm font-bold">In batches, at set windows</p>
+        <Track room label="The same eight payments waiting, then released four at a time at two windows">
+          {Array.from({ length: n }, (_, i) => (
+            <span key={i} className={dot(cn('border bg-background', theme.border))} style={{ left: at(i) }} aria-hidden />
+          ))}
+          {windows.map((w) => (
+            <Fragment key={w}>
+              <span
+                className={cn('absolute top-0 h-8 w-0.5 -translate-x-1/2', theme.bar)}
+                style={{ left: `${(w / n) * 100}%` }}
+                aria-hidden
+              />
+              <span
+                className={cn('absolute -top-4 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-widest', theme.ink)}
+                style={{ left: `${(w / n) * 100}%` }}
+              >
+                window
+              </span>
+            </Fragment>
+          ))}
+        </Track>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Every payment waits, hollow, for the next window, where the four that have built up move
+          together. ACH works this way, and so do the compliance and conversion steps around a wire.
+        </p>
       </div>
     </figure>
   )
