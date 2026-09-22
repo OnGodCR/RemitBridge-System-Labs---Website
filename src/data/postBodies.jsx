@@ -120,10 +120,8 @@ import {
  * Post 6's approved opening said "six different kinds of shocks" over a
  * list of five, ending in "/". Angad had both corrected on 2026-09-21.
  *
- * Post 10's closing paragraph reads "Rather than one individual steps, It's
- * eight smaller ones", a stray plural and a capital after the comma, and
- * its opening has "aims to breakdown" for "break down". Left as approved
- * and flagged 2026-09-22.
+ * Post 10's approved text had "aims to breakdown" and "Rather than one
+ * individual steps, It's eight"; Angad had all three corrected 2026-09-22.
  *
  * Block types: p, h (level 3 for a subheading), label, quote, list, image,
  * callout, table, figure, equation, sources, cta.
@@ -987,7 +985,7 @@ export const bodies = {
   10: [
     {
       type: 'p',
-      text: 'Earlier posts in this series [explained what {{swift|SWIFT}} actually does](/blog/swift-sends-the-message-so-who-moves-the-money), [mapped the chain of {{correspondent-bank|correspondent banks}} a payment travels through](/blog/correspondent-banks-vostro-accounts-and-the-hidden-chain-behind-a-transfer), and [drew the line between a payment being sent, settled, and actually final](/blog/clearing-settlement-and-finality-are-not-the-same-thing). This post pulls those threads together into the most obvious next question: **why does the whole thing still take days?** This blog post aims to breakdown the exact process, with all the previous blog posts discussing each individual factor. We will take a look at eight smaller factors, that when stacked on top of each other, cause SWIFT transfers to take days.',
+      text: 'Earlier posts in this series [explained what {{swift|SWIFT}} actually does](/blog/swift-sends-the-message-so-who-moves-the-money), [mapped the chain of {{correspondent-bank|correspondent banks}} a payment travels through](/blog/correspondent-banks-vostro-accounts-and-the-hidden-chain-behind-a-transfer), and [drew the line between a payment being sent, settled, and actually final](/blog/clearing-settlement-and-finality-are-not-the-same-thing). This post pulls those threads together into the most obvious next question: **why does the whole thing still take days?** This blog post aims to break down the exact process, with all the previous blog posts discussing each individual factor. We will take a look at eight smaller factors, that when stacked on top of each other, cause SWIFT transfers to take days.',
     },
     { type: 'h', text: 'Time Zones' },
     {
@@ -1036,7 +1034,7 @@ export const bodies = {
     { type: 'h', text: 'Eight Gears, Not One Bottleneck' },
     {
       type: 'p',
-      text: '**None of these eight things is a single point of failure that, if just fixed, would make international transfers instant.** They\'re eight separate and independent delays. Things like time zones, cutoff times, batching, compliance review, the correspondent chain itself, currency conversion, one-off exceptions, and the physical {{last-mile|last mile}} are what contribute to the long gap between when a transaction is "sent!" and when a transaction\'s amount is actually usable. This is the answer to why "1 to 5 business days" shows up so consistently across international transfers. Rather than one individual steps, It\'s eight smaller ones, running one after another, each doing its own job correctly while the total time quietly adds up in between.',
+      text: '**None of these eight things is a single point of failure that, if just fixed, would make international transfers instant.** They\'re eight separate and independent delays. Things like time zones, cutoff times, batching, compliance review, the correspondent chain itself, currency conversion, one-off exceptions, and the physical {{last-mile|last mile}} are what contribute to the long gap between when a transaction is "sent!" and when a transaction\'s amount is actually usable. This is the answer to why "1 to 5 business days" shows up so consistently across international transfers. Rather than one individual step, it\'s eight smaller ones, running one after another, each doing its own job correctly while the total time quietly adds up in between.',
     },
     { type: 'figure', render: EightGears },
     { type: 'h', text: 'Sources' },

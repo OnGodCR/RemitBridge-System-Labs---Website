@@ -27,10 +27,6 @@ Deferred by choice, not forgotten. Update this list as things land.
       7's hero row were dropped rather than built: the sections they were
       planned for already carry a figure each. Post 3's two equations are set
       as `equation` blocks in place, not drawn, so they are text, not figures.
-- [ ] **Post 10 has three wording slips**: "aims to breakdown" for "break
-      down", and the closing "Rather than one individual steps, It's eight"
-      (plural, and a capital after the comma). Flagged 2026-09-22, left as
-      approved until Angad says.
 - [ ] **`data/measures.seed.md`.** Five of the six measures on What we measure
       ship `null` until the lab supplies real collected values with dates.
 - [x] Corridor data, all of it. 348 corridors priced in Q3 2025, 368 with
