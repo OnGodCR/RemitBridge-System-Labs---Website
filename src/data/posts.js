@@ -246,9 +246,15 @@ export const posts = [
   },
   {
     "id": 13,
+    "publishedOn": "2026-09-22",
     "series": "series3",
     "seriesName": "Blockchain scaling",
-    "title": "Why base-layer blockchains struggle with this traffic",
+    "title": "Why base-layer blockchains struggle with remittance-scale traffic",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
     "abstract": "Throughput limits, block capacity, congestion, fees that jump around, and confirmation times. Many small frequent transfers turn out to be a hard traffic pattern for a base layer to handle.",
     "readTime": "9 min read",
     "tags": [

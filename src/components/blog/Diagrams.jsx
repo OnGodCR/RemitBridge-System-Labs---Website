@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
-import { AlertTriangle, ArrowDown, ArrowRight, ArrowLeftRight, Banknote, Briefcase, Clock, CloudRain, Coins, Cross, Globe, HandCoins, Landmark, Layers, Map, Megaphone, Percent, Scale, ShieldCheck, Smartphone, Store, Tag, Users, Wheat } from 'lucide-react'
-import { figures, derived, usMxQ3, wfStandardWire, feeAnatomy, corridorCost, deRisking, channelCost, sendingPattern, shocks, tps, zilliqa, tpsClaims, crossShard, bridgeFailures } from '@/data/figures'
+import { AlertTriangle, ArrowDown, ArrowLeft, ArrowUp, ArrowRight, ArrowLeftRight, Banknote, Briefcase, Clock, CloudRain, Coins, Cross, Globe, HandCoins, Landmark, Layers, Map, Megaphone, Percent, Scale, ShieldCheck, Smartphone, Store, Tag, Users, Wheat } from 'lucide-react'
+import { figures, derived, usMxQ3, wfStandardWire, feeAnatomy, corridorCost, deRisking, channelCost, sendingPattern, shocks, tps, zilliqa, tpsClaims, crossShard, bridgeFailures, baseLayer } from '@/data/figures'
 import { cn } from '@/lib/utils'
 
 /**
@@ -3200,5 +3200,184 @@ export function FiveStacked({ theme }) {
         </div>
       </div>
     </figure>
+  )
+}
+
+/**
+ * Capacity against need, on one linear scale. Linear on purpose: a log scale
+ * would make 7 and 330 look like neighbours, and the distance is the point.
+ */
+export function CapacityGap({ theme }) {
+  const { btcTps, ethTps, need } = baseLayer
+  const max = need.peak
+  const rows = [
+    { label: 'Bitcoin, whole network', value: `~${btcTps} TPS`, from: 0, to: btcTps, supply: true },
+    { label: 'Ethereum, whole network', value: `${ethTps[0]} to ${ethTps[1]} TPS`, from: ethTps[0], to: ethTps[1], supply: true },
+    { label: 'Remittances, 10% share', value: `~${need.earlyShare} TPS`, from: 0, to: need.earlyShare },
+    { label: 'Remittances, ordinary demand floor', value: `${need.ordinaryFloor} TPS`, from: 0, to: need.ordinaryFloor },
+    { label: 'Remittances, peak', value: `~${need.peak} TPS`, from: 0, to: need.peak },
+  ]
+  return (
+    <Panel
+      label="What the chains carry, against what remittances need"
+      note="Both capacity bars are the entire network, shared with every other use. The remittance bars are the range worked out in the throughput post. Ethereum's lighter segment is the reach after recent gas-limit increases."
+    >
+      <div className="space-y-5">
+        {rows.map((r) => (
+          <div key={r.label}>
+            <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-3">
+              <span className="text-sm font-bold">{r.label}</span>
+              <span className="text-sm tabular-nums text-muted-foreground">{r.value}</span>
+            </div>
+            <div className="relative h-3 rounded-full bg-muted">
+              {r.from > 0 && (
+                <div className="absolute inset-y-0 left-0 rounded-full bg-muted-foreground/25" style={{ width: `${(r.to / max) * 100}%` }} />
+              )}
+              <div
+                className={cn('absolute inset-y-0 left-0 rounded-full', r.supply ? 'bg-muted-foreground/60' : theme.bar)}
+                style={{ width: `max(6px, ${((r.from || r.to) / max) * 100}%)` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  )
+}
+
+/** December 2017 on Bitcoin, before and during. One episode, labelled as one. */
+export function CongestionSpike({ theme }) {
+  const b = baseLayer.btc2017
+  const cols = [
+    { name: 'Normal', time: `~${b.normalMin} min`, fee: `~$${b.normalFeeUsd}`, hot: false },
+    { name: 'Congested, December 2017', time: `${b.congestedMin[0]} to ${b.congestedMin[1]} min`, fee: `over $${b.congestedFeeUsd}`, hot: true },
+  ]
+  return (
+    <Panel
+      label="Bitcoin, before and during congestion"
+      note={`Ethereum went through the same thing in the 2021 DeFi boom, with fees of $${baseLayer.eth2021FeeUsd[0]} to $${baseLayer.eth2021FeeUsd[1]} a transaction. At $${b.congestedFeeUsd}, a $200 remittance loses a quarter of itself to the fee alone.`}
+    >
+      <div className="grid gap-2 sm:grid-cols-2">
+        {cols.map((c) => (
+          <div key={c.name} className={cn('rounded-2xl border p-3', c.hot ? cn(theme.border, theme.tint) : 'border-border bg-card')}>
+            <p className={cn('text-sm font-bold', c.hot && theme.ink)}>{c.name}</p>
+            <dl className="mt-2 grid grid-cols-2 gap-2">
+              <div>
+                <dt className="text-xs text-muted-foreground">Confirmation</dt>
+                <dd className="text-lg font-bold tabular-nums">{c.time}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted-foreground">Average fee</dt>
+                <dd className="text-lg font-bold tabular-nums">{c.fee}</dd>
+              </div>
+            </dl>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  )
+}
+
+/** Minutes from broadcast to something close to final, on one axis. */
+export function WaitForFinal({ theme }) {
+  const { btcFinalMinutes, btcConfirmations, ethFinalMinutes } = baseLayer
+  const max = btcFinalMinutes
+  const rows = [
+    { label: 'Bitcoin, one confirmation', value: '~10 min', to: 10, done: false },
+    { label: `Bitcoin, ${btcConfirmations} confirmations`, value: '~1 hour', to: btcFinalMinutes, done: true },
+    { label: 'Ethereum, economic finality', value: `${ethFinalMinutes[0]} to ${ethFinalMinutes[1]} min`, to: ethFinalMinutes[1], from: ethFinalMinutes[0], done: true },
+  ]
+  return (
+    <Panel
+      label="Waiting for final, in minutes"
+      note="Neither chain makes a transaction untouchable the moment it is broadcast. One confirmation is the chain's version of sent; the longer bars are its version of final."
+    >
+      <div className="space-y-5">
+        {rows.map((r) => (
+          <BarRow
+            key={r.label}
+            theme={theme}
+            label={r.label}
+            value={r.value}
+            width={((r.from ?? r.to) / max) * 100}
+            ghost={r.from ? (r.to / max) * 100 : undefined}
+          />
+        ))}
+      </div>
+      <div className="mt-2 flex justify-between text-xs tabular-nums text-muted-foreground" aria-hidden>
+        <span>0</span>
+        <span>30</span>
+        <span>60 min</span>
+      </div>
+    </Panel>
+  )
+}
+
+/**
+ * One lane, ordered by bid. The bids are illustrative, and the figure says
+ * so: what it shows is that ordering, not any real fee level.
+ */
+export function OneQueue({ theme }) {
+  const queue = [
+    { what: 'NFT mint', bid: 'highest bid' },
+    { what: 'Large DeFi trade', bid: 'high bid' },
+    { what: 'Everything else', bid: 'middling bids' },
+    { what: '$200 remittance', bid: 'lowest bid', ours: true },
+  ]
+  return (
+    <Panel
+      label="One queue for the next block"
+      note="Illustrative ordering, not real fees. There is no lane for small payments: whatever bids more goes first, and the next block only holds so much."
+    >
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+        <div className={cn('rounded-2xl border p-3 sm:w-40', theme.border, theme.tint)}>
+          <p className={cn('text-sm font-bold', theme.ink)}>Next block</p>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">fixed room, filled from the top of the queue</p>
+        </div>
+        <div className="flex shrink-0 items-center justify-center" aria-hidden>
+          <ArrowUp className="size-4 text-muted-foreground sm:hidden" />
+          <ArrowLeft className="hidden size-4 text-muted-foreground sm:block" />
+        </div>
+        <ol className="min-w-0 flex-1 space-y-2">
+          {queue.map((q, i) => (
+            <li key={q.what} className="flex items-baseline justify-between gap-3 rounded-2xl border border-border bg-card px-3 py-2">
+              <span className={cn('text-sm', q.ours ? cn('font-bold', theme.ink) : 'font-medium')}>
+                {i + 1}. {q.what}
+              </span>
+              <span className="text-xs text-muted-foreground">{q.bid}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </Panel>
+  )
+}
+
+/** What the base layer was built for, what a remittance network needs, and what comes next. */
+export function BuiltForDifferent({ theme }) {
+  const next = ['Sharding: splitting the network into pieces', 'Sidechains: specialised side rails', 'Payment channels: moving payments off the base layer']
+  return (
+    <Panel label="Built for a different job">
+      <div className="grid gap-2 sm:grid-cols-2">
+        <div className="rounded-2xl border border-border bg-card p-3">
+          <p className="text-sm font-bold">What Bitcoin and Ethereum are built for</p>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">
+            general-purpose settlement: every transaction treated the same, an open market for space
+          </p>
+        </div>
+        <div className={cn('rounded-2xl border p-3', theme.border, theme.tint)}>
+          <p className={cn('text-sm font-bold', theme.ink)}>What a remittance network needs</p>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">
+            a steady stream of $200 transfers, predictable cost, certainty without an hour's wait
+          </p>
+        </div>
+      </div>
+      <p className="mt-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Closing the gap, next in this series</p>
+      <ul className="mt-2 space-y-1">
+        {next.map((n) => (
+          <li key={n} className="text-sm">{n}</li>
+        ))}
+      </ul>
+    </Panel>
   )
 }

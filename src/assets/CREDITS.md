@@ -29,6 +29,7 @@ stays auditable and the images can be re-verified or replaced.
 | `brass-gears.jpg` | Gears on Tide Predicting Machine No. 2, by scattered1 (1024px, cropped to 21:9) | CC0 | [source](https://www.flickr.com/photos/85987121@N00/26134911713) |
 | `rosetta-stone.jpg` | Greek script from the Rosetta Stone, by Gary Todd (cropped to 21:9) | CC0 | [source](https://commons.wikimedia.org/wiki/File:Greek_Script_from_Rosetta_Stone_(36140196440).jpg) |
 | `new-bridge.jpg` | A new pedestrian bridge under construction beside the Oulujoki bridges, Oulu, by Estormiz (cropped to 21:9) | CC0 | [source](https://commons.wikimedia.org/wiki/File:Pedestrian_Bridge_Construction_Oulu_20180422.jpg) |
+| `traffic-queue.jpg` | Traffic jam, by spongebabyalwaysfull (1024px, cropped to 21:9) | CC0 | [source](https://www.flickr.com/photos/73080909@N03/7254195084) |
 | `near-logo.png` | NEAR Protocol logo, used to identify NEAR in blog post 14 | CC0 | [source](https://commons.wikimedia.org/wiki/File:Near_Protocol_Logo.png) |
 | `polygon-logo.png` | Polygon logo, used to identify Polygon in blog post 15 | CC0 | [source](https://commons.wikimedia.org/wiki/File:Polygon_logo_blockchain.png) |
 | `founder.jpg` | Photo of the founder, provided by the founder (their own photo, shared in chat) | own photo | — |

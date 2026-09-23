@@ -472,6 +472,60 @@ export const terms = [
     plain:
       'An account where a company holds money that belongs to its customers, kept apart from its own funds so it cannot be spent on the business or lost if the business fails.',
   },
+  {
+    id: 'base-layer',
+    term: 'Base layer',
+    plain:
+      'The main blockchain itself, such as Bitcoin or Ethereum, as opposed to systems built on top of it. Every transaction it carries competes for the same limited room in each block.',
+  },
+  {
+    id: 'block',
+    term: 'Block',
+    plain:
+      'A batch of transactions a blockchain adds to its record in one go. Each chain caps how much a block can hold and how often a new one arrives, which sets how many transactions it can carry at all.',
+  },
+  {
+    id: 'gas-limit',
+    term: 'Gas limit',
+    plain:
+      'Ethereum\'s cap on how much computing work a single block may contain. It does the job a fixed block size does on Bitcoin: raising it lets more transactions in, at the cost of heavier blocks for every node to process.',
+  },
+  {
+    id: 'fee-auction',
+    term: 'Fee auction',
+    plain:
+      'How a busy blockchain decides what goes in the next block: senders attach a fee, and the highest bids are included first. Nothing is rejected outright; a low bid simply waits, or never gets in.',
+  },
+  {
+    id: 'confirmation',
+    term: 'Confirmation',
+    plain:
+      'One more block added on top of the block holding your transaction. Each one makes the transaction harder to undo, which is why a recipient may wait for several before treating it as done.',
+  },
+  {
+    id: 'chain-reorg',
+    term: 'Chain reorganisation',
+    plain:
+      'When a blockchain swaps its most recent blocks for a competing, longer set, dropping transactions that looked confirmed. Rare, but the reason waiting for more confirmations exists.',
+  },
+  {
+    id: 'staking',
+    term: 'Staking',
+    plain:
+      'Locking up a blockchain\'s own currency as a deposit in order to help run the network. On Ethereum it is what an attacker would have to destroy to reverse a finalised transaction.',
+  },
+  {
+    id: 'defi',
+    term: 'DeFi',
+    plain:
+      'Decentralised finance: lending, trading and other financial services run as programs on a blockchain. Busy periods of it compete for the same block space as everything else on the chain.',
+  },
+  {
+    id: 'nft',
+    term: 'NFT mint',
+    plain:
+      'Creating new unique tokens, often a collectible series released all at once. A popular release floods the chain with transactions willing to pay high fees.',
+  },
 ]
 
 /** Case-insensitive match on the term or its definition. */

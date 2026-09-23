@@ -79,6 +79,11 @@ import {
   StablecoinSandwich,
   MpesaBacking,
   FiveStacked,
+  CapacityGap,
+  CongestionSpike,
+  WaitForFinal,
+  OneQueue,
+  BuiltForDifferent,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -1409,6 +1414,69 @@ export const bodies = {
         'Easy Crypto / Zilliqa project history, on Zilliqa\'s 2017 testnet results of 2,488 TPS using 3,600 nodes on AWS Singapore: hub.easycrypto.com/zilliqa-coin and blog.zilliqa.com, "Zilliqa Testnet v1.0 Release: Codename Red Prawn"',
         'iCryptoAI, "Scalability Solutions for Blockchain: Sharding and Layer-2 Technologies," on sidechains carrying independent, potentially weaker security models than the main chain: icryptoai.com/2025/11/26/scalability-solutions-for-blockchain-sharding-and-layer-2-technologies',
         'European Commission Blockchain Observatory, "An overview of blockchain scalability, interoperability and sustainability," on sharding, off-chain payment channels, and cross-shard communication challenges: blockchain-observatory.ec.europa.eu',
+      ],
+    },
+  ],
+
+  13: [
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/how-many-transactions-per-second-would-a-remittance-network-really-need) worked out a range for how much {{throughput|throughput}} a remittance network would actually need, anywhere from roughly 14 transactions per second at a realistic early adoption share, up to somewhere around 330 transactions per second during peak demand if a system tried to handle a much larger share of global volume. [A separate post in this series](/blog/why-a-new-payment-system-must-connect-to-existing-banks) explained why a new payment system has to connect to the existing banking system rather than replace it outright. This blog post aims to put these two ideas together and answer a natural next question: **could the blockchains most people have actually heard of, Bitcoin and Ethereum, handle that kind of traffic today?**',
+    },
+    { type: 'h', text: 'What Bitcoin and Ethereum Can Actually Handle' },
+    {
+      type: 'p',
+      text: 'Bitcoin\'s {{block|blocks}} are limited to about 1 megabyte, arrive roughly every 10 minutes, and a typical transaction takes up around 250 bytes, which works out to somewhere around 4,000 transactions fitting in a single block. If we divide that by the 600 seconds between blocks and Bitcoin\'s real-world capacity **lands at around 7 transactions per second.** Ethereum does slightly better, using a {{gas-limit|gas limit}} rather than a fixed block size and producing a new block roughly every 12 seconds, but even with recent increases to its gas limit, its practical throughput sits somewhere around 15 to 30 transactions per second.',
+    },
+    {
+      type: 'p',
+      text: 'Set those two numbers next to the range worked out in an earlier post in this series and the gap is immediate. Even the smallest, most conservative version of what a remittance network might realistically need, roughly 14 transactions per second at just 10% of global market share, **already asks for close to double Bitcoin\'s entire global capacity**, for every user and every purpose the network serves, not just remittances. Ethereum has more room, but not much: a remittance network operating anywhere near the ordinary-demand floor calculated in that earlier post, 57 transactions per second and up, **would need more capacity than Ethereum\'s entire network currently provides** for every other use case running on it at the same time. This shows that traditional blockchains simply can\'t adapt remittance level load, even at a conservative initial market share.',
+    },
+    { type: 'figure', render: CapacityGap },
+    { type: 'h', text: 'Congestion Doesn\'t Reject Transactions, It Prices Them Out' },
+    {
+      type: 'p',
+      text: 'A defining characteristic of blockchain networks like BTC and ETH is that when demand for space in the next block exceeds what that block can hold, neither Bitcoin nor Ethereum simply turns away the extra transactions. **Instead, they {{fee-auction|run an auction}}.** Users attach a fee to their transaction, and whichever transactions offer the highest fees get included first, while everything else waits, or gets priced out entirely if the sender isn\'t willing to pay more.',
+    },
+    {
+      type: 'p',
+      text: 'This initially sounds like a system that would never get triggered, but that\'s far from the truth. In December 2017, as Bitcoin\'s price surged, network congestion pushed average confirmation times from around 10 minutes out to 30 to 60 minutes, and average fees jumped from roughly $1 to over $50, as users bid against each other for the network\'s limited 7-transactions-per-second capacity. Ethereum saw something similar during the 2021 {{defi|DeFi}} boom, when congestion pushed typical fees into the $50 to $100 range per transaction. [An earlier post in this series](/blog/the-advertised-fee-is-not-the-true-price) worked through exactly how disproportionately a fixed fee hits a small transfer. **A $50 congestion fee on a $200 remittance is a quarter of the entire transfer gone before the money even reaches its destination**, which is a significantly worse outcome than almost any corridor described anywhere else in this series, including the most expensive traditional ones (SWIFT).',
+    },
+    { type: 'figure', render: CongestionSpike },
+    { type: 'h', text: 'Confirmation Time Isn\'t the Same as Finality' },
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/clearing-settlement-and-finality-are-not-the-same-thing) drew a careful line between a payment settling and a payment reaching actual {{finality|finality}}, the point where it can no longer be reversed. That same gap shows up on Bitcoin and Ethereum too, just measured differently. A Bitcoin transaction included in the very next block has only one {{confirmation|confirmation}}, and the standard practice, derived directly from the probability math in Bitcoin\'s own original design, is to wait for six confirmations, roughly an hour, before treating a payment as safe from being reversed by a {{chain-reorg|chain reorganization}}. Ethereum\'s own version of this takes less time but isn\'t instant either: its practical finality model needs roughly 12 to 15 minutes to reach the point where reversing a transaction would require an attacker to destroy a large portion of everything {{staking|staked}} on the network. **Neither network makes a transaction untouchable the moment it\'s broadcast.** Both require measured waiting time before "sent" turns into something closer to "actually final," the exact same distinction described in an earlier post about the traditional banking system, just showing up again in a different technology.',
+    },
+    { type: 'figure', render: WaitForFinal },
+    { type: 'h', text: 'The Traffic Profile Remittances Actually Create' },
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/why-families-often-send-small-amounts-frequently) explained why families tend to send {{remittance|remittances}} in small, frequent amounts, something like $200 sent sixteen times a year, rather than saving up for one or two much larger transfers, for real reasons involving budgeting, risk, and trust. That pattern matters enormously here, because **it\'s close to the worst possible traffic profile for a network that allocates block space through an open fee auction**. A high volume of small, frequent, cost-sensitive payments has to compete for the exact same limited space as everything else happening on the network at that moment, a large DeFi trade, a popular {{nft|NFT mint}}, anything willing to pay more. **There\'s no lane reserved for a $200 remittance.** It\'s in the same queue as every other transaction on the chain, competing purely on how much its sender is willing to pay to jump ahead.',
+    },
+    { type: 'figure', render: OneQueue },
+    { type: 'h', text: 'Peak Demand Makes This Worse, Not Better' },
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/how-many-transactions-per-second-would-a-remittance-network-really-need) also found that remittance volume isn\'t flat throughout the year, it climbs measurably around specific periods, holiday seasons tied to Ramadan and Eid seeing volume rise 20 to 30%, and the run-up to Christmas seeing increases as high as 39% for some providers. A {{base-layer|base-layer}} blockchain that\'s already close to its ceiling under ordinary demand has even less room to absorb that kind of spike, and there\'s no guarantee those periods of higher remittance demand line up conveniently with quieter periods everywhere else on the network. If anything, broader periods of high financial activity tend to overlap rather than avoid each other, meaning **the moments families most need affordable, reliable transfers are also some of the moments a congested base layer is least equipped to provide them**.',
+    },
+    { type: 'h', text: 'A Mismatch by Design, Not by Accident' },
+    {
+      type: 'p',
+      text: 'None of this makes Bitcoin or Ethereum poorly built. **It makes them built for a different priority than the one a remittance network actually needs.** Both networks were designed as general-purpose settlement layers that treat every transaction the same, regardless of size, and let an open market decide who gets through first when space runs short. That design makes sense for a network meant to handle everything from million-dollar settlements to speculative trading. It\'s a difficult fit for a network meant to carry a steady, high-frequency stream of $200 transfers that can\'t afford to lose a meaningful share of their value to a congestion spike, or wait an hour for the kind of certainty a family checking their phone during an emergency actually needs. That mismatch is exactly what the scaling approaches covered next in this series, {{sharding|splitting the network into pieces}}, building specialized {{sidechain|side rails}}, and {{payment-channel|moving some payments off the base layer entirely}}, are trying to close.',
+    },
+    { type: 'figure', render: BuiltForDifferent },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'PrimeXBT, "Transactions Per Second (TPS) - Definition and Meaning," on Bitcoin\'s block size, block time, and ~7 TPS capacity calculation, and the December 2017 congestion event with confirmation times rising to 30-60 minutes and fees spiking past $50: primexbt.com/glossary/transactions-per-second-tps-definition',
+        'Metana, "Ethereum Scaling Solutions: Strategies to Overcome Network Bottlenecks," on Ethereum\'s throughput of roughly 15 TPS and the resulting congestion and fee pressure: metana.io/blog/scaling-solutions-for-ethereum-overcoming-the-bottleneck',
+        'Spark.money, "Blockchain Fee Comparison: Gas Fees Across 15+ Chains," on typical and congestion-driven fee ranges for Bitcoin and Ethereum, and Ethereum fee spikes to $50-100 during the 2021 DeFi boom: spark.money/tools/chain-fee-comparison',
+        'Spark.money, "Chain Reorganization (Reorg)," on the six-confirmation convention derived from Bitcoin\'s original whitepaper probability model: spark.money/glossary/chain-reorganization',
+        'Spark.money, "Finality," on the practical implications of probabilistic finality for point-of-sale payments, exchange deposits, and settlement systems: spark.money/glossary/finality',
+        'Bit.com Knowledge Hub, "Transaction Finality," on Ethereum\'s roughly 12-15 minute economic finality model via epoch checkpoints: bit.com/knowledge-hub/transaction-finality',
+        'Prior posts in this series, "How Many Transactions per Second Would a Remittance Network Really Need?", "Why a New Payment System Must Connect to Existing Banks," "Clearing, Settlement, and Finality Are Not the Same Thing," "The Advertised Fee Is Not the True Price," and "Why Families Often Send Small Amounts Frequently"',
       ],
     },
   ],

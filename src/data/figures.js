@@ -436,6 +436,34 @@ export const sources = {
     date: 'On the Poly Network contract-authorisation exploit',
     href: 'https://hackenproof.com/blog/web3-bridge-hacks',
   },
+  primexbtTps: {
+    id: 'primexbtTps',
+    title: 'Transactions Per Second (TPS): definition and meaning',
+    publisher: 'PrimeXBT',
+    date: 'On Bitcoin at ~7 TPS, the December 2017 congestion, and Ethereum fees in the 2021 DeFi boom',
+    href: 'https://primexbt.com/glossary/transactions-per-second-tps-definition',
+  },
+  sparkFees: {
+    id: 'sparkFees',
+    title: 'Blockchain fee comparison: gas fees across 15+ chains',
+    publisher: 'Spark',
+    date: 'On Ethereum throughput of roughly 15 to 30 transactions per second',
+    href: 'https://spark.money/tools/chain-fee-comparison',
+  },
+  sparkReorg: {
+    id: 'sparkReorg',
+    title: 'Chain reorganization (reorg)',
+    publisher: 'Spark',
+    date: "On the six-confirmation convention from the Bitcoin whitepaper's probability analysis",
+    href: 'https://spark.money/glossary/chain-reorganization',
+  },
+  bitFinality: {
+    id: 'bitFinality',
+    title: 'Transaction finality',
+    publisher: 'Bit.com Knowledge Hub',
+    date: 'On Ethereum economic finality after roughly 12 to 15 minutes',
+    href: 'https://www.bit.com/knowledge-hub/transaction-finality',
+  },
   sdg: {
     id: 'sdg',
     title: 'Sustainable Development Goal 10.c: reduce remittance costs to less than 3 percent',
@@ -798,6 +826,26 @@ export const derived = {
  * One entry per figure, listing every place it appears. If a number gets used
  * somewhere new, it gets added here. That is the whole point of the page.
  */
+/**
+ * Base-layer capacity and congestion, for blog post 13.
+ *
+ * Ethereum's throughput is a range because the post gives one: roughly 15,
+ * rising towards 30 with later gas-limit increases. The 2017 and 2021
+ * congestion numbers are single episodes, reported by one source each, and
+ * the figures that draw them say which episode they are.
+ */
+export const baseLayer = {
+  btcTps: 7,
+  ethTps: [15, 30],
+  btc2017: { normalMin: 10, congestedMin: [30, 60], normalFeeUsd: 1, congestedFeeUsd: 50 },
+  eth2021FeeUsd: [50, 100],
+  btcConfirmations: 6,
+  btcFinalMinutes: 60,
+  ethFinalMinutes: [12, 15],
+  /** Post 19's own range, restated in post 13: the lab's arithmetic on the flows above. */
+  need: { earlyShare: 14, ordinaryFloor: 57, peak: 330 },
+}
+
 export const citations = [
   {
     value: `$${figures.flowsUsdBn} billion`,
@@ -1001,6 +1049,7 @@ export const citations = [
       { page: 'Blog', where: 'Post 19, on what a real observed average looks like' },
       { page: 'Blog', where: 'Post 19, the benchmark against observed average figure' },
       { page: 'Blog', where: 'Post 5, the opening paragraph and the sixteen-a-year figure' },
+      { page: 'Blog', where: 'Post 13, the traffic profile section' },
     ],
   },
   {
@@ -1052,14 +1101,20 @@ export const citations = [
     claim:
       'How far remittance transaction volumes rise during Ramadan and the run-up to Eid al-Fitr against other months, driven by zakat, holiday spending and pre-Eid salary disbursement.',
     source: sources.qatarTribune,
-    usedOn: [{ page: 'Blog', where: 'Post 19, peak holiday-driven demand' }],
+    usedOn: [
+      { page: 'Blog', where: 'Post 19, peak holiday-driven demand' },
+      { page: 'Blog', where: 'Post 13, on peak demand' },
+    ],
   },
   {
     value: '39%',
     claim:
       'Transaction volume increase reported by one US remittance provider over the eleven days to Christmas 2023, against the same period a year earlier. A single provider rather than a market-wide figure.',
     source: sources.bossMoney,
-    usedOn: [{ page: 'Blog', where: 'Post 19, peak holiday-driven demand' }],
+    usedOn: [
+      { page: 'Blog', where: 'Post 19, peak holiday-driven demand' },
+      { page: 'Blog', where: 'Post 13, on peak demand' },
+    ],
   },
   {
     value: '20%',
@@ -1213,6 +1268,61 @@ export const citations = [
     usedOn: [
       { page: 'Blog', where: 'Post 19, the baseline table and the TPS by size figure' },
       { page: 'Blog', where: 'Post 19, the market share and closing range figures' },
+      { page: 'Blog', where: 'Post 13, the capacity comparison and its figure' },
+    ],
+  },
+  {
+    value: `~${baseLayer.btcTps} TPS`,
+    claim: "Bitcoin's practical throughput: blocks of about 1 MB every ten minutes, at around 250 bytes a transaction. Blog post 13 sets it against the 14 TPS a remittance network would need at a 10% share.",
+    source: sources.primexbtTps,
+    usedOn: [
+      { page: 'Blog', where: 'Post 13, on what Bitcoin and Ethereum can handle' },
+      { page: 'Blog', where: 'Post 13, the capacity figure' },
+    ],
+  },
+  {
+    value: `${baseLayer.ethTps[0]} to ${baseLayer.ethTps[1]} TPS`,
+    claim: "Ethereum's practical throughput, after recent increases to its gas limit. More room than Bitcoin, but below the ordinary-demand floor blog post 19 works out.",
+    source: sources.sparkFees,
+    usedOn: [
+      { page: 'Blog', where: 'Post 13, on what Bitcoin and Ethereum can handle' },
+      { page: 'Blog', where: 'Post 13, the capacity figure' },
+    ],
+  },
+  {
+    value: `$${baseLayer.btc2017.normalFeeUsd} to over $${baseLayer.btc2017.congestedFeeUsd}`,
+    claim: `Average Bitcoin fees during the December 2017 congestion, while confirmation times went from about ${baseLayer.btc2017.normalMin} minutes to ${baseLayer.btc2017.congestedMin[0]} to ${baseLayer.btc2017.congestedMin[1]}. One episode, not a typical week.`,
+    source: sources.primexbtTps,
+    usedOn: [
+      { page: 'Blog', where: 'Post 13, on congestion pricing transactions out' },
+      { page: 'Blog', where: 'Post 13, the congestion figure' },
+    ],
+  },
+  {
+    value: `$${baseLayer.eth2021FeeUsd[0]} to $${baseLayer.eth2021FeeUsd[1]}`,
+    claim: 'Typical Ethereum fees per transaction during the 2021 DeFi boom. The post\'s source list attributes this to Spark; the figure is in the PrimeXBT page, which is cited here.',
+    source: sources.primexbtTps,
+    usedOn: [
+      { page: 'Blog', where: 'Post 13, on congestion pricing transactions out' },
+      { page: 'Blog', where: 'Post 13, the congestion figure' },
+    ],
+  },
+  {
+    value: `${baseLayer.btcConfirmations} confirmations`,
+    claim: 'The convention for treating a Bitcoin payment as safe from a chain reorganisation, roughly an hour of blocks, derived from the probability analysis in the original whitepaper.',
+    source: sources.sparkReorg,
+    usedOn: [
+      { page: 'Blog', where: 'Post 13, on confirmation time and finality' },
+      { page: 'Blog', where: 'Post 13, the waiting-time figure' },
+    ],
+  },
+  {
+    value: `${baseLayer.ethFinalMinutes[0]} to ${baseLayer.ethFinalMinutes[1]} minutes`,
+    claim: "Ethereum's economic finality, reached at epoch checkpoints: the point where reversing a transaction would mean destroying a large share of all staked ETH.",
+    source: sources.bitFinality,
+    usedOn: [
+      { page: 'Blog', where: 'Post 13, on confirmation time and finality' },
+      { page: 'Blog', where: 'Post 13, the waiting-time figure' },
     ],
   },
 ]
