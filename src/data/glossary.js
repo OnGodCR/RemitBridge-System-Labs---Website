@@ -436,6 +436,42 @@ export const terms = [
     plain:
       'A person recruited, often through a job offer or a friendship, to receive money and forward it on. The money is usually someone else’s fraud proceeds, and moving it is a crime even when the mule did not know.',
   },
+  {
+    id: 'stablecoin',
+    term: 'Stablecoin',
+    plain:
+      'A token that moves on a blockchain and is meant to hold the value of one ordinary currency, usually a dollar, by being backed by reserves held somewhere off the chain.',
+  },
+  {
+    id: 'on-ramp',
+    term: 'On-ramp',
+    plain:
+      'The regulated point where ordinary money is handed over and turned into a token on a blockchain. Almost always a bank or a licensed institution, because it is the point where the money is real.',
+  },
+  {
+    id: 'off-ramp',
+    term: 'Off-ramp',
+    plain:
+      'The reverse: the regulated point where a token is turned back into ordinary local currency the recipient can spend. Every transfer that starts on a blockchain still has to come out of one.',
+  },
+  {
+    id: 'central-bank-money',
+    term: 'Central bank money',
+    plain:
+      'Money held as a balance at a country\'s own central bank. It cannot fail the way a claim on a commercial bank can, which is why final settlement between banks happens there.',
+  },
+  {
+    id: 'legal-tender',
+    term: 'Legal tender',
+    plain:
+      'The money a country recognises for settling a debt: the notes and balances a local shop, landlord or clinic will actually accept. Roughly 200 countries means roughly 200 of them.',
+  },
+  {
+    id: 'trust-account',
+    term: 'Trust account',
+    plain:
+      'An account where a company holds money that belongs to its customers, kept apart from its own funds so it cannot be spent on the business or lost if the business fails.',
+  },
 ]
 
 /** Case-insensitive match on the term or its definition. */

@@ -23,7 +23,7 @@ Deferred by choice, not forgotten. Update this list as things land.
       provider comparison tool. Asked several times, not yet answered, and
       nothing should be built until they are. See `HANDOFF.md`.
 - [ ] **One figure per section is the standing rule for blog posts**, set
-      2026-08-21. Posts 2 through 11 all meet it. Post 2's corridor map and post
+      2026-08-21. Posts 2 through 12 all meet it. Post 2's corridor map and post
       7's hero row were dropped rather than built: the sections they were
       planned for already carry a figure each. Post 3's two equations are set
       as `equation` blocks in place, not drawn, so they are text, not figures.

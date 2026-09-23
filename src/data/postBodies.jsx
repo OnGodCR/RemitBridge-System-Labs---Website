@@ -74,6 +74,11 @@ import {
   OneReference,
   WeakLink,
   TwoLayers,
+  SameRules,
+  SettlementKeys,
+  StablecoinSandwich,
+  MpesaBacking,
+  FiveStacked,
 } from '@/components/blog/Diagrams'
 
 /**
@@ -1122,6 +1127,67 @@ export const bodies = {
         'Bank for International Settlements, CPMI, "Harmonised ISO 20022 data requirements for enhancing cross-border payments," on the G20 cross-border payments programme and the 12 harmonized data requirements developed with industry: bis.org/cpmi/publ/d218.htm',
         'ProgreSoft, "Bridging Fragmentation: A Central Bank Imperative," on SEPA as an example of standardization reducing cross-border euro payment cost and time compared to fragmented national clearing systems: progressoft.com/blogs/bridging-fragmentation-a-central-bank-imperative',
         'Prior posts in this series, "Correspondent Banks, Vostro Accounts, and the Hidden Chain Behind a Transfer" and "Why Can an International Transfer Still Take Several Days?"',
+      ],
+    },
+  ],
+
+  12: [
+    {
+      type: 'p',
+      text: 'If you\'ve been keeping up with all the blog posts till this point, there is an extremely apparent pattern: **{{swift|SWIFT}} only sends messages.** This leads to {{correspondent-bank|correspondent}} fees being added on, along with things like {{cutoff-time|cutoff times}}, {{batch-processing|batching windows}}, and fragmented data standards adding additional friction on top. After cataloguing all of that, the obvious question is: why not just build something completely new and skip the old system entirely? The easiest answer to this problem is understanding that the institutions in charge of running SWIFT have no incentive to switch or innovate. They\'re the only player in the market, and when there\'s nobody competing with you, you don\'t need to do very much to retain your customers. Another big factor that SWIFT actually does well, to its credit, is allowing time for adherence to compliance regulations.',
+    },
+    { type: 'h', text: 'Regulation Doesn\'t Disappear Just Because the Technology Changes' },
+    {
+      type: 'p',
+      text: '[Earlier posts in this series](/blog/correspondent-banks-vostro-accounts-and-the-hidden-chain-behind-a-transfer) described the {{compliance-checks|compliance screening}} every bank in a payment chain runs, checking transactions against {{sanctions-screening|sanctions lists}} and {{aml|anti-money-laundering}} rules. **None of this is specific to a bank, however. It\'s specific to the act of moving money across a border**, and any institution would be required to adhere to these standards, regardless of what technology sits underneath it. The basic requirements are as follows: verify who\'s sending and receiving money, screen for prohibited parties, and report suspicious activity to regulators. A completely new payment system trying to operate independently of any bank doesn\'t get to skip this. **It has to earn licenses, build compliance infrastructure, and establish regulatory relationships in every single country it wants to serve, one at a time, from scratch**, which is an extremely long and tedious process. This is one aspect of why replacing SWIFT is so hard.',
+    },
+    { type: 'figure', render: SameRules },
+    { type: 'h', text: 'Only Banks Actually Hold the Keys to Final Settlement' },
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/clearing-settlement-and-finality-are-not-the-same-thing) drew a careful line between a payment being {{settlement|settled}} and a payment reaching {{finality|finality}}, the point where it can\'t be reversed. For most currencies, true finality ultimately happens at that currency\'s own central bank, through the {{rtgs|RTGS}} systems described earlier in this series, in {{central-bank-money|central bank money}}. **Access to that layer isn\'t open to just anyone.** It\'s typically restricted to licensed banks and a small number of other regulated institutions that meet a central bank\'s own requirements. **A new payment system, however fast or clever its own internal technology is, still needs either a banking license of its own or a partnership with an institution that already has one to actually reach that final settlement layer.** There\'s no way around this step. This also poses a real barrier to entry. While SWIFT is a non-profit organization, it poses many characteristics of a classical monopoly, making a new system\'s implementation very hard.',
+    },
+    { type: 'figure', render: SettlementKeys },
+    { type: 'h', text: 'The Real Economy Still Runs on Existing Money' },
+    {
+      type: 'p',
+      text: '[An earlier post in this series](/blog/what-is-an-international-remittance-and-why-is-it-more-than-a-money-transfer) described what {{remittance|remittances}} actually get spent on: rent, groceries, school fees, medicine. None of that changes based on how fast or cheap the middle of a transfer was. **A recipient still needs their country\'s actual {{legal-tender|legal tender}}, spendable at an actual local shop, to pay for any of it.** That means every remittance, no matter how it\'s routed or what technology carries it partway there, eventually has to convert back into ordinary, locally spendable money close to the recipient. In other words, there must be a fiat rail at the end of the system, which is very hard to do when there\'s nearly 200 countries, and hence 200 legal tenders that an institution has to acquire.',
+    },
+    { type: 'h', text: 'What This Already Looks Like in Practice' },
+    {
+      type: 'p',
+      text: 'This isn\'t a theoretical constraint. It\'s exactly how the most advanced blockchain-based cross-border payment systems already operate today. In what the industry calls a stablecoin sandwich, a payment starts with ordinary fiat currency being converted into a {{stablecoin|stablecoin}} through a regulated {{on-ramp|on-ramp}}, typically a bank or a licensed financial institution handling that conversion. The stablecoin then moves across a blockchain network, often in seconds, bypassing the multi-hop correspondent chain described earlier in this series entirely. But the transfer doesn\'t end there. **It has to be converted back into ordinary local currency through a regulated {{off-ramp|off-ramp}}, another bank or licensed institution, before it reaches the recipient.** Traditional banking infrastructure sits at both ends of this model on purpose. The blockchain only replaces the middle segment, the exact segment where correspondent banks were adding the most delay and the least visibility in the first place.',
+    },
+    { type: 'figure', render: StablecoinSandwich },
+    { type: 'h', text: 'Even the Biggest Non-Bank Success Story Still Needed a Bank' },
+    {
+      type: 'p',
+      text: 'If there\'s one real-world example that makes this case most clearly, it\'s M-Pesa, widely considered the most successful {{mobile-money|mobile money}} system ever built outside the traditional banking sector. **Every single unit of value stored in an M-Pesa account is backed, one to one, by real money sitting in {{trust-account|trust accounts}} held at actual licensed commercial banks**, first Commercial Bank of Africa, later joined by KCB Group. When M-Pesa was first being developed, its parent company actively tried to recruit a bank partner before launch, specifically because operating in complete isolation from the banking system wasn\'t a realistic starting point. Kenya\'s central bank ultimately allowed M-Pesa to operate under a specially tailored license, but only on the condition that customer funds stayed deposited in a regulated financial institution the whole time. **Even the system most often held up as proof that you don\'t need banks to move money at scale was built directly on top of them.**',
+    },
+    { type: 'figure', render: MpesaBacking },
+    { type: 'h', text: 'Why Building From Scratch Is Slower, Not Faster' },
+    {
+      type: 'p',
+      text: '**Building an independent alternative to all of this from the ground up isn\'t just difficult, it\'s slower than the alternative.** Industry analysis of what it actually takes to build fiat-to-crypto infrastructure independently describes it as five separate, stacked problems: payment processors to actually collect the money, banking relationships to hold and settle it, compliance systems to satisfy {{kyc|KYC}} and anti-money-laundering rules, liquidity management to make sure funds are available when needed, and a regulatory landscape that keeps shifting underneath all of it. Assembling all five from nothing, in every country a system wants to operate in, takes years and enormous capital. **Connecting to institutions that already have all five in place, banks and licensed providers that have already done this work, takes a fraction of that time.**',
+    },
+    { type: 'figure', render: FiveStacked },
+    { type: 'h', text: 'The Practical Path Forward' },
+    {
+      type: 'p',
+      text: 'None of this means the technology underneath a payment doesn\'t matter. It clearly does, faster settlement, lower cost, and better visibility are all real, achievable improvements over the system described throughout this series. **What it means is that those improvements arrive fastest, and most safely, by building secure, compliant connections into the banking system that already handles licensing, compliance, and final settlement**, rather than trying to build an entirely separate system that has to earn all of that credibility again from zero, in every country, before it can move a single real transfer. **Every serious example of this actually working, from stablecoin infrastructure to M-Pesa itself, follows the same pattern: replace the parts of the system that are genuinely broken, and connect to the parts that already work.**',
+    },
+    { type: 'h', text: 'Sources' },
+    {
+      type: 'sources',
+      items: [
+        'ClearBank, "Stablecoin payments for fintechs: How they work and when it makes sense to adopt them," on the "stablecoin sandwich" model and traditional banking infrastructure remaining in place at both ends of a stablecoin-based transfer: clear.bank/learn/insights/stablecoin-payments',
+        'Interexy, "Fiat On/Off-Ramps for Stablecoins: A Complete Guide," on the five stacked problems involved in building independent fiat-to-crypto infrastructure: interexy.com/fiat-on-off-ramps-for-stablecoins',
+        'FinTech Weekly, "The Off-Ramp Problem: Why Onchain Dollars Still Can’t Pay the Bills," on the shift from token-level constraints to the regulated real-economy bridge needed to convert onchain value into spendable local currency: fintechweekly.com/magazine/articles/stablecoin-offramp-problem-fiat-conversion',
+        'Crossmint, "Stablecoin Offramp Guide for Fintechs, Enterprises & Agentic Platforms," on licensing, banking relationships, and compliance requirements for operating an off-ramp, and demand for integration with local rails like M-Pesa: crossmint.com/learn/stablecoin-offramp-guide',
+        'CGAP, "10 Myths About M-PESA: 2014 Update," on M-PESA customer funds being held in trust accounts at commercial banks, fully backed and separate from Safaricom’s own balance sheet: cgap.org/node/2483',
+        'CGAP, "10 Things You Thought You Knew about M-PESA," on the Central Bank of Kenya’s requirement that M-PESA funds remain deposited in a regulated financial institution: cgap.org/node/1764',
+        'Tralac, "M-Pesa: The Safaricom Story, Case Study," on Safaricom’s early attempt to recruit a bank partner before launch and the Central Bank of Kenya’s licensing conditions: tralac.org/images/News/Documents/M-Pesa_Case_study_June_2014_synopsis.pdf',
+        'Prior posts in this series, "What Is an International Remittance and Why Is It More Than a Money Transfer?", "Correspondent Banks, Vostro Accounts, and the Hidden Chain Behind a Transfer," and "Clearing, Settlement, and Finality Are Not the Same Thing"',
       ],
     },
   ],

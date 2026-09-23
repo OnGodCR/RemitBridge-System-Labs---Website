@@ -228,10 +228,16 @@ export const posts = [
   },
   {
     "id": 12,
+    "publishedOn": "2026-09-22",
     "series": "series2",
     "seriesName": "How banks move it",
-    "title": "Why a new system has to connect to the old banks",
-    "abstract": "Ripping out the banking infrastructure that already exists is not realistic, so the useful work is in building bridges that are secure and legal. This paper argues for that approach and looks at what it requires.",
+    "title": "Why a new payment system must connect to existing banks",
+    "author": {
+      "name": "Angad Kochar",
+      "role": "RemitBridge Systems Lab",
+      "consentOn": "2026-08-21"
+    },
+    "abstract": "Ripping out the banking infrastructure that already exists is not realistic: licensing, compliance and final settlement all sit inside it. The useful work is in building bridges that are secure and legal, which is what the stablecoin sandwich and M-Pesa both turn out to be.",
     "readTime": "8 min read",
     "tags": [
       "Fiat Bridges",

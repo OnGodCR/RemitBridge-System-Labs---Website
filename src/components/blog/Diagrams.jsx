@@ -3036,3 +3036,169 @@ export function TwoLayers({ theme }) {
     </figure>
   )
 }
+
+/**
+ * The rules attach to the border, not to the institution. Both columns carry
+ * the same three obligations; what differs is whether they already exist.
+ */
+export function SameRules({ theme }) {
+  const duties = ['Verify who is sending and receiving', 'Screen for prohibited parties', 'Report suspicious activity']
+  const columns = [
+    { who: 'An existing bank', note: 'already licensed, in every country it serves' },
+    { who: 'A brand new system', note: 'earns all of it again, one country at a time' },
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        The same three obligations, either way
+      </figcaption>
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        {columns.map((c, i) => (
+          <div key={c.who} className={cn('rounded-2xl border p-3', i === 0 ? 'border-border bg-card' : cn(theme.border, theme.tint))}>
+            <p className={cn('text-sm font-bold', i === 1 && theme.ink)}>{c.who}</p>
+            <ul className="mt-2 space-y-1">
+              {duties.map((d) => (
+                <li key={d} className="text-xs leading-snug text-muted-foreground">{d}</li>
+              ))}
+            </ul>
+            <p className="mt-2 border-t border-border pt-2 text-xs leading-snug text-muted-foreground">{c.note}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        The obligations follow the act of moving money across a border, not the technology underneath it.
+      </p>
+    </figure>
+  )
+}
+
+/** Who can reach central bank money, and who has to go through someone who can. */
+export function SettlementKeys({ theme }) {
+  const outside = ['A payments startup', 'A blockchain network', 'An app with no licence']
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Who reaches final settlement
+      </figcaption>
+      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+        <div className="rounded-2xl border border-border bg-card p-3">
+          <p className="text-sm font-bold">Outside the door</p>
+          <ul className="mt-2 space-y-1">
+            {outside.map((o) => (
+              <li key={o} className="text-xs leading-snug text-muted-foreground">{o}</li>
+            ))}
+          </ul>
+          <p className={cn('mt-2 border-t border-border pt-2 text-xs font-bold', theme.ink)}>
+            needs a licence of its own, or a partner holding one
+          </p>
+        </div>
+        <Hop />
+        <div className={cn('rounded-2xl border p-3', theme.border, theme.tint)}>
+          <p className={cn('text-sm font-bold', theme.ink)}>Final settlement</p>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">
+            central bank money, through an RTGS system
+          </p>
+          <p className="mt-2 border-t border-border pt-2 text-xs leading-snug text-muted-foreground">
+            open to licensed banks and a small number of other regulated institutions
+          </p>
+        </div>
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Speed in the middle of a transfer does not open this door. Only a licence does.
+      </p>
+    </figure>
+  )
+}
+
+/** The stablecoin sandwich: the chain is only replaced in the middle. */
+export function StablecoinSandwich({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        The stablecoin sandwich
+      </figcaption>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-stretch">
+        <Node theme={theme} title="On-ramp" sub="a bank or licensed institution" note="fiat in" />
+        <Hop />
+        <div className={cn('min-w-0 flex-1 rounded-2xl border p-3 text-center', theme.border, theme.tint)}>
+          <p className={cn('text-sm font-bold leading-snug', theme.ink)}>Stablecoin on a blockchain</p>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">often seconds</p>
+          <p className="mt-2 border-t border-border pt-2 text-xs font-bold text-muted-foreground">
+            replaces the correspondent chain
+          </p>
+        </div>
+        <Hop />
+        <Node theme={theme} title="Off-ramp" sub="a bank or licensed institution" note="local currency out" />
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        Both ends are traditional banking infrastructure on purpose. Only the middle segment changes.
+      </p>
+    </figure>
+  )
+}
+
+/** M-Pesa's balances are a claim on money sitting in a bank. */
+export function MpesaBacking({ theme }) {
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        What sits behind an M-Pesa balance
+      </figcaption>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-stretch">
+        <div className="min-w-0 flex-1 rounded-2xl border border-border bg-card p-3">
+          <Smartphone className="size-5 text-muted-foreground" aria-hidden />
+          <p className="mt-2 text-sm font-bold">A balance in an M-Pesa account</p>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">mobile money, no bank account needed by the user</p>
+        </div>
+        <div className="flex shrink-0 items-center justify-center">
+          <p className={cn('rounded-full border px-3 py-1 text-xs font-bold', theme.border, theme.tint, theme.ink)}>
+            backed 1:1
+          </p>
+        </div>
+        <div className="min-w-0 flex-1 rounded-2xl border border-border bg-card p-3">
+          <Landmark className="size-5 text-muted-foreground" aria-hidden />
+          <p className="mt-2 text-sm font-bold">Trust accounts at licensed banks</p>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">Commercial Bank of Africa, later joined by KCB Group</p>
+        </div>
+      </div>
+      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+        The system held up as proof that banks are unnecessary keeps every shilling of its float inside one.
+      </p>
+    </figure>
+  )
+}
+
+/** Five stacked problems, assembled from nothing or inherited from a partner. */
+export function FiveStacked({ theme }) {
+  const layers = [
+    'Payment processors, to collect the money',
+    'Banking relationships, to hold and settle it',
+    'Compliance systems, for KYC and anti-money-laundering rules',
+    'Liquidity management, so funds are there when needed',
+    'A regulatory landscape that keeps shifting underneath all of it',
+  ]
+  return (
+    <figure className="my-10 rounded-2xl border border-border bg-background p-4 sm:p-5">
+      <figcaption className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Five stacked problems, in every country
+      </figcaption>
+      <div className="mt-4 space-y-2">
+        {layers.map((l) => (
+          <div key={l} className="rounded-2xl border border-border bg-card px-3 py-2">
+            <p className="text-xs leading-snug">{l}</p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <div className="rounded-2xl border border-border bg-card p-3">
+          <p className="text-sm font-bold">Build all five from nothing</p>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">years, and enormous capital</p>
+        </div>
+        <div className={cn('rounded-2xl border p-3', theme.border, theme.tint)}>
+          <p className={cn('text-sm font-bold', theme.ink)}>Connect to institutions that have them</p>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">a fraction of that time</p>
+        </div>
+      </div>
+    </figure>
+  )
+}
