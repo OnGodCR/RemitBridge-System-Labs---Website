@@ -49,13 +49,17 @@ export function postText(text, theme, keyPrefix = '') {
 
       const link = token.match(/^\[([^\]]+)\]\((\/[^)]*)\)$/)
       if (link) {
+        /* A glossary token inside link text renders as its words only. The
+           hover term is a button, and a button inside a link is two targets
+           under one click; the link wins, and the term is still defined at
+           its next use. Without this the raw {{id|words}} printed as text. */
         return (
           <Link
             key={key}
             to={link[2]}
             className="font-medium text-primary underline underline-offset-2"
           >
-            {link[1]}
+            {link[1].replace(/\{\{[a-z0-9-]+\|([^}]+)\}\}/g, '$1')}
           </Link>
         )
       }
