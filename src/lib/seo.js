@@ -16,7 +16,7 @@ import { routes } from '../routes.js'
 import { posts } from '../data/posts.js'
 import { slugify } from './slug.js'
 
-export const SITE = 'RemitBridge Systems Lab'
+export const SITE = 'RemitBridge Labs'
 
 /** Used on the home page and as the fallback anywhere a page has no line. */
 export const DEFAULT_DESCRIPTION =
@@ -24,7 +24,7 @@ export const DEFAULT_DESCRIPTION =
 
 export const OG_IMAGE = '/og-image.png'
 export const OG_IMAGE_ALT =
-  'RemitBridge Systems Lab, measuring what it really costs to send money home.'
+  'RemitBridge Labs, measuring what it really costs to send money home.'
 
 /**
  * Titles are short on purpose. Google truncates a result at roughly sixty

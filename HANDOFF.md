@@ -1,4 +1,4 @@
-# RemitBridge Systems Lab — handoff
+# RemitBridge Labs, handoff
 
 Everything needed to pick this up cold. `CLAUDE.md` is the companion: this file
 is what exists, that one is how to work on it.

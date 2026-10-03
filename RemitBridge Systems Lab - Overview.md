@@ -1,6 +1,6 @@
 
 
-**RemitBridge Systems Lab**
+**RemitBridge Labs**
 
 *A Student-Led Applied Research and Community Access Initiative for Equitable Cross-Border Payments*
 
@@ -12,7 +12,7 @@ Proposed Founder and Executive Director: Angad
 
 Eastlake High School | Sammamish, Washington
 
-RemitBridge Systems Lab is a proposed student-led applied research and community-access initiative founded on Angad's research into international remittance systems. Its central academic question is which sharding, sidechain, or off-chain transaction architectures can most effectively increase throughput and reduce settlement cost for blockchain-based remittances, and how those systems could interoperate with existing fiat payment rails such as SWIFT-connected institutions and real-time gross settlement systems.
+RemitBridge Labs is a proposed student-led applied research and community-access initiative founded on Angad's research into international remittance systems. Its central academic question is which sharding, sidechain, or off-chain transaction architectures can most effectively increase throughput and reduce settlement cost for blockchain-based remittances, and how those systems could interoperate with existing fiat payment rails such as SWIFT-connected institutions and real-time gross settlement systems.
 
 The organization would convert Angad's technical work into tangible community benefit through open-source benchmarking, an educational true-cost calculator, multilingual community workshops, student research fellowships, and public research reports. Its primary beneficiaries would be immigrant and refugee families who send or receive money across borders, along with students and researchers seeking accessible resources on payment-system engineering.
 
@@ -36,16 +36,16 @@ Blockchain-based payment infrastructure could theoretically reduce some intermed
 
 | Element | Definition |
 | ----- | ----- |
-| Formal Name | RemitBridge Systems Lab |
+| Formal Name | RemitBridge Labs |
 | Formal Subtitle | A Student-Led Applied Research and Community Access Initiative for Equitable Cross-Border Payments |
 | Public Tagline | Engineering faster, fairer ways for families to send money home. |
-| Proposed Founder Title | Founder and Executive Director; Lead Researcher, RemitBridge Systems Lab |
+| Proposed Founder Title | Founder and Executive Director; Lead Researcher, RemitBridge Labs |
 | Initial Geography | Sammamish and the greater King County, Washington community |
 | Academic Fields | Computer science, financial economics, distributed systems, international finance, public policy, and community education |
 
 ## **Mission**
 
-RemitBridge Systems Lab conducts student-led research on scalable and interoperable cross-border payment systems and translates that research into open-source benchmarks, accessible educational tools, multilingual community resources, and workshops that help immigrant and refugee families better understand remittance costs, exchange-rate markups, transfer delays, digital-payment risks, and emerging payment technologies.
+RemitBridge Labs conducts student-led research on scalable and interoperable cross-border payment systems and translates that research into open-source benchmarks, accessible educational tools, multilingual community resources, and workshops that help immigrant and refugee families better understand remittance costs, exchange-rate markups, transfer delays, digital-payment risks, and emerging payment technologies.
 
 ## **Vision**
 

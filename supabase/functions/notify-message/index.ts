@@ -104,7 +104,7 @@ function buildHtml(opts: {
           <tr>
             <td style="background-color:${GREEN};padding:24px 28px">
               <p style="margin:0;font-family:${FONT};font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#ffffff;opacity:0.85">
-                RemitBridge Systems Lab
+                RemitBridge Labs
               </p>
               <p style="margin:6px 0 0;font-family:${FONT};font-size:22px;font-weight:700;color:#ffffff">
                 New message from the contact page
