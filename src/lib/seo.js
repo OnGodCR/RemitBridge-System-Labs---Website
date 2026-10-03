@@ -222,7 +222,7 @@ export function documentTitle(title, bare = false) {
  * page component. This is the shared mailbox, never the owner address, which
  * is in app_config and in no tracked file.
  */
-export const CONTACT_EMAIL = 'remitbridgesystemlabs@gmail.com'
+export const CONTACT_EMAIL = 'hello@remitbridgelabs.org'
 
 /**
  * Structured data for a page.

@@ -75,7 +75,9 @@ Deferred by choice, not forgotten. Update this list as things land.
       project.
 - [x] `post-images` bucket, public, MIME allowlist, three policies. Anon upload
       refused by RLS.
-- [x] Contact address set to remitbridgesystemlabs@gmail.com.
+- [x] Public contact address is hello@remitbridgelabs.org (2026-10-03). ImprovMX
+      forwards it to the Gmail account, which still owns every service and
+      stays the `NOTIFY_TO` target for contact notifications.
 - [x] og: URLs built from the Vercel production domain at build time.
 - [x] Vercel Web Analytics enabled. Speed Insights deliberately not used.
 - [x] Personal email removed from tracked files. It remains in the root commit
