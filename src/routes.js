@@ -10,11 +10,6 @@ export const navGroups = [
     blurb: 'Things you can actually run, today.',
     items: [
       {
-        path: '/app',
-        label: 'The app',
-        blurb: 'RemitBridge for iPhone and Android: the same tools, ranked by what arrives.',
-      },
-      {
         path: '/truecost',
         label: 'TrueCost',
         blurb: 'Work out what a transfer really costs once the exchange rate is counted.',
@@ -106,10 +101,26 @@ export const navGroups = [
   },
 ]
 
+/**
+ * Pages that sit in the header on their own, beside the dropdowns, rather
+ * than inside a group. The app is the lab's product, not one tool among five,
+ * and Angad asked for it to be one click from every page.
+ */
+export const topLinks = [
+  {
+    path: '/app',
+    label: 'App',
+    blurb: 'RemitBridge for iPhone and Android: every tool, ranked by what arrives.',
+  },
+]
+
 /** Flat list, for anything that just needs every page. */
-export const routes = navGroups.flatMap((group) =>
-  group.items.map((item) => ({ ...item, group: group.label })),
-)
+export const routes = [
+  ...topLinks.map((item) => ({ ...item, group: null })),
+  ...navGroups.flatMap((group) =>
+    group.items.map((item) => ({ ...item, group: group.label })),
+  ),
+]
 
 /**
  * What a first-time visitor should look at, in order.

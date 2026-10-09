@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Container } from './Section'
 import { LogoMark } from './Logo'
-import { navGroups } from '@/routes'
+import { navGroups, topLinks } from '@/routes'
 import { authEnabled, useAuth, canWrite } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 
@@ -98,6 +98,21 @@ export default function Navbar() {
                 </NavigationMenuItem>
               )
             })}
+            {topLinks.map((item) => (
+              <NavigationMenuItem key={item.path}>
+                <NavigationMenuLink asChild>
+                  <Link
+                    to={item.path}
+                    className={cn(
+                      'rounded-md px-4 py-2 text-sm font-medium',
+                      pathname === item.path ? 'text-primary' : 'text-muted-foreground',
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            ))}
           </NavigationMenuList>
         </NavigationMenu>
 
@@ -171,6 +186,17 @@ export default function Navbar() {
               </SheetHeader>
               {/* Same grouping, expanded — hover menus do not work on touch. */}
               <nav className="flex flex-col gap-6 px-4 pb-8">
+                {topLinks.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      cn('text-base font-bold', isActive ? 'text-primary' : 'text-foreground')
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                ))}
                 {navGroups.map((group) => (
                   <div key={group.label}>
                     <p className="mb-2 text-xs font-bold uppercase tracking-widest text-primary">

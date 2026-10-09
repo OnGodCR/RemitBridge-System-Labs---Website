@@ -49,6 +49,9 @@ export default function Footer() {
           <Link to="/sources" className={quiet}>
             Sources for the statistics on this site
           </Link>
+          <Link to="/app" className={quiet}>
+            The app
+          </Link>
           <Link to="/privacy" className={quiet}>
             Privacy
           </Link>
