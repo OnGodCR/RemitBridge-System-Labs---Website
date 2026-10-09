@@ -118,6 +118,11 @@ export const pages = {
     description:
       'Every statistic on this site, what it means, which publication it came from, and the exact pages it is used on.',
   },
+  '/app': {
+    title: 'The RemitBridge app',
+    description:
+      'A free app for iPhone and Android that compares what it costs to send money from the US by how much arrives. Coming soon to the App Store and Google Play.',
+  },
   '/privacy': {
     title: 'Privacy policy',
     description:

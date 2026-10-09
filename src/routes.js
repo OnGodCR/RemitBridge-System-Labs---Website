@@ -10,6 +10,11 @@ export const navGroups = [
     blurb: 'Things you can actually run, today.',
     items: [
       {
+        path: '/app',
+        label: 'The app',
+        blurb: 'RemitBridge for iPhone and Android: the same tools, ranked by what arrives.',
+      },
+      {
         path: '/truecost',
         label: 'TrueCost',
         blurb: 'Work out what a transfer really costs once the exchange rate is counted.',
