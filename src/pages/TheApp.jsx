@@ -213,30 +213,60 @@ function Features() {
           </div>
 
           {/* What the picked row does */}
-          <div aria-live="polite">
-            <p className="font-mono text-sm text-current/60">
-              {String(tab + 1).padStart(2, '0')} / {t.label} / {String(t.items.indexOf(f) + 1).padStart(2, '0')}
-            </p>
-            <span className="mt-6 flex size-16 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20">
-              <f.icon className="size-8" />
-            </span>
-            <h3 className="mt-6 text-3xl sm:text-5xl">{f.name}</h3>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-current/85">{f.body}</p>
-            {f.path && (
-              <Link to={f.path} className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-primary transition-transform hover:-translate-y-0.5">
-                Try it on the web <ChevronRight className="size-4" />
-              </Link>
-            )}
+          <div>
+            {/* What the picked feature does. */}
+            <div aria-live="polite" className="flex items-start gap-5">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white text-primary">
+                <f.icon className="size-7" />
+              </span>
+              <div>
+                <h3 className="text-2xl sm:text-3xl">{f.name}</h3>
+                <p className="mt-2 max-w-xl leading-relaxed text-current/85">{f.body}</p>
+                {f.path && (
+                  <Link to={f.path} className="mt-3 inline-flex items-center gap-1 text-sm font-bold underline underline-offset-4">
+                    Try it on the web <ChevronRight className="size-4" />
+                  </Link>
+                )}
+              </div>
+            </div>
 
-            <div className="mt-12 flex flex-wrap gap-x-5 gap-y-2 border-t border-white/15 pt-6 text-sm">
-              {t.items.map((it, ri) => (
-                <button
-                  key={it.name}
-                  onClick={() => setRow(ri)}
-                  className={cn('transition-colors', it === f ? 'font-bold text-current' : 'text-current/60 hover:text-current')}
-                >
-                  {it.name}
-                </button>
+            {/*
+              Every feature in the app, by tab, so nothing waits behind a
+              tap. Picking one here moves the phone to its tab and row.
+            */}
+            <div className="mt-10 grid gap-x-8 gap-y-8 border-t border-white/15 pt-8 sm:grid-cols-2 xl:grid-cols-3">
+              {tabs.map((tt, ti) => (
+                <div key={tt.id}>
+                  <button
+                    onClick={() => pick(ti)}
+                    className={cn('flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors', ti === tab ? 'text-current' : 'text-current/60 hover:text-current')}
+                  >
+                    <tt.icon className="size-4" />
+                    {tt.label}
+                  </button>
+                  <ul className="mt-3 space-y-0.5">
+                    {tt.items.map((it, ri) => {
+                      const on = it === f
+                      return (
+                        <li key={it.name}>
+                          <button
+                            onClick={() => {
+                              setTab(ti)
+                              setRow(ri)
+                            }}
+                            aria-pressed={on}
+                            className={cn(
+                              '-ml-3 w-full rounded-lg py-1.5 pl-3 text-left text-sm transition-colors',
+                              on ? 'bg-white/15 font-bold text-current' : 'text-current/75 hover:bg-white/10 hover:text-current',
+                            )}
+                          >
+                            {it.name}
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
               ))}
             </div>
           </div>
