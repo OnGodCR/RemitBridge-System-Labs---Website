@@ -118,6 +118,16 @@ export const pages = {
     description:
       'Every statistic on this site, what it means, which publication it came from, and the exact pages it is used on.',
   },
+  '/privacy': {
+    title: 'Privacy policy',
+    description:
+      'What this site collects, why, who processes it, how long it is kept, and how to have it deleted. RemitBridge Labs, a Washington nonprofit corporation, is responsible for it.',
+  },
+  '/terms': {
+    title: 'Terms of use',
+    description:
+      'The terms for using this site: an agreement between you and RemitBridge Labs, a Washington nonprofit corporation, and no one else.',
+  },
   '/remitbench': {
     title: 'RemitBench testbed',
     description:
@@ -174,7 +184,7 @@ export const postPaths = posts.map((post) => ({
  * `/remitbench` is included by hand: it is linked from Coming soon but is
  * deliberately not in the navigation.
  */
-export const staticPaths = ['/', ...routes.map((r) => r.path), '/remitbench', '/sources']
+export const staticPaths = ['/', ...routes.map((r) => r.path), '/remitbench', '/sources', '/privacy', '/terms']
 
 /**
  * What the build writes a file for, which is more than what it lists.
@@ -300,3 +310,6 @@ export function jsonLdFor(pathname, origin, extra = {}) {
 
   return { '@context': 'https://schema.org', '@graph': nodes }
 }
+
+/** Who operates the site, worded once so every page says it the same way. */
+export const LEGAL_ENTITY = 'RemitBridge Labs, a Washington nonprofit corporation'

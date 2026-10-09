@@ -75,6 +75,12 @@ Deferred by choice, not forgotten. Update this list as things land.
       project.
 - [x] `post-images` bucket, public, MIME allowlist, three policies. Anon upload
       refused by RLS.
+- [x] Incorporated: RemitBridge Labs, a Washington nonprofit corporation
+      (2026-10-08). `/privacy` and `/terms` (`src/pages/Legal.jsx`, marked
+      DRAFT pending legal review) match the app's wording; the footer,
+      sign-up, Leadership and Contact name the entity from one constant,
+      `LEGAL_ENTITY` in `src/lib/seo.js`. Never write "charity", "501(c)(3)"
+      or "tax-deductible": the IRS has approved nothing.
 - [x] Public contact address is hello@remitbridgelabs.org (2026-10-03). ImprovMX
       forwards it to the Gmail account, which still owns every service and
       stays the `NOTIFY_TO` target for contact notifications.

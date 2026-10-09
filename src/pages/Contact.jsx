@@ -4,7 +4,7 @@ import Section from '@/components/Section'
 import { Input } from '@/components/ui/input'
 import { buttonVariants } from '@/components/ui/button'
 import { supabase, backendEnabled } from '@/lib/supabase'
-import { CONTACT_EMAIL } from '@/lib/seo'
+import { CONTACT_EMAIL, LEGAL_ENTITY } from '@/lib/seo'
 import { cn } from '@/lib/utils'
 
 /**
@@ -219,7 +219,7 @@ export default function Contact() {
                   Consumer Financial Protection Bureau
                 </a>
                 , who take complaints about money transfers and can act on them. We are a
-                student research lab and cannot recover money or intervene with a company.
+                student research lab, run by {LEGAL_ENTITY}, and cannot recover money or intervene with a company.
               </p>
             </div>
 
@@ -228,7 +228,7 @@ export default function Contact() {
               <a href={`mailto:${contactEmail}`} className="font-bold text-primary hover:underline">
                 {contactEmail}
               </a>{' '}
-              directly.
+              directly. This site is operated by {LEGAL_ENTITY}.
             </p>
           </form>
 

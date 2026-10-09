@@ -2,6 +2,10 @@ import { Link } from 'react-router-dom'
 import { Container } from './Section'
 import { LogoMark } from './Logo'
 import { navGroups } from '@/routes'
+import { CONTACT_EMAIL, LEGAL_ENTITY } from '@/lib/seo'
+
+const quiet =
+  'underline-offset-4 transition-colors hover:text-ink-foreground hover:underline'
 
 export default function Footer() {
   return (
@@ -41,14 +45,21 @@ export default function Footer() {
         </div>
 
         {/* Deliberately footer-only: a reference page, not a destination. */}
-        <div className="mt-14 border-t border-white/10 pt-6">
-          <Link
-            to="/sources"
-            className="text-sm text-ink-muted underline-offset-4 transition-colors hover:text-ink-foreground hover:underline"
-          >
+        <div className="mt-14 flex flex-wrap gap-x-6 gap-y-3 border-t border-white/10 pt-6 text-sm text-ink-muted">
+          <Link to="/sources" className={quiet}>
             Sources for the statistics on this site
           </Link>
+          <Link to="/privacy" className={quiet}>
+            Privacy
+          </Link>
+          <Link to="/terms" className={quiet}>
+            Terms
+          </Link>
+          <a href={`mailto:${CONTACT_EMAIL}`} className={quiet}>
+            {CONTACT_EMAIL}
+          </a>
         </div>
+        <p className="mt-4 text-sm text-ink-muted">&copy; 2026 {LEGAL_ENTITY}</p>
       </Container>
     </footer>
   )

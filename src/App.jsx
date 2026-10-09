@@ -19,6 +19,7 @@ import Impact from './pages/Impact'
 import Leadership from './pages/Leadership'
 import Contact from './pages/Contact'
 import Sources from './pages/Sources'
+import { Privacy, Terms } from './pages/Legal'
 import Dashboard from './pages/Dashboard'
 import { SignInPage, SignUpPage } from './pages/Account'
 import NotFound from './pages/NotFound'
@@ -63,6 +64,8 @@ export function AppRoutes() {
             <Route path="leadership" element={<Leadership />} />
             <Route path="contact" element={<Contact />} />
             <Route path="sources" element={<Sources />} />
+            <Route path="privacy" element={<Privacy />} />
+            <Route path="terms" element={<Terms />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="account" element={<Dashboard />} />
             {/* Superseded by the dashboard's Writing tab. */}

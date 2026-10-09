@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import Section, { Container } from '@/components/Section'
+import { LEGAL_ENTITY } from '@/lib/seo'
 import Backdrop from '@/components/Backdrop'
 import TeamDirectory from '@/components/TeamDirectory'
 import founderPhoto from '@/assets/founder.jpg'
@@ -138,7 +139,8 @@ export default function Leadership() {
             </div>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               Students run the work and make the calls. The roles are what each person is
-              responsible for, not job titles.
+              responsible for, not job titles. The site and the lab are operated by{' '}
+              {LEGAL_ENTITY}.
             </p>
           </div>
 

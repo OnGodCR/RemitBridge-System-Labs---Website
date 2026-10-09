@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { LEGAL_ENTITY } from '@/lib/seo'
 import { Container } from '@/components/Section'
 import { Input } from '@/components/ui/input'
 import { buttonVariants } from '@/components/ui/button'
@@ -203,6 +204,20 @@ function AuthForm({ mode }) {
           {status.state === 'error' && (
             <p role="alert" className="text-sm text-destructive">
               {status.message}
+            </p>
+          )}
+
+          {isSignUp && (
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              By creating an account you agree to the{' '}
+              <Link to="/terms" className="font-bold text-primary hover:underline">
+                terms
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy" className="font-bold text-primary hover:underline">
+                privacy policy
+              </Link>{' '}
+              of {LEGAL_ENTITY}.
             </p>
           )}
 
