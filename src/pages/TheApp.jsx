@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Container } from '@/components/Section'
+import Backdrop from '@/components/Backdrop'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import {
   ArrowLeftRight, BarChart3, Bell, BookOpen, Bookmark, CalendarRange, CircleUser, Gauge,
   GraduationCap, Languages, Library, LineChart, ListChecks, MapPin, MessageCircle, Newspaper,
-  Receipt, Scale, ScanLine, ShieldAlert, ShieldCheck, Unlock, Wrench,
+  ChevronRight, Receipt, Scale, ScanLine, ShieldAlert, ShieldCheck, Unlock, Wrench,
 } from 'lucide-react'
 
 const APP_SITE = 'https://app.remitbridgelabs.org'
@@ -128,74 +129,118 @@ const tabs = [
 ]
 
 /*
-  All five panels are in the markup and the inactive ones carry `hidden`, so
-  a crawler and the prerender read every feature, not just the first tab.
+  A working model of the app's own navigation rather than a grid of cards:
+  the phone's tab bar switches tabs, each row on its screen is a feature, and
+  the panel beside it explains the one picked. It is drawn in HTML in the
+  app's visual language (green header, list rows, bottom tab bar), so it is a
+  guide to the app, not a screenshot standing in for one.
+
+  Every tab's rows are in the markup with `hidden` on the inactive ones, so
+  the prerender and crawlers still read every feature.
 */
 function Features() {
-  const [open, setOpen] = useState('scan')
+  const [tab, setTab] = useState(0)
+  const [row, setRow] = useState(0)
+  const t = tabs[tab]
+  const f = t.items[Math.min(row, t.items.length - 1)]
+  const pick = (i) => {
+    setTab(i)
+    setRow(0)
+  }
+
   return (
-    <section className="bg-accent py-20 sm:py-28">
-      <Container>
-        <p className="text-sm font-bold uppercase tracking-widest text-primary">Everything in the app</p>
-        <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">Five tabs. Every feature, one tap away.</h2>
+    <section className="relative overflow-hidden bg-primary py-20 text-primary-foreground sm:py-28">
+      <Backdrop onDark fadeClass={null} />
+      <Container className="relative">
+        <p className="text-sm font-bold uppercase tracking-widest text-current/70">Everything in the app</p>
+        <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl">Five tabs. Tap around.</h2>
 
-        <div
-          role="tablist"
-          aria-label="App tabs"
-          className="mt-10 flex gap-1 overflow-x-auto rounded-2xl border border-border bg-card p-1.5 shadow-sm sm:inline-flex"
-        >
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              id={`tab-${t.id}`}
-              aria-selected={open === t.id}
-              aria-controls={`panel-${t.id}`}
-              onClick={() => setOpen(t.id)}
-              className={cn(
-                'flex min-w-16 flex-1 flex-col items-center gap-1 rounded-xl px-4 py-2.5 text-xs font-bold transition-colors sm:flex-none sm:flex-row sm:gap-2 sm:text-sm',
-                open === t.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-              )}
-            >
-              <t.icon className="size-5 sm:size-4" />
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <div className="mt-14 grid items-center gap-12 lg:grid-cols-[auto_1fr] lg:gap-20">
+          {/* The phone */}
+          <div className="mx-auto w-full max-w-[19rem] rounded-[2.75rem] bg-ink p-2.5 shadow-[0_40px_80px_rgba(0,0,0,0.35)]">
+            <div className="flex h-[36rem] flex-col overflow-hidden rounded-[2.25rem] bg-background text-foreground">
+              <div className="bg-primary px-5 pb-5 pt-9 text-primary-foreground">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-current/70">RemitBridge</p>
+                <p className="mt-1 text-2xl font-bold tracking-tight">{t.label}</p>
+                <p className="mt-1 text-xs leading-snug text-current/80">{t.line}</p>
+              </div>
 
-        {tabs.map((t) => (
-          <div
-            key={t.id}
-            role="tabpanel"
-            id={`panel-${t.id}`}
-            aria-labelledby={`tab-${t.id}`}
-            hidden={open !== t.id}
-            className="mt-8"
-          >
-            <p className="max-w-2xl text-lg leading-relaxed">{t.line}</p>
-            <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {t.items.map((f) => (
-                <li
-                  key={f.name}
-                  className="flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm"
-                >
-                  <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-primary">
-                    <f.icon className="size-5" />
-                  </span>
-                  <p className="mt-5 text-lg font-bold">{f.name}</p>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{f.body}</p>
-                  {f.path && (
-                    <Link to={f.path} className="mt-4 text-sm font-bold text-primary hover:underline">
-                      Try it on the web
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
+              <div className="flex-1 overflow-y-auto px-3 py-3">
+                {tabs.map((tt, ti) => (
+                  <ul key={tt.id} hidden={ti !== tab} className="space-y-1.5" aria-label={`${tt.label} features`}>
+                    {tt.items.map((it, ri) => {
+                      const on = ti === tab && it === f
+                      return (
+                        <li key={it.name}>
+                          <button
+                            onClick={() => setRow(ri)}
+                            aria-pressed={on}
+                            className={cn(
+                              'flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition-colors',
+                              on ? 'border-primary bg-accent' : 'border-border bg-card hover:border-primary/40',
+                            )}
+                          >
+                            <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-xl', on ? 'bg-primary text-primary-foreground' : 'bg-accent text-primary')}>
+                              <it.icon className="size-4" />
+                            </span>
+                            <span className="min-w-0 flex-1 text-sm font-bold leading-snug">{it.name}</span>
+                            <ChevronRight className={cn('size-4 shrink-0', on ? 'text-primary' : 'text-muted-foreground')} />
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                ))}
+              </div>
+
+              <div role="tablist" aria-label="App tabs" className="grid grid-cols-5 border-t border-border bg-card px-1 pb-4 pt-2">
+                {tabs.map((tt, i) => (
+                  <button
+                    key={tt.id}
+                    role="tab"
+                    aria-selected={i === tab}
+                    onClick={() => pick(i)}
+                    className={cn('flex flex-col items-center gap-1 rounded-xl py-1.5 text-[10px] font-bold transition-colors', i === tab ? 'text-primary' : 'text-muted-foreground hover:text-foreground')}
+                  >
+                    <span className={cn('flex h-7 w-11 items-center justify-center rounded-full transition-colors', i === tab && 'bg-accent')}>
+                      <tt.icon className="size-[18px]" />
+                    </span>
+                    {tt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-        ))}
+
+          {/* What the picked row does */}
+          <div aria-live="polite">
+            <p className="font-mono text-sm text-current/60">
+              {String(tab + 1).padStart(2, '0')} / {t.label} / {String(t.items.indexOf(f) + 1).padStart(2, '0')}
+            </p>
+            <span className="mt-6 flex size-16 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20">
+              <f.icon className="size-8" />
+            </span>
+            <h3 className="mt-6 text-3xl sm:text-5xl">{f.name}</h3>
+            <p className="mt-5 max-w-lg text-lg leading-relaxed text-current/85">{f.body}</p>
+            {f.path && (
+              <Link to={f.path} className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-primary transition-transform hover:-translate-y-0.5">
+                Try it on the web <ChevronRight className="size-4" />
+              </Link>
+            )}
+
+            <div className="mt-12 flex flex-wrap gap-x-5 gap-y-2 border-t border-white/15 pt-6 text-sm">
+              {t.items.map((it, ri) => (
+                <button
+                  key={it.name}
+                  onClick={() => setRow(ri)}
+                  className={cn('transition-colors', it === f ? 'font-bold text-current' : 'text-current/60 hover:text-current')}
+                >
+                  {it.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </Container>
     </section>
   )
