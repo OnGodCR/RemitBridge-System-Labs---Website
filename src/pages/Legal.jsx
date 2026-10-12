@@ -42,6 +42,30 @@ function Contact() {
   )
 }
 
+/*
+  The app and its site are covered by their own documents, which say more
+  (receipt scanning, WhatsApp, rate alerts). Both legal pages point to them,
+  so a reader who came here about the app is not left reading the wrong one.
+*/
+function AppDocs() {
+  return (
+    <div className="mt-8 rounded-2xl border border-border bg-accent p-5">
+      <p className="font-bold">Using the RemitBridge app?</p>
+      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+        The app, app.remitbridgelabs.org and the WhatsApp bot have their own documents:
+      </p>
+      <p className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm font-bold">
+        <a href="https://app.remitbridgelabs.org/privacy" className="text-primary hover:underline">
+          App privacy policy
+        </a>
+        <a href="https://app.remitbridgelabs.org/terms" className="text-primary hover:underline">
+          App terms of use
+        </a>
+      </p>
+    </div>
+  )
+}
+
 export function Privacy() {
   return (
     <>
@@ -52,15 +76,10 @@ export function Privacy() {
             This site, remitbridgelabs.org, is operated by {LEGAL_ENTITY} (&ldquo;RemitBridge
             Labs&rdquo;, &ldquo;we&rdquo;), which is responsible for the data described here. No
             person who founded, runs or volunteers for RemitBridge Labs holds your data in their
-            own name. The RemitBridge app has{' '}
-            <a
-              href="https://app.remitbridgelabs.org/privacy"
-              className="font-bold text-primary hover:underline"
-            >
-              its own privacy policy
-            </a>
-            .
+            own name.
           </p>
+
+          <AppDocs />
 
           <Block title="Without an account">
             <p>
@@ -175,6 +194,8 @@ export function Terms() {
             </Link>{' '}
             explains what we collect and why.
           </p>
+
+          <AppDocs />
 
           <Block title="Who you&rsquo;re agreeing with">
             <p>
