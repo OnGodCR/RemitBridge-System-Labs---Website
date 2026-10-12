@@ -24,10 +24,28 @@ const APP_SITE = 'https://app.remitbridgelabs.org'
 */
 const steps = [
   {
-    screen: 'tools',
-    name: 'Tools',
-    title: 'Every check, before and after you send',
-    body: 'Fair rate, TrueCost, Yearly cost, Rate history and Scam check, grouped by when you need them.',
+    screen: 'scan',
+    name: 'Scan',
+    title: 'What did your transfer really cost?',
+    body: 'Photograph the receipt. Your details are covered on the phone, then you see the fee and the markup hidden in the rate.',
+  },
+  {
+    screen: 'compare',
+    name: 'Compare',
+    title: 'Ranked by what arrives',
+    body: 'Banks, credit unions and transfer companies, ordered by how much your family receives, and nothing else.',
+  },
+  {
+    screen: 'quote',
+    name: 'Every cost split out',
+    title: 'Where the money goes',
+    body: 'The upfront fee and the exchange-rate markup, side by side, with when the price was checked.',
+  },
+  {
+    screen: 'alert',
+    name: 'Rate alerts',
+    title: 'Hear when it gets better',
+    body: 'Set a target. One notification when a price reaches it, at most once a day.',
   },
   {
     screen: 'fair-rate',
@@ -37,18 +55,17 @@ const steps = [
     path: '/fair-rate',
   },
   {
-    screen: 'true-cost',
-    name: 'TrueCost',
-    title: 'Find the cost hidden in the rate',
-    body: 'Type in a receipt and see the fee and the exchange-rate markup counted as one cost.',
-    path: '/truecost',
+    screen: 'yearly-cost',
+    name: 'Yearly cost',
+    title: 'A year of sending, added up',
+    body: 'The same transfer every month, against the global average and the UN target.',
+    path: '/reckoner',
   },
   {
-    screen: 'rate-history',
-    name: 'Rate history',
-    title: 'Watch the rate move',
-    body: 'The mid-market rate day by day. Drag across the chart to read any day.',
-    path: '/rate-history',
+    screen: 'learn',
+    name: 'Learn',
+    title: 'Short lessons, in plain words',
+    body: 'From what a transfer really costs to staying safe, one small step at a time.',
   },
   {
     screen: 'scam-check',
@@ -71,7 +88,7 @@ const tabs = [
     icon: ScanLine,
     line: 'What did your transfer really cost? Photograph the receipt and find out.',
     items: [
-      { icon: Receipt, name: 'Scan a receipt', body: 'Snap a transfer receipt and see the fee and the markup hidden in the rate, as one real cost.' },
+      { icon: Receipt, name: 'Scan a receipt', screen: 'scan', body: 'Snap a transfer receipt and see the fee and the markup hidden in the rate, as one real cost.' },
       { icon: ShieldCheck, name: 'Covered before it leaves', body: 'Names, addresses and account numbers are covered on your phone first, and you see exactly what would be sent.' },
       { icon: ListChecks, name: 'Check each value', body: 'Every figure read from the receipt is shown for you to confirm or correct before the result.' },
       { icon: BarChart3, name: 'What people really paid', body: 'Share a receipt if you choose, and it joins totals shown only for groups of five or more.' },
@@ -83,11 +100,23 @@ const tabs = [
     icon: ArrowLeftRight,
     line: 'Banks, credit unions and transfer companies, ranked by what your family receives.',
     items: [
-      { icon: Scale, name: 'Ranked by what arrives', body: 'Nothing else decides the order. No provider can pay to rank higher.' },
-      { icon: Gauge, name: 'Every cost split out', body: 'Each price shows the upfront fee and the exchange-rate markup, and when it was checked.' },
+      { icon: Scale, name: 'Ranked by what arrives', screen: 'compare', body: 'Nothing else decides the order. No provider can pay to rank higher.' },
+      { icon: Gauge, name: 'Every cost split out', screen: 'quote', body: 'Each price shows the upfront fee and the exchange-rate markup, and when it was checked.' },
       { icon: ShieldAlert, name: 'What a price leaves out', body: 'Agent fees charged in person, taxes where the money arrives, and rate moves since the last check.' },
-      { icon: Bell, name: 'Rate alerts', body: 'Set a target and get one notification when a price reaches it, at most once a day.' },
-      { icon: MapPin, name: 'Ask for a route', body: 'Request a country that is not covered yet, and see which routes are live, being built or requested.' },
+      { icon: Bell, name: 'Rate alerts', screen: 'alert', body: 'Set a target and get one notification when a price reaches it, at most once a day.' },
+      { icon: MapPin, name: 'Ask for a route', screen: 'routes', body: 'Request a country that is not covered yet, and see which routes are live, being built or requested.' },
+    ],
+  },
+  {
+    id: 'whatsapp',
+    label: 'WhatsApp',
+    icon: MessageCircle,
+    line: 'Compare prices in a chat. No app needed.',
+    items: [
+      { icon: MessageCircle, name: 'Prices in a chat', body: 'Text the bot an amount and a country, like 500 to India, and get what each provider gives your family today.' },
+      { icon: Receipt, name: 'Send a receipt photo', body: 'The bot reads it, covers your details, and says what that transfer really cost.' },
+      { icon: ShieldAlert, name: 'WHY and SCAM', body: 'Ask where the hidden cost is, or check a message asking you for money.' },
+      { icon: Bookmark, name: 'Link it to your account', body: 'Then SAVE 500 to India adds the comparison to your saved list in the app.' },
     ],
   },
   {
@@ -96,11 +125,11 @@ const tabs = [
     icon: Wrench,
     line: 'Five checks, grouped by whether you need them before or after you send.',
     items: [
-      { icon: Gauge, name: 'Fair rate', body: 'How far your rate is from the mid-market rate, and what each point costs.', path: '/fair-rate' },
-      { icon: Receipt, name: 'TrueCost', body: 'Check a receipt by hand when you would rather not scan it.', path: '/truecost' },
-      { icon: CalendarRange, name: 'Yearly cost', body: 'The same transfer, every month for a year. What it adds up to.', path: '/reckoner' },
-      { icon: LineChart, name: 'Rate history', body: 'The mid-market rate, day by day. Drag across the chart to read any day.', path: '/rate-history' },
-      { icon: ShieldAlert, name: 'Scam check', body: 'Eight questions from FTC and CFPB guidance. Your answers stay on your phone.', path: '/scam-check' },
+      { icon: Gauge, name: 'Fair rate', screen: 'fair-rate', body: 'How far your rate is from the mid-market rate, and what each point costs.', path: '/fair-rate' },
+      { icon: Receipt, name: 'TrueCost', screen: 'true-cost', body: 'Check a receipt by hand when you would rather not scan it.', path: '/truecost' },
+      { icon: CalendarRange, name: 'Yearly cost', screen: 'yearly-cost', body: 'The same transfer, every month for a year. What it adds up to.', path: '/reckoner' },
+      { icon: LineChart, name: 'Rate history', screen: 'rate-history', body: 'The mid-market rate, day by day. Drag across the chart to read any day.', path: '/rate-history' },
+      { icon: ShieldAlert, name: 'Scam check', screen: 'scam-check', body: 'Eight questions from FTC and CFPB guidance. Your answers stay on your phone.', path: '/scam-check' },
     ],
   },
   {
@@ -109,21 +138,23 @@ const tabs = [
     icon: BookOpen,
     line: 'Short lessons and the lab\u2019s research, in plain language.',
     items: [
-      { icon: GraduationCap, name: 'Eight lessons', body: 'From what a transfer really costs and how money arrives, to staying safe and how banks move money.' },
-      { icon: Newspaper, name: 'The lab\u2019s blog', body: 'Every post from this site, inside the app.', path: '/blog' },
-      { icon: Library, name: 'Glossary', body: 'Every term the research relies on, in plain words.', path: '/glossary' },
+      { icon: GraduationCap, name: 'Lessons', screen: 'learn', body: 'Modules from the basics and what a transfer really costs, to staying safe and how banks move money.' },
+      { icon: BookOpen, name: 'One word at a time', screen: 'lesson', body: 'Each lesson is a short card: a term, what it means, and a check that you have it.' },
+      { icon: Newspaper, name: 'The lab\u2019s blog', screen: 'blog', body: 'Every post from this site, inside the app.', path: '/blog' },
+      { icon: Library, name: 'Glossary', screen: 'glossary', body: 'Every term the research relies on, in plain words.', path: '/glossary' },
     ],
   },
   {
+    // Not a tab: behind the avatar in the top corner of every tab.
     id: 'account',
     label: 'Account',
     icon: CircleUser,
+    inBar: false,
     line: 'Optional. It keeps what you save, on any phone you use.',
     items: [
       { icon: Unlock, name: 'No account needed', body: 'Comparing prices needs no sign-up. If you make one, you can delete it in the app at any time.' },
       { icon: Bookmark, name: 'Saved comparisons', body: 'Save a comparison or a receipt check and reopen it in one tap.' },
-      { icon: MessageCircle, name: 'WhatsApp', body: 'Ask for prices in a WhatsApp chat, and link it to save from there and get alerts.' },
-      { icon: Languages, name: 'Your language', body: 'English now. Hindi, Spanish, Tagalog and Vietnamese are written and waiting on reviewers.' },
+      { icon: Languages, name: 'Your language', screen: 'language', body: 'English, with Hindi, Spanish, Tagalog and Vietnamese marked Draft until a fluent speaker checks them.' },
     ],
   },
 ]
@@ -141,12 +172,22 @@ const tabs = [
 function Features() {
   const [tab, setTab] = useState(0)
   const [row, setRow] = useState(0)
+  // A real screenshot shows only once a feature is picked; switching tabs goes
+  // back to the list, so the tab bar always does what a tab bar does.
+  const [shot, setShot] = useState(false)
   const t = tabs[tab]
   const f = t.items[Math.min(row, t.items.length - 1)]
   const pick = (i) => {
     setTab(i)
     setRow(0)
+    setShot(false)
   }
+  const choose = (ti, ri) => {
+    setTab(ti)
+    setRow(ri)
+    setShot(true)
+  }
+  const showing = shot && f.screen
 
   return (
     <section className="relative overflow-hidden bg-primary py-20 text-primary-foreground sm:py-28">
@@ -158,7 +199,32 @@ function Features() {
         <div className="mt-14 grid items-center gap-12 lg:grid-cols-[auto_1fr] lg:gap-20">
           {/* The phone */}
           <div className="mx-auto w-full max-w-[19rem] rounded-[2.75rem] bg-ink p-2.5 shadow-[0_40px_80px_rgba(0,0,0,0.35)]">
-            <div className="flex h-[36rem] flex-col overflow-hidden rounded-[2.25rem] bg-background text-foreground">
+            <div className="relative flex h-[36rem] flex-col overflow-hidden rounded-[2.25rem] bg-background text-foreground">
+              {/*
+                Real screens, taken in the simulator. Laid over the drawn header
+                and list, stopping above the tab bar, and cropped from the top so
+                the screenshot's own tab bar falls below the fold.
+              */}
+              <div className={cn('absolute inset-x-0 top-0 bottom-[4.6rem] z-10 bg-background transition-opacity duration-300', showing ? 'opacity-100' : 'pointer-events-none opacity-0')}>
+                {tabs.flatMap((tt) => tt.items).filter((it) => it.screen).map((it) => (
+                  <img
+                    key={it.name}
+                    src={`/app/${it.screen}.webp`}
+                    alt={`${it.name}, in the RemitBridge app`}
+                    width="603"
+                    height="1311"
+                    loading="lazy"
+                    className={cn('absolute inset-0 h-full w-full object-cover object-top', showing && it === f ? 'opacity-100' : 'opacity-0')}
+                  />
+                ))}
+                <button
+                  onClick={() => setShot(false)}
+                  aria-label={`Back to the ${t.label} list`}
+                  className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-ink/85 px-4 py-2 text-xs font-bold text-ink-foreground shadow-lg backdrop-blur"
+                >
+                  Back to {t.label}
+                </button>
+              </div>
               <div className="bg-primary px-5 pb-5 pt-9 text-primary-foreground">
                 <p className="text-[11px] font-bold uppercase tracking-widest">RemitBridge</p>
                 <p className="mt-1 text-2xl font-bold tracking-tight">{t.label}</p>
@@ -173,7 +239,7 @@ function Features() {
                       return (
                         <li key={it.name}>
                           <button
-                            onClick={() => setRow(ri)}
+                            onClick={() => choose(ti, ri)}
                             aria-pressed={on}
                             className={cn(
                               'flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition-colors',
@@ -194,7 +260,7 @@ function Features() {
               </div>
 
               <div role="tablist" aria-label="App tabs" className="grid grid-cols-5 border-t border-border bg-card px-1 pb-4 pt-2">
-                {tabs.map((tt, i) => (
+                {tabs.map((tt, i) => tt.inBar !== false && (
                   <button
                     key={tt.id}
                     role="tab"
@@ -250,10 +316,7 @@ function Features() {
                       return (
                         <li key={it.name}>
                           <button
-                            onClick={() => {
-                              setTab(ti)
-                              setRow(ri)
-                            }}
+                            onClick={() => choose(ti, ri)}
                             aria-pressed={on}
                             className={cn(
                               '-ml-3 w-full rounded-lg py-1.5 pl-3 text-left text-sm transition-colors',
@@ -369,8 +432,8 @@ export default function TheApp() {
             </p>
           </div>
           <div className="relative mx-auto flex h-[30rem] w-full max-w-md items-center justify-center sm:h-[36rem]">
-            <Phone screen="rate-history" eager className="absolute left-0 top-4 hidden -rotate-6 opacity-80 sm:block" />
-            <Phone screen="true-cost" eager className="relative rotate-3 sm:left-16" />
+            <Phone screen="scan" eager className="absolute left-0 top-4 hidden -rotate-6 opacity-80 sm:block" />
+            <Phone screen="compare" eager className="relative rotate-3 sm:left-16" />
           </div>
         </Container>
         <p className="pb-6 text-center text-[11px] tracking-[0.3em] text-muted-foreground">SCROLL</p>
