@@ -98,7 +98,7 @@ export default function Contact() {
     }
 
     setForm({ name: '', email: '', topic: '', message: '' })
-    setStatus({ state: 'sent', message: 'Thanks — that reached us. We read everything.' })
+    setStatus({ state: 'sent', message: 'Thanks, that reached us. A person reads every message.' })
   }
 
   return (

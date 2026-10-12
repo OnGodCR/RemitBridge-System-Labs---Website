@@ -123,6 +123,10 @@ export const pages = {
     description:
       'A free app for iPhone and Android that compares what it costs to send money from the US by how much arrives. Coming soon to the App Store and Google Play.',
   },
+  '/404': {
+    title: 'Page not found',
+    description: 'There is no page at this address. The home page and the menu lead to everything on the site.',
+  },
   '/privacy': {
     title: 'Privacy policy',
     description:
@@ -148,7 +152,7 @@ export const pages = {
  * indexing a URL that shows it nothing but a sign-in box, which is a bad
  * result for whoever clicks it.
  */
-export const NOINDEX = ['/dashboard', '/account', '/write', '/sign-in', '/sign-up']
+export const NOINDEX = ['/dashboard', '/account', '/write', '/sign-in', '/sign-up', '/404']
 
 export const isNoindex = (pathname) =>
   NOINDEX.some((p) => pathname === p || pathname.startsWith(`${p}/`))

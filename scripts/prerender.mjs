@@ -55,6 +55,15 @@ for (const file of htmlFiles(dist)) {
   written += 1
 }
 
+/*
+ * Vercel serves 404.html, with a real 404 status, for any address that matches
+ * no file and no rewrite. The catch-all rewrite to index.html used to answer
+ * every unknown address with a 200 and a "not found" drawn by React, which a
+ * search engine reads as a page that exists (a soft 404). vercel.json now
+ * rewrites only the routes that need the app at runtime, and this is the rest.
+ */
+fs.copyFileSync(path.join(dist, '404', 'index.html'), path.join(dist, '404.html'))
+
 // The server bundle is a build tool, not part of the site.
 fs.rmSync(serverDir, { recursive: true, force: true })
 
