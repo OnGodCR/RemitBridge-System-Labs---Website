@@ -37,8 +37,10 @@ export default function Home() {
           </p>
 
           <div className="rise rise-3 mt-10 flex flex-wrap justify-center gap-4">
-            <Link to="/truecost" className={buttonVariants({ size: 'hero' })}>
-              Try the calculator
+            {/* Was "Try the calculator" (/truecost). The app is the lab's
+                product now, so the first button leads to it. */}
+            <Link to="/app" className={buttonVariants({ size: 'hero' })}>
+              Meet the app
               <ArrowRight className="size-4" />
             </Link>
             {/* Was /remitbench, which is now filed under Coming soon. The
