@@ -159,7 +159,7 @@ function Features() {
           {/* The phone */}
           <div className="mx-auto w-full max-w-[19rem] rounded-[2.75rem] bg-ink p-2.5 shadow-[0_40px_80px_rgba(0,0,0,0.35)]">
             <div className="flex h-[36rem] flex-col overflow-hidden rounded-[2.25rem] bg-background text-foreground">
-              <div className="bg-primary px-5 pb-5 pt-9 text-foreground">
+              <div className="bg-primary px-5 pb-5 pt-9 text-primary-foreground">
                 <p className="text-[11px] font-bold uppercase tracking-widest">RemitBridge</p>
                 <p className="mt-1 text-2xl font-bold tracking-tight">{t.label}</p>
                 <p className="mt-1 text-xs leading-snug">{t.line}</p>
