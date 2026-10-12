@@ -343,10 +343,14 @@ export default function TheApp() {
   const step = useStep(story, steps.length)
 
   return (
-    <div className="bg-card text-foreground">
+    /*
+      No fill of its own: the site's fixed Backdrop (bridge marks and the light
+      that follows the pointer) shows through the hero, the story and the
+      closing, as it does on every other page. The green band carries its own.
+    */
+    <div className="text-foreground">
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -right-40 top-1/2 size-[56rem] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(20,112,90,0.10),transparent_62%)]" />
         <Container className="relative grid min-h-[calc(100svh-4rem)] items-center gap-12 py-20 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary">
@@ -375,7 +379,6 @@ export default function TheApp() {
       {/* The story: the stage is sticky inside a box one screen tall per step. */}
       <section ref={story} className="relative" style={{ height: `${steps.length * 100}svh` }}>
         <div className="sticky top-16 flex h-[calc(100svh-4rem)] items-center overflow-hidden">
-          <div className="pointer-events-none absolute left-1/2 top-1/2 size-[44rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(20,112,90,0.12),transparent_64%)]" />
           <Container className="relative grid items-center gap-8 md:grid-cols-[1fr_auto_1fr]">
             <div className="relative order-2 min-h-44 md:order-none md:col-start-1 md:row-start-1">
               {steps.map((s, i) => (
@@ -408,7 +411,7 @@ export default function TheApp() {
 
       <Features />
 
-      <section className="bg-card py-20 sm:py-24">
+      <section className="py-20 sm:py-24">
         <Container>
           <h2 className="text-2xl sm:text-3xl">Ranked by what arrives. Nothing else.</h2>
           <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
